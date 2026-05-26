@@ -7,64 +7,35 @@ import {
   Plus, 
   FileText
 } from "lucide-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import Button from "@/shared/components/Button";
 import Input from "@/shared/components/Input";
 import Tabs from "@/shared/components/Tabs";
 import { getSalesOrders } from "../services/sales.service";
 
-// ========================================
-// CONSTANTS
-// ========================================
-
 const TABS = ["All", "Pending", "Dikemas", "Dikirim", "Completed", "Void"];
-
-// ========================================
-// HELPERS
-// ========================================
 
 function formatRupiah(value = 0) {
   return `Rp ${Math.round(value).toLocaleString("id-ID")}`;
 }
 
 function calculateOrderTotals(order) {
-  const revenue =
-    order.items?.reduce(
-      (sum, item) => sum + Number(item.subtotal || 0),
-      0,
-    ) || 0;
-
-  const hpp =
-    order.items?.reduce(
-      (sum, item) => sum + Number(item.total_hpp || 0),
-      0,
-    ) || 0;
-
-  return {
-    revenue,
-    hpp,
-    profit: revenue - hpp,
-  };
+  const revenue = order.items?.reduce((sum, item) => sum + Number(item.subtotal || 0), 0) || 0;
+  const hpp = order.items?.reduce((sum, item) => sum + Number(item.total_hpp || 0), 0) || 0;
+  return { revenue, hpp, profit: revenue - hpp };
 }
 
 function getStatusClass(status) {
   switch (status) {
-    case "COMPLETED":
-      return "bg-emerald-100 text-emerald-700";
-    case "DIKEMAS":
-      return "bg-orange-100 text-orange-700";
-    case "DIKIRIM":
-      return "bg-blue-100 text-blue-700";
-    case "VOID":
-      return "bg-red-100 text-red-700";
-    default:
-      return "bg-yellow-100 text-yellow-700";
+    case "COMPLETED": return "bg-emerald-100 text-emerald-700";
+    case "DIKEMAS": return "bg-orange-100 text-orange-700";
+    case "DIKIRIM": return "bg-blue-100 text-blue-700";
+    case "VOID": return "bg-red-100 text-red-700";
+    default: return "bg-yellow-100 text-yellow-700";
   }
 }
-
-// ========================================
-// COMPONENT
-// ========================================
 
 export default function SalesOrdersPage() {
   const navigate = useNavigate();
@@ -76,10 +47,6 @@ export default function SalesOrdersPage() {
   
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
-
-  // ========================================
-  // LOAD DATA
-  // ========================================
 
   async function loadOrders() {
     try {
@@ -96,10 +63,6 @@ export default function SalesOrdersPage() {
   useEffect(() => {
     loadOrders();
   }, []);
-
-  // ========================================
-  // FILTERED
-  // ========================================
 
   const filteredOrders = useMemo(() => {
     let data = [...orders];
@@ -126,10 +89,6 @@ export default function SalesOrdersPage() {
 
     return data;
   }, [orders, activeTab, search, dateFilter]);
-
-  // ========================================
-  // PREPARE & SUMMARY
-  // ========================================
 
   const preparedOrders = useMemo(() => {
     return filteredOrders.map((order) => {
@@ -161,32 +120,58 @@ export default function SalesOrdersPage() {
     };
   }, [orders]);
 
-  // ========================================
-  // DOWNLOAD DATA (STUB)
-  // ========================================
-
   const handleDownloadPDF = () => {
-    // Dipersiapkan sementara agar aman dari error library bundling di HP
-    alert(`Mendownload data filter: ${dateFilter || "Semua Tanggal"} (${preparedOrders.length} data)`);
-  };
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.setTextColor(30, 41, 59);
+    doc.text("SALES ORDERS REPORT", 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Filter Date: ${dateFilter || "All"} | Status Tab: ${activeTab}`, 14, 27);
 
-  // ========================================
-  // LOADING STATE
-  // ========================================
+    const tableColumn = ["SO Number", "Customer Name", "Status", "Revenue", "Gross Profit"];
+    const tableRows = [];
+
+    preparedOrders.forEach((order) => {
+      tableRows.push([
+        order.so_number || "-",
+        order.customer_name || "-",
+        order.status || "-",
+        formatRupiah(order.revenue),
+        formatRupiah(order.profit),
+      ]);
+    });
+
+    tableRows.push(["TOTAL", "", "", formatRupiah(summary.revenue), formatRupiah(summary.profit)]);
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 33,
+      theme: "striped",
+      headStyles: { fillColor: [59, 130, 246] },
+      styles: { fontSize: 9 },
+      columnStyles: { 3: { halign: "right" }, 4: { halign: "right" } },
+      didParseCell: (data) => {
+        if (data.row.index === tableRows.length - 1) {
+          data.cell.styles.fontStyle = "bold";
+        }
+      },
+    });
+
+    doc.save(`Sales_Report_${dateFilter || "All"}_${activeTab}.pdf`);
+  };
 
   if (loading) {
     return (
       <div className="min-w-0 space-y-4 p-4">
         <div className="h-24 animate-pulse rounded-2xl bg-slate-200" />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          {[1, 2, 3].map((item) => (
-            <div key={item} className="h-20 animate-pulse rounded-2xl bg-slate-200" />
-          ))}
+          {[1, 2, 3].map((item) => <div key={item} className="h-20 animate-pulse rounded-2xl bg-slate-200" />)}
         </div>
         <div className="space-y-2">
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-16 animate-pulse rounded-2xl bg-slate-200" />
-          ))}
+          {[1, 2, 3, 4].map((item) => <div key={item} className="h-16 animate-pulse rounded-2xl bg-slate-200" />)}
         </div>
       </div>
     );
@@ -195,15 +180,10 @@ export default function SalesOrdersPage() {
   return (
     <div className="min-w-0 pb-24 lg:pb-8 relative">
       
-      {/* ================================================= */}
-      {/* 1 & 3. STICKY HEADER - Menggantung Aman di Bawah Navbar Top */}
-      {/* ================================================= */}
-      
       <div className="sticky top-[75px] z-20 -mx-5 px-5 pb-3 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
         <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 border border-slate-200 shadow-sm">
           
           <div className="flex items-center gap-2">
-            {/* Search */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
                 <Search size={16} />
@@ -217,7 +197,6 @@ export default function SalesOrdersPage() {
               />
             </div>
 
-            {/* Date Filter */}
             <div className="relative flex-shrink-0">
               <input
                 type="date"
@@ -234,7 +213,6 @@ export default function SalesOrdersPage() {
               </button>
             </div>
 
-            {/* Download */}
             <button 
               onClick={handleDownloadPDF}
               className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition active:bg-slate-200"
@@ -243,7 +221,6 @@ export default function SalesOrdersPage() {
             </button>
           </div>
 
-          {/* Tab Filter */}
           <div className="-mx-1 overflow-x-auto no-scrollbar">
             <div className="min-w-max px-1">
               <Tabs
@@ -259,10 +236,6 @@ export default function SalesOrdersPage() {
         </div>
       </div>
 
-      {/* ================================================= */}
-      {/* SUMMARY CARDS */}
-      {/* ================================================= */}
-      
       <div className="mt-3 grid grid-cols-1 gap-2.5 md:grid-cols-3 md:gap-4 px-1">
         <SummaryCard title="Total Revenue" value={formatRupiah(summary.revenue)} />
         <SummaryCard title="Total HPP" value={formatRupiah(summary.hpp)} />
@@ -273,10 +246,6 @@ export default function SalesOrdersPage() {
         />
       </div>
 
-      {/* ================================================= */}
-      {/* 2 & 4. LIST DATA - CARD MOBILE RAMPING & URUTAN BARU */}
-      {/* ================================================= */}
-      
       <div className="mt-4 space-y-2 px-1">
         {preparedOrders.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-14 px-4 text-center">
@@ -293,7 +262,6 @@ export default function SalesOrdersPage() {
             >
               <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm flex flex-col gap-1">
                 
-                {/* BARIS ATAS: Nama Customer & Nilai Uang Sejajar */}
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-slate-900 text-sm md:text-base truncate pr-2">
                     {order.customer_name || "Unknown Customer"}
@@ -303,7 +271,6 @@ export default function SalesOrdersPage() {
                   </span>
                 </div>
 
-                {/* BARIS BAWAH: Nomor Referensi SO & Badge Status */}
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-medium text-blue-600 truncate">
                     {order.so_number}
@@ -321,10 +288,6 @@ export default function SalesOrdersPage() {
         )}
       </div>
 
-      {/* ================================================= */}
-      {/* 2. FAB: CREATE BUTTON - Sticky Mengambang di Pojok */}
-      {/* ================================================= */}
-      
       <div className="fixed bottom-6 right-5 z-40 lg:bottom-8 lg:right-8">
         <button
           onClick={() => navigate("/sales/create")}
