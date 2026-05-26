@@ -15,6 +15,7 @@ import { supabase } from "@/lib/supabase";
 
 export default function InventoryPage() {
   const [activeTab, setActiveTab] = useState("Produk");
+
   // =====================================================
   // STATE
   // =====================================================
@@ -44,20 +45,16 @@ export default function InventoryPage() {
   // =====================================================
 
   const columns = [
-    // =====================================================
-    // SKU
-    // =====================================================
-
     {
       key: "sku",
       label: "SKU",
 
-      render: (row) => <span className="text-slate-500">{row.sku}</span>,
+      render: (row) => (
+        <span className="whitespace-nowrap text-slate-500">
+          {row.sku}
+        </span>
+      ),
     },
-
-    // =====================================================
-    // PRODUCT NAME
-    // =====================================================
 
     {
       key: "name",
@@ -65,45 +62,43 @@ export default function InventoryPage() {
 
       render: (row) => (
         <button
-          onClick={() => navigate(`/inventory/products/${row.id}`)}
+          onClick={() =>
+            navigate(`/inventory/products/${row.id}`)
+          }
           className="
-          text-left
-          font-medium
-          text-slate-900
-          transition
-          hover:text-blue-600
-        "
+            text-left
+            font-medium
+            text-slate-900
+            transition
+            hover:text-blue-600
+          "
         >
           {row.name}
         </button>
       ),
     },
 
-    // =====================================================
-    // STOCK
-    // =====================================================
-
     {
       key: "stock",
       label: "Stock",
 
-      render: (row) => <span className="text-slate-700">{Number(row.stock || 0)}</span>,
+      render: (row) => (
+        <span className="whitespace-nowrap text-slate-700">
+          {Number(row.stock || 0)}
+        </span>
+      ),
     },
-
-    // =====================================================
-    // UNIT
-    // =====================================================
 
     {
       key: "unit",
       label: "Unit",
 
-      render: (row) => <span className="uppercase text-slate-500">{row.unit}</span>,
+      render: (row) => (
+        <span className="whitespace-nowrap uppercase text-slate-500">
+          {row.unit}
+        </span>
+      ),
     },
-
-    // =====================================================
-    // ACTIONS
-    // =====================================================
 
     {
       key: "actions",
@@ -111,28 +106,24 @@ export default function InventoryPage() {
 
       render: (row) => (
         <div className="flex items-center gap-3">
-          {/* EDIT */}
-
           <button
             onClick={() => handleEdit(row)}
             className="
-            text-blue-600
-            transition
-            hover:text-blue-700
-          "
+              text-blue-600
+              transition
+              hover:text-blue-700
+            "
           >
             <Pencil size={18} />
           </button>
 
-          {/* DELETE */}
-
           <button
             onClick={() => handleDelete(row.id)}
             className="
-            text-red-500
-            transition
-            hover:text-red-600
-          "
+              text-red-500
+              transition
+              hover:text-red-600
+            "
           >
             <Trash2 size={18} />
           </button>
@@ -188,21 +179,43 @@ export default function InventoryPage() {
 
       label: "Avg Cost",
 
-      render: (row) => <span>Rp {Number(row.average_cost || 0).toLocaleString()}</span>,
+      render: (row) => (
+        <span>
+          Rp{" "}
+          {Number(
+            row.average_cost || 0,
+          ).toLocaleString()}
+        </span>
+      ),
     },
 
     {
       key: "selling_price",
       label: "Selling Price",
 
-      render: (row) => <span className="font-medium text-blue-600">Rp {Number(row.selling_price || 0).toLocaleString()}</span>,
+      render: (row) => (
+        <span className="font-medium text-blue-600">
+          Rp{" "}
+          {Number(
+            row.selling_price || 0,
+          ).toLocaleString()}
+        </span>
+      ),
     },
 
     {
       key: "inventory_value",
       label: "Inventory Value",
 
-      render: (row) => <span className="text-emerald-600">Rp {(Number(row.stock || 0) * Number(row.average_cost || 0)).toLocaleString()}</span>,
+      render: (row) => (
+        <span className="text-emerald-600">
+          Rp{" "}
+          {(
+            Number(row.stock || 0) *
+            Number(row.average_cost || 0)
+          ).toLocaleString()}
+        </span>
+      ),
     },
   ];
 
@@ -221,19 +234,17 @@ export default function InventoryPage() {
   async function getProducts() {
     const { data, error } = await supabase
       .from("products")
-      .select(
-        `
-    *,
-    brands (
-      id,
-      name
-    ),
-    categories (
-      id,
-      name
-    )
-  `,
-      )
+      .select(`
+        *,
+        brands (
+          id,
+          name
+        ),
+        categories (
+          id,
+          name
+        )
+      `)
       .order("created_at", {
         ascending: false,
       });
@@ -308,17 +319,26 @@ export default function InventoryPage() {
       name: form.name,
       unit: form.unit,
 
-      average_cost: Number(form.average_cost || 0),
+      average_cost: Number(
+        form.average_cost || 0,
+      ),
 
-      selling_price: Number(form.selling_price || 0),
+      selling_price: Number(
+        form.selling_price || 0,
+      ),
     };
 
     let response;
 
     if (editingId) {
-      response = await supabase.from("products").update(payload).eq("id", editingId);
+      response = await supabase
+        .from("products")
+        .update(payload)
+        .eq("id", editingId);
     } else {
-      response = await supabase.from("products").insert([payload]);
+      response = await supabase
+        .from("products")
+        .insert([payload]);
     }
 
     if (response.error) {
@@ -339,11 +359,16 @@ export default function InventoryPage() {
   // =====================================================
 
   async function handleDelete(id) {
-    const confirmDelete = confirm("Delete this product?");
+    const confirmDelete = confirm(
+      "Delete this product?",
+    );
 
     if (!confirmDelete) return;
 
-    const { error } = await supabase.from("products").delete().eq("id", id);
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       console.error(error);
@@ -367,8 +392,10 @@ export default function InventoryPage() {
       sku: product.sku,
       name: product.name,
       unit: product.unit,
-      average_cost: product.average_cost || "",
-      selling_price: product.selling_price || "",
+      average_cost:
+        product.average_cost || "",
+      selling_price:
+        product.selling_price || "",
     });
 
     setOpenModal(true);
@@ -411,30 +438,36 @@ export default function InventoryPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 flex-col gap-6 overflow-x-hidden">
       {/* ===================================================== */}
       {/* HEADER */}
       {/* ===================================================== */}
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Inventory</h1>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Inventory
+          </h1>
 
-          <p className="mt-1 text-sm text-slate-500">Product master and inventory overview</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Product master and inventory overview
+          </p>
         </div>
 
         <Button
           onClick={handleAddProduct}
           className="
-          rounded-xl
-          bg-blue-600
-          px-5
-          py-2.5
-          text-sm
-          font-medium
-          text-white
-          hover:bg-blue-700
-        "
+            w-full
+            rounded-xl
+            bg-blue-600
+            px-5
+            py-2.5
+            text-sm
+            font-medium
+            text-white
+            hover:bg-blue-700
+            md:w-auto
+          "
         >
           + Add Product
         </Button>
@@ -444,7 +477,20 @@ export default function InventoryPage() {
       {/* TABS */}
       {/* ===================================================== */}
 
-      <Tabs tabs={["Produk", "Merek", "Kategori Produk", "Daftar Harga"]} value={activeTab} onChange={setActiveTab} />
+      <div className="overflow-x-auto">
+        <div className="min-w-max">
+          <Tabs
+            tabs={[
+              "Produk",
+              "Merek",
+              "Kategori Produk",
+              "Daftar Harga",
+            ]}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
+        </div>
+      </div>
 
       {/* ===================================================== */}
       {/* PRODUK TAB */}
@@ -453,47 +499,206 @@ export default function InventoryPage() {
       {activeTab === "Produk" && (
         <div
           className="
-      rounded-2xl
-      border
-      border-slate-200
-      bg-white
-      shadow-sm
-    "
+            overflow-hidden
+            rounded-2xl
+            border
+            border-slate-200
+            bg-white
+            shadow-sm
+          "
         >
           {/* TOPBAR */}
 
           <div
             className="
-        flex
-        flex-wrap
-        items-center
-        justify-between
-        gap-4
-        border-b
-        border-slate-200
-        px-6
-        py-5
-      "
+              flex
+              flex-col
+              gap-4
+              border-b
+              border-slate-200
+              px-4
+              py-4
+              md:flex-row
+              md:items-center
+              md:justify-between
+              md:px-6
+              md:py-5
+            "
           >
-            <div className="flex items-center gap-3">
-              <button className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600">Bulk Action</button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                className="
+                  rounded-lg
+                  border
+                  border-slate-200
+                  bg-white
+                  px-4
+                  py-2
+                  text-sm
+                  font-medium
+                  text-slate-600
+                "
+              >
+                Bulk Action
+              </button>
 
-              <button className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600">Export</button>
+              <button
+                className="
+                  rounded-lg
+                  border
+                  border-slate-200
+                  bg-white
+                  px-4
+                  py-2
+                  text-sm
+                  font-medium
+                  text-slate-600
+                "
+              >
+                Export
+              </button>
             </div>
 
-            <div className="w-full max-w-xs">
+            <div className="w-full md:max-w-xs">
               <Input
                 placeholder="Search product..."
                 className="
-            border-slate-200
-            bg-white
-            text-slate-900
-          "
+                  border-slate-200
+                  bg-white
+                  text-slate-900
+                "
               />
             </div>
           </div>
 
-          <Table columns={columns} data={products} />
+          {/* MOBILE CARD */}
+
+          <div className="space-y-3 p-4 md:hidden">
+            {products.map((row) => (
+              <div
+                key={row.id}
+                className="
+                  rounded-2xl
+                  border
+                  border-slate-200
+                  bg-white
+                  p-4
+                "
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-slate-400">
+                      {row.sku}
+                    </p>
+
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/inventory/products/${row.id}`,
+                        )
+                      }
+                      className="
+                        mt-1
+                        text-left
+                        text-base
+                        font-semibold
+                        text-slate-900
+                      "
+                    >
+                      {row.name}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() =>
+                        handleEdit(row)
+                      }
+                      className="
+                        text-blue-600
+                        transition
+                        hover:text-blue-700
+                      "
+                    >
+                      <Pencil size={18} />
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleDelete(row.id)
+                      }
+                      className="
+                        text-red-500
+                        transition
+                        hover:text-red-600
+                      "
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      Stock
+                    </p>
+
+                    <p className="mt-1 text-sm font-semibold text-slate-800">
+                      {Number(row.stock || 0)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      Unit
+                    </p>
+
+                    <p className="mt-1 text-sm font-semibold uppercase text-slate-800">
+                      {row.unit}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      Avg Cost
+                    </p>
+
+                    <p className="mt-1 text-sm font-semibold text-slate-800">
+                      Rp{" "}
+                      {Number(
+                        row.average_cost || 0,
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      Sell Price
+                    </p>
+
+                    <p className="mt-1 text-sm font-semibold text-blue-600">
+                      Rp{" "}
+                      {Number(
+                        row.selling_price || 0,
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* DESKTOP TABLE */}
+
+          <div className="hidden md:block">
+            <div className="overflow-x-auto">
+              <Table
+                columns={columns}
+                data={products}
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -504,27 +709,39 @@ export default function InventoryPage() {
       {activeTab === "Merek" && (
         <div
           className="
-      rounded-2xl
-      border
-      border-slate-200
-      bg-white
-      shadow-sm
-    "
+            overflow-hidden
+            rounded-2xl
+            border
+            border-slate-200
+            bg-white
+            shadow-sm
+          "
         >
           <div
             className="
-        border-b
-        border-slate-200
-        px-6
-        py-5
-      "
+              border-b
+              border-slate-200
+              px-4
+              py-4
+              md:px-6
+              md:py-5
+            "
           >
-            <h2 className="text-lg font-semibold text-slate-900">Brand List</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              Brand List
+            </h2>
 
-            <p className="mt-1 text-sm text-slate-500">Product brands grouping</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Product brands grouping
+            </p>
           </div>
 
-          <Table columns={brandColumns} data={brands} />
+          <div className="overflow-x-auto">
+            <Table
+              columns={brandColumns}
+              data={brands}
+            />
+          </div>
         </div>
       )}
 
@@ -532,30 +749,43 @@ export default function InventoryPage() {
       {/* CATEGORY TAB */}
       {/* ===================================================== */}
 
-      {activeTab === "Kategori Produk" && (
+      {activeTab ===
+        "Kategori Produk" && (
         <div
           className="
-      rounded-2xl
-      border
-      border-slate-200
-      bg-white
-      shadow-sm
-    "
+            overflow-hidden
+            rounded-2xl
+            border
+            border-slate-200
+            bg-white
+            shadow-sm
+          "
         >
           <div
             className="
-        border-b
-        border-slate-200
-        px-6
-        py-5
-      "
+              border-b
+              border-slate-200
+              px-4
+              py-4
+              md:px-6
+              md:py-5
+            "
           >
-            <h2 className="text-lg font-semibold text-slate-900">Category List</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              Category List
+            </h2>
 
-            <p className="mt-1 text-sm text-slate-500">Product category grouping</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Product category grouping
+            </p>
           </div>
 
-          <Table columns={categoryColumns} data={categories} />
+          <div className="overflow-x-auto">
+            <Table
+              columns={categoryColumns}
+              data={categories}
+            />
+          </div>
         </div>
       )}
 
@@ -566,42 +796,82 @@ export default function InventoryPage() {
       {activeTab === "Daftar Harga" && (
         <div
           className="
-      rounded-2xl
-      border
-      border-slate-200
-      bg-white
-      shadow-sm
-    "
+            overflow-hidden
+            rounded-2xl
+            border
+            border-slate-200
+            bg-white
+            shadow-sm
+          "
         >
           <div
             className="
-        flex
-        items-center
-        justify-between
-        border-b
-        border-slate-200
-        px-6
-        py-5
-      "
+              flex
+              flex-col
+              gap-4
+              border-b
+              border-slate-200
+              px-4
+              py-4
+              md:flex-row
+              md:items-center
+              md:justify-between
+              md:px-6
+              md:py-5
+            "
           >
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Price List</h2>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Price List
+              </h2>
 
-              <p className="mt-1 text-sm text-slate-500">Product costing overview</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Product costing overview
+              </p>
             </div>
 
-            <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white">Update Price</button>
+            <button
+              className="
+                rounded-lg
+                bg-blue-600
+                px-4
+                py-2
+                text-sm
+                font-medium
+                text-white
+              "
+            >
+              Update Price
+            </button>
           </div>
 
-          <Table columns={priceColumns} data={products} />
+          <div className="overflow-x-auto">
+            <Table
+              columns={priceColumns}
+              data={products}
+            />
+          </div>
         </div>
       )}
 
-      <Modal open={openModal} onClose={closeModal} title={editingId ? "Edit Product" : "Add Product"}>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* SKU + UNIT */}
+      {/* ===================================================== */}
+      {/* MODAL */}
+      {/* ===================================================== */}
 
-          <div className="grid grid-cols-2 gap-4">
+      <Modal
+        open={openModal}
+        onClose={closeModal}
+        title={
+          editingId
+            ? "Edit Product"
+            : "Add Product"
+        }
+      >
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5"
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Input
               placeholder="SKU"
               value={form.sku}
@@ -625,8 +895,6 @@ export default function InventoryPage() {
             />
           </div>
 
-          {/* PRODUCT */}
-
           <Input
             placeholder="Product Name"
             value={form.name}
@@ -638,8 +906,6 @@ export default function InventoryPage() {
             }
           />
 
-          {/* COST */}
-
           <Input
             type="number"
             placeholder="Average Cost"
@@ -647,10 +913,12 @@ export default function InventoryPage() {
             onChange={(e) =>
               setForm({
                 ...form,
-                average_cost: e.target.value,
+                average_cost:
+                  e.target.value,
               })
             }
           />
+
           <Input
             type="number"
             placeholder="Selling Price"
@@ -658,33 +926,37 @@ export default function InventoryPage() {
             onChange={(e) =>
               setForm({
                 ...form,
-                selling_price: e.target.value,
+                selling_price:
+                  e.target.value,
               })
             }
           />
-          {/* BUTTON */}
 
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={closeModal}
               className="
-          rounded-xl
-          border
-          border-slate-200
-          px-5
-          py-2.5
-          text-sm
-          font-medium
-          text-slate-600
-          transition
-          hover:bg-slate-100
-        "
+                rounded-xl
+                border
+                border-slate-200
+                px-5
+                py-2.5
+                text-sm
+                font-medium
+                text-slate-600
+                transition
+                hover:bg-slate-100
+              "
             >
               Cancel
             </button>
 
-            <Button type="submit">{editingId ? "Update Product" : "Save Product"}</Button>
+            <Button type="submit">
+              {editingId
+                ? "Update Product"
+                : "Save Product"}
+            </Button>
           </div>
         </form>
       </Modal>
