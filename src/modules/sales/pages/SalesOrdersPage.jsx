@@ -268,7 +268,7 @@ export default function SalesOrdersPage() {
         },
       });
 
-      doc.save(`SO_Report_${activeTab}.pdf");
+      doc.save(`SO_Report_${activeTab}.pdf`);
     } catch (err) {
       alert(
         "Sedang memuat sistem PDF, silakan coba beberapa detik lagi.",
@@ -319,7 +319,7 @@ export default function SalesOrdersPage() {
 
             onChange={(value) => {
               const cleanValue = value.replace(
-                /\s$begin:math:text$\\d\+$end:math:text$/,
+                /\s\(\d+\)$/,
                 "",
               );
 
