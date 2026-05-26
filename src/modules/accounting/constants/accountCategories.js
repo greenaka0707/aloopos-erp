@@ -1,0 +1,13 @@
+export const ACCOUNT_CATEGORIES = {
+  ASSET: "ASSET",
+  LIABILITY: "LIABILITY",
+  EQUITY: "EQUITY",
+  REVENUE: "REVENUE",
+  COGS: "COGS",
+  EXPENSE: "EXPENSE",
+};
+
+export const NORMAL_BALANCE = {
+  DEBIT: "DEBIT",
+  CREDIT: "CREDIT",
+};

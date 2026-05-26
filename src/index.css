@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-white;
+  }
+}
+
+@layer components {
+  .erp-card {
+    @apply bg-slate-900 border border-slate-800 rounded-2xl p-6;
+  }
+
+  .erp-input {
+    @apply px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 outline-none focus:border-blue-500;
+  }
+
+  .erp-button-primary {
+    @apply bg-blue-600 hover:bg-blue-700 transition rounded-xl px-4 py-3 font-medium;
+  }
+
+  .erp-button-danger {
+    @apply bg-red-500 hover:bg-red-600 transition rounded-xl px-4 py-3 font-medium;
+  }
+
+  .erp-title {
+    @apply text-4xl font-bold;
+  }
+
+  .erp-subtitle {
+    @apply text-slate-400;
+  }
+}
