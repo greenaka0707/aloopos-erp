@@ -7,7 +7,7 @@ import Logo from "@/assets/aloopos.svg";
 import {
   ChevronDown,
   Menu,
- PanelLeftClose,
+  PanelLeftClose,
   X,
 } from "lucide-react";
 
@@ -523,7 +523,6 @@ export default function AppLayout({
       <div
         className={`
           flex
-          min-h-screen
           min-w-0
           flex-col
           transition-all
