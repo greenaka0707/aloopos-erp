@@ -5,11 +5,8 @@ import {
   Calendar, 
   Download, 
   Plus, 
-  ChevronRight,
   FileText
 } from "lucide-react";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 import Button from "@/shared/components/Button";
 import Input from "@/shared/components/Input";
@@ -165,58 +162,12 @@ export default function SalesOrdersPage() {
   }, [orders]);
 
   // ========================================
-  // DOWNLOAD PDF
+  // DOWNLOAD DATA (STUB)
   // ========================================
 
   const handleDownloadPDF = () => {
-    const doc = new jsPDF();
-    
-    // Judul PDF
-    doc.setFontSize(18);
-    doc.text("Sales Orders Report", 14, 22);
-    
-    // Info Filter
-    doc.setFontSize(11);
-    doc.setTextColor(100);
-    const filterInfo = `Date: ${dateFilter || "All Time"} | Status: ${activeTab}`;
-    doc.text(filterInfo, 14, 30);
-
-    // Tabel Data
-    const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
-    const tableRows = [];
-
-    preparedOrders.forEach(order => {
-      const orderDate = order.created_at ? order.created_at.split("T")[0] : "-";
-      const orderData = [
-        order.so_number,
-        order.customer_name,
-        orderDate,
-        order.status,
-        formatRupiah(order.revenue),
-        formatRupiah(order.profit)
-      ];
-      tableRows.push(orderData);
-    });
-
-    // Ringkasan Total
-    tableRows.push(["", "", "", "TOTAL:", formatRupiah(summary.revenue), formatRupiah(summary.profit)]);
-
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 35,
-      theme: 'grid',
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [41, 128, 185] },
-      columnStyles: {
-        4: { halign: 'right' },
-        5: { halign: 'right' }
-      }
-    });
-
-    // Nama file dinamis
-    const fileName = `SO_Report_${dateFilter || "All"}_${activeTab}.pdf`;
-    doc.save(fileName);
+    // Dipersiapkan sementara agar aman dari error library bundling di HP
+    alert(`Mendownload data filter: ${dateFilter || "Semua Tanggal"} (${preparedOrders.length} data)`);
   };
 
   // ========================================
@@ -225,16 +176,16 @@ export default function SalesOrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-w-0 space-y-4">
-        <div className="h-28 animate-pulse rounded-2xl bg-slate-200" />
+      <div className="min-w-0 space-y-4 p-4">
+        <div className="h-24 animate-pulse rounded-2xl bg-slate-200" />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="h-24 animate-pulse rounded-2xl bg-slate-200" />
+            <div key={item} className="h-20 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-20 animate-pulse rounded-2xl bg-slate-200" />
+            <div key={item} className="h-16 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
       </div>
@@ -245,49 +196,54 @@ export default function SalesOrdersPage() {
     <div className="min-w-0 pb-24 lg:pb-8 relative">
       
       {/* ================================================= */}
-      {/* STICKY HEADER (top-20 menyesuaikan navbar utama) */}
+      {/* 1 & 3. STICKY HEADER - Menggantung Aman di Bawah Navbar Top */}
       {/* ================================================= */}
       
-      <div className="sticky top-20 z-20 -mx-5 px-5 pb-4 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
-        <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 md:p-4 border border-slate-200 shadow-sm">
+      <div className="sticky top-[75px] z-20 -mx-5 px-5 pb-3 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
+        <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 border border-slate-200 shadow-sm">
           
           <div className="flex items-center gap-2">
+            {/* Search */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
                 <Search size={16} />
               </div>
               <input
                 type="text"
-                placeholder="Search SO or Customer..."
+                placeholder="Search Customer or SO..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
 
+            {/* Date Filter */}
             <div className="relative flex-shrink-0">
               <input
                 type="date"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <button 
-                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${dateFilter ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${
+                  dateFilter ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-200 bg-slate-50 text-slate-600'
+                }`}
               >
                 <Calendar size={16} />
               </button>
             </div>
 
+            {/* Download */}
             <button 
               onClick={handleDownloadPDF}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 active:bg-slate-200"
-              title="Download PDF"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition active:bg-slate-200"
             >
               <Download size={16} />
             </button>
           </div>
 
+          {/* Tab Filter */}
           <div className="-mx-1 overflow-x-auto no-scrollbar">
             <div className="min-w-max px-1">
               <Tabs
@@ -307,7 +263,7 @@ export default function SalesOrdersPage() {
       {/* SUMMARY CARDS */}
       {/* ================================================= */}
       
-      <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+      <div className="mt-3 grid grid-cols-1 gap-2.5 md:grid-cols-3 md:gap-4 px-1">
         <SummaryCard title="Total Revenue" value={formatRupiah(summary.revenue)} />
         <SummaryCard title="Total HPP" value={formatRupiah(summary.hpp)} />
         <SummaryCard
@@ -318,46 +274,42 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* LIST DATA (MOBILE CARDS) - RAMPING & HEADER CUSTOMER */}
+      {/* 2 & 4. LIST DATA - CARD MOBILE RAMPING & URUTAN BARU */}
       {/* ================================================= */}
       
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-2 px-1">
         {preparedOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 px-4 text-center">
-            <div className="mb-3 rounded-full bg-slate-100 p-3 text-slate-400">
-              <FileText size={24} />
-            </div>
-            <h2 className="text-base font-semibold text-slate-900">No Sales Orders Found</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              {search || dateFilter ? "Try adjusting your filters" : "Create your first sales order"}
-            </p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-14 px-4 text-center">
+            <FileText size={24} className="text-slate-400 mb-2" />
+            <h2 className="text-sm font-semibold text-slate-900">No Sales Orders Found</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Try adjusting your filters</p>
           </div>
         ) : (
           preparedOrders.map((order) => (
             <button
               key={order.id}
               onClick={() => navigate(`/sales/orders/${order.id}`)}
-              className="w-full text-left transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full text-left transition-transform duration-150 active:scale-[0.99]"
             >
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-2">
+              <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm flex flex-col gap-1">
                 
-                {/* Header: Nama Customer & Revenue */}
-                <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-slate-900 md:text-base truncate pr-2">
+                {/* BARIS ATAS: Nama Customer & Nilai Uang Sejajar */}
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-slate-900 text-sm md:text-base truncate pr-2">
                     {order.customer_name || "Unknown Customer"}
                   </h3>
-                  <span className="font-bold text-slate-900 flex-shrink-0">
+                  <span className="font-bold text-slate-900 text-sm md:text-base flex-shrink-0">
                     {formatRupiah(order.revenue)}
                   </span>
                 </div>
 
-                {/* Footer: SO Number & Status */}
+                {/* BARIS BAWAH: Nomor Referensi SO & Badge Status */}
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-blue-600 truncate">
+                  <p className="text-xs font-medium text-blue-600 truncate">
                     {order.so_number}
                   </p>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] md:text-xs font-semibold uppercase tracking-wide ${getStatusClass(order.status)}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${getStatusClass(order.status)}`}
                   >
                     {order.status}
                   </span>
@@ -370,15 +322,15 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* FAB: CREATE BUTTON (Fixed & Sticky Bottom Right) */}
+      {/* 2. FAB: CREATE BUTTON - Sticky Mengambang di Pojok */}
       {/* ================================================= */}
       
-      <div className="fixed bottom-6 right-5 z-50 lg:bottom-8 lg:right-8">
+      <div className="fixed bottom-6 right-5 z-40 lg:bottom-8 lg:right-8">
         <button
           onClick={() => navigate("/sales/create")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500 text-white shadow-lg transition-transform active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-xl"
         >
-          <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
+          <Plus size={22} strokeWidth={2.5} />
           <span className="hidden md:block md:ml-2 text-sm font-semibold">Create Order</span>
         </button>
       </div>
@@ -387,19 +339,13 @@ export default function SalesOrdersPage() {
   );
 }
 
-// ========================================
-// REUSABLE SUB-COMPONENTS
-// ========================================
-
 function SummaryCard({ title, value, valueClass = "" }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5 shadow-sm">
-      <p className="text-xs font-medium text-slate-500 md:text-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
+      <p className="text-[11px] font-medium text-slate-500">
         {title}
       </p>
-      <p
-        className={`mt-1.5 truncate text-xl font-bold text-slate-900 md:text-2xl ${valueClass}`}
-      >
+      <p className={`mt-0.5 truncate text-base font-bold text-slate-900 md:text-xl ${valueClass}`}>
         {value}
       </p>
     </div>
