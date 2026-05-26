@@ -29,7 +29,7 @@ export default function InventoryPage() {
   });
 
   // =====================================================
-  // TABLE COLUMNS (DESKTOP)
+  // TABLE COLUMNS
   // =====================================================
 
   const columns = [
@@ -122,7 +122,7 @@ export default function InventoryPage() {
   }
 
   // =====================================================
-  // CREATE / UPDATE PRODUCT
+  // CREATE / UPDATE
   // =====================================================
 
   async function handleSubmit(e) {
@@ -160,7 +160,7 @@ export default function InventoryPage() {
   }
 
   // =====================================================
-  // DELETE PRODUCT
+  // DELETE
   // =====================================================
 
   async function handleDelete(id) {
@@ -182,7 +182,7 @@ export default function InventoryPage() {
   }
 
   // =====================================================
-  // EDIT PRODUCT
+  // EDIT
   // =====================================================
 
   function handleEdit(product) {
@@ -200,7 +200,7 @@ export default function InventoryPage() {
   }
 
   // =====================================================
-  // ADD PRODUCT
+  // ADD
   // =====================================================
 
   function handleAddProduct() {
@@ -245,61 +245,7 @@ export default function InventoryPage() {
   );
 
   return (
-    <div className="relative min-w-0 pb-28">
-
-      {/* ===================================================== */}
-      {/* STICKY SEARCH */}
-      {/* ===================================================== */}
-
-      <div className="sticky bottom-4 z-40 mb-4 px-1">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
-
-          {/* SEARCH */}
-          <div className="relative flex-1">
-            <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
-              <Search size={18} strokeWidth={2.5} />
-            </div>
-
-            <input
-              type="text"
-              placeholder="Search product..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="
-                w-full rounded-full
-                border border-slate-200
-                bg-white/90 backdrop-blur-md
-                py-3.5 pl-11 pr-4
-                text-base
-                shadow-[0_4px_20px_rgba(0,0,0,0.08)]
-                focus:border-blue-500
-                focus:outline-none
-                focus:ring-2
-                focus:ring-blue-500/20
-              "
-            />
-          </div>
-
-          {/* FAB */}
-          <button
-            onClick={handleAddProduct}
-            className="
-              flex h-14 w-14 flex-shrink-0
-              items-center justify-center
-              rounded-full
-              bg-orange-500
-              text-white
-              shadow-[0_4px_20px_rgba(249,115,22,0.4)]
-              transition-transform
-              hover:scale-105
-              hover:bg-orange-600
-              active:scale-95
-            "
-          >
-            <Plus size={28} strokeWidth={2.5} />
-          </button>
-        </div>
-      </div>
+    <div className="relative min-w-0 pb-32">
 
       {/* ===================================================== */}
       {/* MOBILE LIST */}
@@ -354,8 +300,7 @@ export default function InventoryPage() {
                 </span>
 
                 <span className="mt-0.5 text-xs font-semibold text-slate-700">
-                  {Number(row.stock || 0)}
-                  {" "}
+                  {Number(row.stock || 0)}{" "}
                   <span className="uppercase">
                     {row.unit}
                   </span>
@@ -406,6 +351,60 @@ export default function InventoryPage() {
               data={filteredProducts}
             />
           </div>
+        </div>
+      </div>
+
+      {/* ===================================================== */}
+      {/* FLOATING SEARCH + FAB */}
+      {/* ===================================================== */}
+
+      <div className="fixed bottom-4 left-0 right-0 z-50 px-4 md:px-6">
+        <div className="mx-auto flex max-w-7xl items-center gap-3">
+
+          {/* SEARCH */}
+          <div className="relative flex-1">
+            <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
+              <Search size={18} strokeWidth={2.5} />
+            </div>
+
+            <input
+              type="text"
+              placeholder="Search product..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="
+                w-full rounded-full
+                border border-slate-200
+                bg-white/95 backdrop-blur-md
+                py-3.5 pl-11 pr-4
+                text-base
+                shadow-[0_8px_30px_rgba(0,0,0,0.12)]
+                focus:border-blue-500
+                focus:outline-none
+                focus:ring-2
+                focus:ring-blue-500/20
+              "
+            />
+          </div>
+
+          {/* FAB */}
+          <button
+            onClick={handleAddProduct}
+            className="
+              flex h-14 w-14 flex-shrink-0
+              items-center justify-center
+              rounded-full
+              bg-orange-500
+              text-white
+              shadow-[0_8px_30px_rgba(249,115,22,0.45)]
+              transition-all
+              hover:scale-105
+              hover:bg-orange-600
+              active:scale-95
+            "
+          >
+            <Plus size={28} strokeWidth={2.5} />
+          </button>
         </div>
       </div>
 
