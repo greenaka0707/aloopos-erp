@@ -255,7 +255,7 @@ export default function InventoryPage() {
       {/* MOBILE LIST */}
       {/* ===================================================== */}
 
-      <div className="space-y-3 px-1 md:hidden">
+      <div className="space-y-3 md:hidden">
         {filteredProducts.map((row) => (
           <div
             key={row.id}
@@ -347,7 +347,7 @@ export default function InventoryPage() {
       {/* DESKTOP TABLE */}
       {/* ===================================================== */}
 
-      <div className="hidden px-1 md:block">
+      <div className="hidden md:block">
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <Table
