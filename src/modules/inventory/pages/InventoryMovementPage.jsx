@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
-  Package,
   RefreshCcw,
 } from "lucide-react";
 
@@ -206,8 +205,6 @@ export default function InventoryMovementPage() {
   /* ===================================================== */
 
   const summary = useMemo(() => {
-    const totalMovement = movements.length;
-
     const totalIn = movements
       .filter((item) => item.type === "IN")
       .reduce(
@@ -225,7 +222,6 @@ export default function InventoryMovementPage() {
       );
 
     return {
-      totalMovement,
       totalIn,
       totalOut,
     };
@@ -235,67 +231,23 @@ export default function InventoryMovementPage() {
     <div className="relative min-w-0 pb-10">
 
       {/* ===================================================== */}
-      {/* HEADER */}
+      {/* REFRESH */}
       {/* ===================================================== */}
 
-      <div
-        className="
-          mb-6
-          flex flex-col gap-4
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-        "
-      >
-
-        {/* LEFT */}
-
-        <div className="min-w-0">
-          <h1
-            className="
-              text-[44px]
-              font-black
-              leading-[0.95]
-              tracking-tight
-              text-slate-900
-              lg:text-3xl
-            "
-          >
-            Inventory
-            <br className="lg:hidden" />
-            {" "}Movements
-          </h1>
-
-          <p
-            className="
-              mt-4
-              max-w-xl
-              text-lg
-              leading-relaxed
-              text-slate-500
-              lg:mt-2
-              lg:text-sm
-            "
-          >
-            Track inventory stock movement and
-            transaction activity
-          </p>
-        </div>
-
-        {/* RIGHT */}
-
+      <div className="mb-4">
         <Button
           variant="secondary"
           onClick={loadMovements}
           loading={loading}
           className="
             h-14
+            w-full
             rounded-2xl
-            px-6
             text-lg
             font-semibold
             shadow-sm
             lg:h-auto
+            lg:w-auto
             lg:px-4
             lg:text-sm
           "
@@ -309,20 +261,7 @@ export default function InventoryMovementPage() {
       {/* SUMMARY */}
       {/* ===================================================== */}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-
-        {/* TOTAL */}
-
-        <StatsCard
-          title="Total Movements"
-          value={summary.totalMovement}
-          valueClassName="text-slate-900"
-          icon={<Package size={22} />}
-          iconClassName="
-            bg-slate-100
-            text-slate-700
-          "
-        />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
         {/* STOCK IN */}
 
