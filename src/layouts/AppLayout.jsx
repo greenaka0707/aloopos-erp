@@ -486,7 +486,7 @@ export default function AppLayout({ children }) {
         {/* PAGE */}
         {/* ===================================================== */}
 
-        <main className="relative min-w-0 flex-1 bg-slate-100 px-5 pb-5 lg:px-8 lg:pb-8">
+        <main className="relative min-w-0 flex-1 bg-slate-100 px-4 pb-5 lg:px-8 lg:pb-8">
           <div
             className={`
               transition-opacity duration-300 ease-out
