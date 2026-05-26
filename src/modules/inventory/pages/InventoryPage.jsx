@@ -229,34 +229,23 @@ export default function InventoryPage() {
 
   return (
     <div className="min-w-0 pb-24 lg:pb-8 relative">
+      
       {/* ===================================================== */}
-      {/* STICKY TOP BAR */}
+      {/* STICKY SEARCH BAR (TANPA CONTAINER) */}
       {/* ===================================================== */}
-      <div className="sticky top-[75px] z-20 -mx-5 px-5 pb-4 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
-        <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 md:p-4 border border-slate-200 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <button className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100 active:bg-slate-200">
-                Bulk Action
-              </button>
-              <button className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100 active:bg-slate-200">
-                Export
-              </button>
-            </div>
-            
-            <div className="relative w-full md:max-w-xs">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
-                <Search size={16} />
-              </div>
-              <input
-                type="text"
-                placeholder="Search product..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+      
+      <div className="sticky top-[75px] z-20 -mx-5 px-5 pb-3 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
+        <div className="relative w-full">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+            <Search size={16} />
           </div>
+          <input
+            type="text"
+            placeholder="Search product..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
         </div>
       </div>
 
@@ -264,61 +253,60 @@ export default function InventoryPage() {
       {/* PRODUCT LIST */}
       {/* ===================================================== */}
       
-      {/* MOBILE LIST (RAMPING) */}
-      <div className="mt-2 space-y-3 px-1 md:hidden">
+      {/* MOBILE LIST (RAMPING & KEKINIAN) */}
+      <div className="mt-1 space-y-3 px-1 md:hidden">
         {filteredProducts.map((row) => (
-          <div key={row.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="mb-1 flex items-start justify-between">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-                {row.sku}
-              </p>
-              <div className="flex items-center gap-3">
+          <div key={row.id} className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              {/* Info Kiri */}
+              <div 
+                className="min-w-0 flex-1 cursor-pointer" 
+                onClick={() => navigate(`/inventory/products/${row.id}`)}
+              >
+                <h3 className="truncate text-sm font-bold text-slate-900">{row.name}</h3>
+                <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                  {row.sku}
+                </p>
+              </div>
+              
+              {/* Aksi Kanan */}
+              <div className="flex items-center gap-1.5 -mt-1 -mr-1">
                 <button
                   onClick={() => handleEdit(row)}
-                  className="text-blue-600 transition hover:text-blue-700"
+                  className="p-1.5 text-blue-600 transition hover:bg-blue-50 rounded-lg"
                 >
                   <Pencil size={16} />
                 </button>
                 <button
                   onClick={() => handleDelete(row.id)}
-                  className="text-red-500 transition hover:text-red-600"
+                  className="p-1.5 text-red-500 transition hover:bg-red-50 rounded-lg"
                 >
                   <Trash2 size={16} />
                 </button>
               </div>
             </div>
 
-            <button
-              onClick={() => navigate(`/inventory/products/${row.id}`)}
-              className="mb-3 text-left text-base font-semibold text-slate-900 transition hover:text-blue-600"
-            >
-              {row.name}
-            </button>
-
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-              <div>
-                <p className="mb-0.5 text-xs text-slate-400">Stock</p>
-                <p className="text-sm font-medium text-slate-800">
-                  {Number(row.stock || 0)}
-                </p>
+            {/* Statistik Bawah */}
+            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-medium uppercase text-slate-400">Stock</span>
+                <span className="mt-0.5 text-xs font-semibold text-slate-700">
+                  {Number(row.stock || 0)} <span className="uppercase">{row.unit}</span>
+                </span>
               </div>
-              <div>
-                <p className="mb-0.5 text-xs text-slate-400">Unit</p>
-                <p className="text-sm font-medium uppercase text-slate-800">
-                  {row.unit}
-                </p>
-              </div>
-              <div>
-                <p className="mb-0.5 text-xs text-slate-400">Avg Cost</p>
-                <p className="text-sm font-medium text-slate-800">
+              
+              <div className="flex flex-col">
+                <span className="text-[10px] font-medium uppercase text-slate-400">Avg Cost</span>
+                <span className="mt-0.5 text-xs font-semibold text-slate-700">
                   Rp {Number(row.average_cost || 0).toLocaleString("id-ID")}
-                </p>
+                </span>
               </div>
-              <div>
-                <p className="mb-0.5 text-xs text-slate-400">Sell Price</p>
-                <p className="text-sm font-medium text-blue-600">
+              
+              <div className="flex flex-col text-right">
+                <span className="text-[10px] font-medium uppercase text-slate-400">Sell Price</span>
+                <span className="mt-0.5 text-sm font-bold text-blue-600">
                   Rp {Number(row.selling_price || 0).toLocaleString("id-ID")}
-                </p>
+                </span>
               </div>
             </div>
           </div>
@@ -340,12 +328,13 @@ export default function InventoryPage() {
       </div>
 
       {/* ===================================================== */}
-      {/* FAB: FIXED CREATE BUTTON */}
+      {/* FAB: STICKY CREATE BUTTON */}
       {/* ===================================================== */}
-      <div className="fixed bottom-6 right-6 z-50 lg:bottom-8 lg:right-8">
+      
+      <div className="sticky bottom-6 z-50 flex justify-end px-5 pointer-events-none lg:bottom-8 lg:px-8">
         <button
           onClick={handleAddProduct}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
+          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
         >
           <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
           <span className="hidden md:block md:ml-2 text-sm font-semibold">
@@ -357,6 +346,7 @@ export default function InventoryPage() {
       {/* ===================================================== */}
       {/* MODAL */}
       {/* ===================================================== */}
+      
       <Modal
         open={openModal}
         onClose={closeModal}
