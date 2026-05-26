@@ -228,33 +228,14 @@ export default function InventoryPage() {
   );
 
   return (
-    <div className="min-w-0 pb-24 lg:pb-8 relative">
-      
-      {/* ===================================================== */}
-      {/* STICKY SEARCH BAR (TANPA CONTAINER) */}
-      {/* ===================================================== */}
-      
-      <div className="sticky top-[75px] z-20 -mx-5 px-5 pb-3 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
-            <Search size={16} />
-          </div>
-          <input
-            type="text"
-            placeholder="Search product..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-      </div>
+    <div className="min-w-0 pb-28 lg:pb-8 relative">
 
       {/* ===================================================== */}
       {/* PRODUCT LIST */}
       {/* ===================================================== */}
       
       {/* MOBILE LIST (RAMPING & KEKINIAN) */}
-      <div className="mt-1 space-y-3 px-1 md:hidden">
+      <div className="space-y-3 px-1 md:hidden">
         {filteredProducts.map((row) => (
           <div key={row.id} className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
             <div className="flex items-start justify-between gap-3">
@@ -319,7 +300,7 @@ export default function InventoryPage() {
       </div>
 
       {/* DESKTOP TABLE */}
-      <div className="mt-2 hidden px-1 md:block">
+      <div className="hidden px-1 md:block">
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <Table columns={columns} data={filteredProducts} />
@@ -328,19 +309,37 @@ export default function InventoryPage() {
       </div>
 
       {/* ===================================================== */}
-      {/* FAB: STICKY CREATE BUTTON */}
+      {/* FLOATING ACTION BAR: SEARCH + FAB (BOTTOM) */}
       {/* ===================================================== */}
       
-      <div className="sticky bottom-6 z-50 flex justify-end px-5 pointer-events-none lg:bottom-8 lg:px-8">
-        <button
-          onClick={handleAddProduct}
-          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
-        >
-          <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
-          <span className="hidden md:block md:ml-2 text-sm font-semibold">
-            Add Product
-          </span>
-        </button>
+      <div className="fixed bottom-6 left-0 right-0 z-50 px-5 pointer-events-none lg:bottom-8 lg:px-8">
+        <div className="flex items-center justify-end gap-3 md:justify-end max-w-7xl mx-auto">
+          
+          {/* Search Box - text-base mencegah zoom di iOS */}
+          <div className="relative w-full md:max-w-md pointer-events-auto">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
+              <Search size={18} strokeWidth={2.5} />
+            </div>
+            <input
+              type="text"
+              placeholder="Search product..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-full border border-slate-200/60 bg-white/90 backdrop-blur-md py-3.5 pl-11 pr-4 text-base shadow-[0_8px_30px_rgb(0,0,0,0.08)] focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            />
+          </div>
+
+          {/* ADD Button FAB */}
+          <button
+            onClick={handleAddProduct}
+            className="pointer-events-auto flex flex-shrink-0 h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_8px_30px_rgba(249,115,22,0.3)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-14 md:w-auto md:px-6"
+          >
+            <Plus size={24} strokeWidth={2.5} />
+            <span className="hidden md:block md:ml-2 text-base font-semibold">
+              Add Product
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* ===================================================== */}
