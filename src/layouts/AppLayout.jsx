@@ -56,17 +56,14 @@ export default function AppLayout({
     const path =
       location.pathname.toLowerCase();
 
-    // DASHBOARD
     if (path.includes("dashboard")) {
       return "Dashboard";
     }
 
-    // INVENTORY
     if (path.includes("inventory")) {
       return "Inventory";
     }
 
-    // SALES
     if (
       path.includes("sales") ||
       path.includes("order")
@@ -74,26 +71,22 @@ export default function AppLayout({
       return "Sales Orders";
     }
 
-    // CREATE SALES
     if (
       path.includes("create")
     ) {
       return "Create Sales Order";
     }
 
-    // MANUFACTURING
     if (
       path.includes("manufacturing")
     ) {
       return "Manufacturing";
     }
 
-    // FINANCE
     if (path.includes("finance")) {
       return "Finance";
     }
 
-    // SETTINGS
     if (
       path.includes("settings")
     ) {
@@ -186,11 +179,15 @@ export default function AppLayout({
 
         <div
           className={`
+            sticky
+            top-0
+            z-10
             relative
             flex
             items-center
             border-b
             border-slate-200
+            bg-white
             px-5
             py-5
 
@@ -314,10 +311,6 @@ export default function AppLayout({
         >
           <div className="flex flex-col gap-1">
             {navigation.map((item) => {
-              /* ===================================================== */
-              /* SINGLE MENU */
-              /* ===================================================== */
-
               if (!item.children) {
                 return (
                   <NavLink
@@ -366,10 +359,6 @@ export default function AppLayout({
                   </NavLink>
                 );
               }
-
-              /* ===================================================== */
-              /* GROUP */
-              /* ===================================================== */
 
               const isGroupActive =
                 item.children.some(
@@ -565,8 +554,10 @@ export default function AppLayout({
             justify-between
             border-b
             border-slate-200
-            bg-white
+            bg-white/95
             px-4
+            shadow-sm
+            backdrop-blur-md
             lg:px-8
           "
         >
