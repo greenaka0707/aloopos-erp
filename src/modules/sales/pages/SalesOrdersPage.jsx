@@ -284,7 +284,7 @@ export default function SalesOrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-w-0 space-y-3 px-1">
+      <div className="min-w-0 space-y-3">
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
@@ -307,7 +307,7 @@ export default function SalesOrdersPage() {
       {/* TABS */}
       {/* ======================================== */}
 
-      <div className="mb-3 overflow-x-auto no-scrollbar px-1">
+      <div className="mb-3 overflow-x-auto no-scrollbar">
         <div className="min-w-max">
 
           <Tabs
@@ -333,7 +333,7 @@ export default function SalesOrdersPage() {
       {/* LIST */}
       {/* ======================================== */}
 
-      <div className="space-y-3 px-1">
+      <div className="space-y-3">
 
         {preparedOrders.length === 0 ? (
           <div
