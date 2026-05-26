@@ -10,7 +10,14 @@ import { removeJournalByReference } from "@/modules/accounting/services/journal.
 // CREATE SALES ORDER
 // ============================================
 
-export async function createSalesOrder({ orderDate, customerName, salesName, paidAmount, isDraft, items }) {
+export async function createSalesOrder({
+  orderDate,
+  customerName,
+  salesName,
+  paidAmount,
+  isDraft,
+  items,
+}) {
   try {
     // ============================================
     // VALIDATE
@@ -35,9 +42,15 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
     // ============================================
     // VALIDATE STOCK
     // ============================================
+
     let grandTotalHpp = 0;
+
     for (const item of items) {
-      const { data: product, error } = await supabase.from("products").select("*").eq("id", item.product_id).single();
+      const { data: product, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", item.product_id)
+        .single();
 
       if (error || !product) {
         return {
@@ -47,7 +60,10 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
         };
       }
 
-      if (!isDraft && Number(product.stock || 0) < Number(item.qty)) {
+      if (
+        !isDraft &&
+        Number(product.stock || 0) < Number(item.qty)
+      ) {
         return {
           error: {
             message: `Stock ${product.name} tidak cukup`,
@@ -61,7 +77,11 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
     // ============================================
 
     const totalAmount = items.reduce((sum, item) => {
-      return sum + Number(item.qty || 0) * Number(item.price || 0);
+      return (
+        sum +
+        Number(item.qty || 0) *
+          Number(item.price || 0)
+      );
     }, 0);
 
     const paid = Number(paidAmount || 0);
@@ -78,35 +98,45 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
     // CREATE ORDER
     // ============================================
 
-    const { data: salesOrder, error: soError } = await supabase
-      .from("sales_orders")
-      .insert([
-        {
-          so_number: soNumber,
+    const { data: salesOrder, error: soError } =
+      await supabase
+        .from("sales_orders")
+        .insert([
+          {
+            so_number: soNumber,
 
-          customer_name: customerName,
+            customer_name: customerName,
 
-          sales_name: salesName,
+            sales_name: salesName,
 
-          order_date: orderDate,
+            order_date: orderDate,
 
-          paid_amount: paid,
+            paid_amount: paid,
 
-          remaining_amount: Math.max(totalAmount - paid, 0),
+            remaining_amount: Math.max(
+              totalAmount - paid,
+              0,
+            ),
 
-          total_amount: totalAmount,
+            total_amount: totalAmount,
 
-          payment_status: isPaid ? "PAID" : paid > 0 ? "PARTIAL" : "UNPAID",
+            payment_status: isPaid
+              ? "PAID"
+              : paid > 0
+                ? "PARTIAL"
+                : "UNPAID",
 
-          is_paid: isPaid,
+            is_paid: isPaid,
 
-          is_draft: isDraft,
+            is_draft: isDraft,
 
-          status: isDraft ? "DRAFT" : "PENDING",
-        },
-      ])
-      .select()
-      .single();
+            status: isDraft
+              ? "DRAFT"
+              : "PENDING",
+          },
+        ])
+        .select()
+        .single();
 
     if (soError) {
       console.error(soError);
@@ -121,33 +151,44 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
     // ============================================
 
     for (const item of items) {
-      const subtotal = Number(item.qty) * Number(item.price);
+      const subtotal =
+        Number(item.qty) * Number(item.price);
 
-      const { data: product } = await supabase.from("products").select("*").eq("id", item.product_id).single();
+      const { data: product } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", item.product_id)
+        .single();
 
-      const hpp = Number(product.average_cost || 0);
+      const hpp = Number(
+        product.average_cost || 0,
+      );
 
-      const totalHpp = hpp * Number(item.qty);
+      const totalHpp =
+        hpp * Number(item.qty);
 
       grandTotalHpp += totalHpp;
 
-      const { error: itemError } = await supabase.from("sales_order_items").insert([
-        {
-          sales_order_id: salesOrder.id,
+      const { error: itemError } =
+        await supabase
+          .from("sales_order_items")
+          .insert([
+            {
+              sales_order_id: salesOrder.id,
 
-          product_id: item.product_id,
+              product_id: item.product_id,
 
-          qty: Number(item.qty),
+              qty: Number(item.qty),
 
-          price: Number(item.price),
+              price: Number(item.price),
 
-          subtotal,
+              subtotal,
 
-          hpp,
+              hpp,
 
-          total_hpp: totalHpp,
-        },
-      ]);
+              total_hpp: totalHpp,
+            },
+          ]);
 
       if (itemError) {
         console.error(itemError);
@@ -162,19 +203,20 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
       // ============================================
 
       if (!isDraft) {
-        const movementResult = await createInventoryMovement({
-          productId: item.product_id,
+        const movementResult =
+          await createInventoryMovement({
+            productId: item.product_id,
 
-          type: "OUT",
+            type: "OUT",
 
-          qty: Number(item.qty),
+            qty: Number(item.qty),
 
-          unitCost: hpp,
+            unitCost: hpp,
 
-          totalCost: totalHpp,
+            totalCost: totalHpp,
 
-          note: `Sales Order ${soNumber}`,
-        });
+            note: `Sales Order ${soNumber}`,
+          });
 
         if (movementResult.error) {
           return {
@@ -183,14 +225,12 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
         }
       }
     }
+
     // ============================================
     // ACCOUNTING JOURNAL
     // ============================================
 
     if (!isDraft) {
-      console.log("grandTotalHpp =", grandTotalHpp);
-
-      console.log("items =", items);
       await createSalesJournal({
         sale: {
           id: salesOrder.id,
@@ -201,12 +241,15 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
 
           grand_total: totalAmount,
 
-          payment_type: isPaid ? "CASH" : "CREDIT",
+          payment_type: isPaid
+            ? "CASH"
+            : "CREDIT",
         },
 
         hpp: grandTotalHpp,
       });
     }
+
     return {
       success: true,
     };
@@ -215,15 +258,31 @@ export async function createSalesOrder({ orderDate, customerName, salesName, pai
 
     return {
       error: {
-        message: err.message || "Internal server error",
+        message:
+          err.message ||
+          "Internal server error",
       },
     };
   }
 }
 
-export async function updateSalesOrder(id, payload) {
+// ============================================
+// UPDATE SALES ORDER
+// ============================================
+
+export async function updateSalesOrder(
+  id,
+  payload,
+) {
   try {
-    const { orderDate, customerName, salesName, paidAmount, isDraft, items } = payload;
+    const {
+      orderDate,
+      customerName,
+      salesName,
+      paidAmount,
+      isDraft,
+      items,
+    } = payload;
 
     // ============================================
     // VALIDATE
@@ -246,11 +305,38 @@ export async function updateSalesOrder(id, payload) {
     }
 
     // ============================================
+    // GET EXISTING ORDER
+    // ============================================
+
+    const {
+      data: existingOrder,
+      error: orderError,
+    } = await supabase
+      .from("sales_orders")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (orderError || !existingOrder) {
+      return {
+        error: {
+          message:
+            "Sales order not found",
+        },
+      };
+    }
+
+    // ============================================
     // VALIDATE STOCK
     // ============================================
 
     for (const item of items) {
-      const { data: product, error } = await supabase.from("products").select("*").eq("id", item.product_id).single();
+      const { data: product, error } =
+        await supabase
+          .from("products")
+          .select("*")
+          .eq("id", item.product_id)
+          .single();
 
       if (error || !product) {
         return {
@@ -260,12 +346,22 @@ export async function updateSalesOrder(id, payload) {
         };
       }
 
-      // stock available after reverse old qty
-      const { data: oldItem } = await supabase.from("sales_order_items").select("*").eq("sales_order_id", id).eq("product_id", item.product_id).single();
+      const { data: oldItem } =
+        await supabase
+          .from("sales_order_items")
+          .select("*")
+          .eq("sales_order_id", id)
+          .eq("product_id", item.product_id)
+          .single();
 
-      const reversedStock = Number(product.stock || 0) + Number(oldItem?.qty || 0);
+      const reversedStock =
+        Number(product.stock || 0) +
+        Number(oldItem?.qty || 0);
 
-      if (!isDraft && reversedStock < Number(item.qty)) {
+      if (
+        !isDraft &&
+        reversedStock < Number(item.qty)
+      ) {
         return {
           error: {
             message: `Stock ${product.name} tidak cukup`,
@@ -278,9 +374,16 @@ export async function updateSalesOrder(id, payload) {
     // TOTAL
     // ============================================
 
-    const totalAmount = items.reduce((sum, item) => {
-      return sum + Number(item.qty || 0) * Number(item.price || 0);
-    }, 0);
+    const totalAmount = items.reduce(
+      (sum, item) => {
+        return (
+          sum +
+          Number(item.qty || 0) *
+            Number(item.price || 0)
+        );
+      },
+      0,
+    );
 
     const paid = Number(paidAmount || 0);
 
@@ -290,38 +393,36 @@ export async function updateSalesOrder(id, payload) {
     // UPDATE ORDER
     // ============================================
 
-    const { data: existingOrder, error: orderError } = await supabase.from("sales_orders").select("*").eq("id", id).single();
+    const { error: updateError } =
+      await supabase
+        .from("sales_orders")
+        .update({
+          customer_name: customerName,
 
-    if (orderError || !existingOrder) {
-      return {
-        error: {
-          message: "Sales order not found",
-        },
-      };
-    }
+          sales_name: salesName,
 
-    const { error: updateError } = await supabase
-      .from("sales_orders")
-      .update({
-        customer_name: customerName,
+          order_date: orderDate,
 
-        sales_name: salesName,
+          paid_amount: paid,
 
-        order_date: orderDate,
+          remaining_amount: Math.max(
+            totalAmount - paid,
+            0,
+          ),
 
-        paid_amount: paid,
+          total_amount: totalAmount,
 
-        remaining_amount: Math.max(totalAmount - paid, 0),
+          payment_status: isPaid
+            ? "PAID"
+            : paid > 0
+              ? "PARTIAL"
+              : "UNPAID",
 
-        total_amount: totalAmount,
+          is_paid: isPaid,
 
-        payment_status: isPaid ? "PAID" : paid > 0 ? "PARTIAL" : "UNPAID",
-
-        is_paid: isPaid,
-
-        is_draft: isDraft,
-      })
-      .eq("id", id);
+          is_draft: isDraft,
+        })
+        .eq("id", id);
 
     if (updateError) {
       return {
@@ -330,11 +431,23 @@ export async function updateSalesOrder(id, payload) {
     }
 
     // ============================================
+    // REMOVE OLD JOURNAL
+    // ============================================
+
+    await removeJournalByReference(
+      existingOrder.so_number,
+    );
+
+    // ============================================
     // REVERSE OLD STOCK
     // ============================================
 
     if (!existingOrder.is_draft) {
-      const { data: oldItems } = await supabase.from("sales_order_items").select("*").eq("sales_order_id", id);
+      const { data: oldItems } =
+        await supabase
+          .from("sales_order_items")
+          .select("*")
+          .eq("sales_order_id", id);
 
       for (const oldItem of oldItems || []) {
         await createInventoryMovement({
@@ -346,7 +459,8 @@ export async function updateSalesOrder(id, payload) {
 
           unitCost: oldItem.hpp || 0,
 
-          totalCost: oldItem.total_hpp || 0,
+          totalCost:
+            oldItem.total_hpp || 0,
 
           note: `Reverse Edit Sales ${existingOrder.so_number}`,
         });
@@ -357,7 +471,11 @@ export async function updateSalesOrder(id, payload) {
     // DELETE OLD ITEMS
     // ============================================
 
-    const { error: deleteError } = await supabase.from("sales_order_items").delete().eq("sales_order_id", id);
+    const { error: deleteError } =
+      await supabase
+        .from("sales_order_items")
+        .delete()
+        .eq("sales_order_id", id);
 
     if (deleteError) {
       return {
@@ -369,52 +487,74 @@ export async function updateSalesOrder(id, payload) {
     // INSERT NEW ITEMS
     // ============================================
 
+    let grandTotalHpp = 0;
+
     for (const item of items) {
-      const subtotal = Number(item.qty) * Number(item.price);
+      const subtotal =
+        Number(item.qty) * Number(item.price);
 
-      const { data: product } = await supabase.from("products").select("*").eq("id", item.product_id).single();
+      const { data: product } =
+        await supabase
+          .from("products")
+          .select("*")
+          .eq("id", item.product_id)
+          .single();
 
-      const hpp = Number(product.average_cost || 0);
+      const hpp = Number(
+        product.average_cost || 0,
+      );
 
-      const totalHpp = hpp * Number(item.qty);
+      const totalHpp =
+        hpp * Number(item.qty);
 
-      const { error: itemError } = await supabase.from("sales_order_items").insert([
-        {
-          sales_order_id: id,
+      grandTotalHpp += totalHpp;
 
-          product_id: item.product_id,
+      const { error: itemError } =
+        await supabase
+          .from("sales_order_items")
+          .insert([
+            {
+              sales_order_id: id,
 
-          qty: Number(item.qty),
+              product_id: item.product_id,
 
-          price: Number(item.price),
+              qty: Number(item.qty),
 
-          subtotal,
+              price: Number(item.price),
 
-          hpp,
+              subtotal,
 
-          total_hpp: totalHpp,
-        },
-      ]);
+              hpp,
+
+              total_hpp: totalHpp,
+            },
+          ]);
 
       if (itemError) {
         return {
           error: itemError,
         };
       }
+
+      // ============================================
+      // INVENTORY MOVEMENT
+      // ============================================
+
       if (!isDraft) {
-        const movementResult = await createInventoryMovement({
-          productId: item.product_id,
+        const movementResult =
+          await createInventoryMovement({
+            productId: item.product_id,
 
-          type: "OUT",
+            type: "OUT",
 
-          qty: Number(item.qty),
+            qty: Number(item.qty),
 
-          unitCost: hpp,
+            unitCost: hpp,
 
-          totalCost: totalHpp,
+            totalCost: totalHpp,
 
-          note: `Edit Sales ${existingOrder.so_number}`,
-        });
+            note: `Edit Sales ${existingOrder.so_number}`,
+          });
 
         if (movementResult.error) {
           return {
@@ -422,6 +562,31 @@ export async function updateSalesOrder(id, payload) {
           };
         }
       }
+    }
+
+    // ============================================
+    // CREATE NEW JOURNAL
+    // ============================================
+
+    if (!isDraft) {
+      await createSalesJournal({
+        sale: {
+          id,
+
+          date: orderDate,
+
+          invoice_number:
+            existingOrder.so_number,
+
+          grand_total: totalAmount,
+
+          payment_type: isPaid
+            ? "CASH"
+            : "CREDIT",
+        },
+
+        hpp: grandTotalHpp,
+      });
     }
 
     return {
@@ -432,7 +597,9 @@ export async function updateSalesOrder(id, payload) {
 
     return {
       error: {
-        message: err.message || "Internal server error",
+        message:
+          err.message ||
+          "Internal server error",
       },
     };
   }
@@ -445,19 +612,18 @@ export async function updateSalesOrder(id, payload) {
 export async function getSalesOrders() {
   const { data, error } = await supabase
     .from("sales_orders")
-    .select(
-      `
+    .select(`
       *,
       items:sales_order_items (
         id,
+        product_id,
         qty,
         price,
         subtotal,
         hpp,
         total_hpp
       )
-    `,
-    )
+    `)
     .order("created_at", {
       ascending: false,
     });
@@ -478,8 +644,7 @@ export async function getSalesOrders() {
 export async function getSalesOrderById(id) {
   const { data, error } = await supabase
     .from("sales_orders")
-    .select(
-      `
+    .select(`
       *,
       items:sales_order_items (
         *,
@@ -489,8 +654,7 @@ export async function getSalesOrderById(id) {
           unit
         )
       )
-    `,
-    )
+    `)
     .eq("id", id)
     .single();
 
@@ -512,7 +676,8 @@ export async function voidSalesOrder(order) {
     if (order.status === "VOID") {
       return {
         error: {
-          message: "Order already void",
+          message:
+            "Order already void",
         },
       };
     }
@@ -522,19 +687,21 @@ export async function voidSalesOrder(order) {
     // ============================================
 
     for (const item of order.items) {
-      const result = await createInventoryMovement({
-        productId: item.product_id,
+      const result =
+        await createInventoryMovement({
+          productId: item.product_id,
 
-        type: "IN",
+          type: "IN",
 
-        qty: Number(item.qty),
+          qty: Number(item.qty),
 
-        unitCost: item.hpp || 0,
+          unitCost: item.hpp || 0,
 
-        totalCost: item.total_hpp || 0,
+          totalCost:
+            item.total_hpp || 0,
 
-        note: `Void Sales ${order.so_number}`,
-      });
+          note: `Void Sales ${order.so_number}`,
+        });
 
       if (result.error) {
         return {
@@ -542,6 +709,14 @@ export async function voidSalesOrder(order) {
         };
       }
     }
+
+    // ============================================
+    // REMOVE JOURNAL
+    // ============================================
+
+    await removeJournalByReference(
+      order.so_number,
+    );
 
     // ============================================
     // UPDATE STATUS
@@ -576,7 +751,10 @@ export async function voidSalesOrder(order) {
 // UPDATE SALES STATUS
 // ============================================
 
-export async function updateSalesStatus(orderId, status) {
+export async function updateSalesStatus(
+  orderId,
+  status,
+) {
   const { error } = await supabase
     .from("sales_orders")
     .update({
@@ -600,7 +778,11 @@ export async function updateSalesStatus(orderId, status) {
 // ========================================
 
 export async function getCustomers() {
-  const { data, error } = await supabase.from("customers").select("*").order("name");
+  const { data, error } =
+    await supabase
+      .from("customers")
+      .select("*")
+      .order("name");
 
   if (error) throw error;
 
@@ -612,7 +794,11 @@ export async function getCustomers() {
 // ========================================
 
 export async function getProducts() {
-  const { data, error } = await supabase.from("products").select("*").order("name");
+  const { data, error } =
+    await supabase
+      .from("products")
+      .select("*")
+      .order("name");
 
   if (error) throw error;
 
@@ -624,7 +810,11 @@ export async function getProducts() {
 // ========================================
 
 export async function getSalesmans() {
-  const { data, error } = await supabase.from("salesmans").select("*").order("name");
+  const { data, error } =
+    await supabase
+      .from("salesmans")
+      .select("*")
+      .order("name");
 
   if (error) throw error;
 
