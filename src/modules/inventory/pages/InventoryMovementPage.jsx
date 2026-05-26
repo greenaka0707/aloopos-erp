@@ -294,14 +294,14 @@ export default function InventoryMovementPage() {
       {/* MOBILE CARD LIST */}
       {/* ===================================================== */}
 
-      <div className="mt-6 space-y-3 md:hidden">
+      <div className="mt-5 space-y-3 md:hidden">
 
         {loading &&
           [1, 2, 3, 4].map((item) => (
             <div
               key={item}
               className="
-                h-[120px]
+                h-[96px]
                 animate-pulse
                 rounded-2xl
                 bg-slate-200
@@ -317,7 +317,7 @@ export default function InventoryMovementPage() {
                 rounded-2xl
                 border border-slate-200
                 bg-white
-                p-4
+                px-4 py-3.5
                 shadow-sm
               "
             >
@@ -337,7 +337,7 @@ export default function InventoryMovementPage() {
 
                   <p
                     className="
-                      mt-0.5
+                      mt-1
                       text-[11px]
                       font-medium
                       uppercase
@@ -389,10 +389,9 @@ export default function InventoryMovementPage() {
               {/* FOOTER */}
               <div
                 className="
-                  mt-4
-                  flex items-end justify-between
+                  mt-3
                   border-t border-slate-100
-                  pt-4
+                  pt-3
                 "
               >
 
@@ -414,7 +413,7 @@ export default function InventoryMovementPage() {
                   <span
                     className={`
                       mt-1
-                      text-lg
+                      text-xl
                       font-bold
 
                       ${
@@ -427,38 +426,6 @@ export default function InventoryMovementPage() {
                     {Number(row.qty || 0)}
                   </span>
                 </div>
-
-                {/* REFERENCE */}
-                <div className="flex flex-col text-right">
-
-                  <span
-                    className="
-                      text-[10px]
-                      font-medium
-                      uppercase
-                      tracking-wide
-                      text-slate-400
-                    "
-                  >
-                    Reference
-                  </span>
-
-                  <span
-                    className="
-                      mt-1
-                      text-xs
-                      font-medium
-                      text-slate-600
-                    "
-                  >
-                    {row.reference ||
-                      row.reference_no ||
-                      row.ref_no ||
-                      (row.type === "IN"
-                        ? "Stock In"
-                        : "Stock Out")}
-                  </span>
-                </div>
               </div>
             </div>
           ))}
@@ -469,7 +436,7 @@ export default function InventoryMovementPage() {
               rounded-2xl
               border border-slate-200
               bg-white
-              px-4 py-16
+              px-4 py-14
               text-center
               text-sm
               text-slate-500
