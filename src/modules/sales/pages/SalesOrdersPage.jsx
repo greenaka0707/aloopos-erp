@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+mimport { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -284,30 +284,33 @@ export default function SalesOrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-w-0 space-y-4 p-4">
-        <div className="h-28 animate-pulse rounded-2xl bg-slate-200" />
+      <div className="min-w-0 space-y-3 px-1">
 
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((item) => (
-            <div
-              key={item}
-              className="h-32 animate-pulse rounded-2xl bg-slate-200"
-            />
-          ))}
-        </div>
+        {[1, 2, 3, 4].map((item) => (
+          <div
+            key={item}
+            className="
+              h-[120px]
+              animate-pulse
+              rounded-2xl
+              bg-slate-200
+            "
+          />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="relative min-w-0 pb-40">
+    <div className="relative min-w-0 pb-32">
 
       {/* ======================================== */}
       {/* TABS */}
       {/* ======================================== */}
 
-      <div className="mb-4 overflow-x-auto no-scrollbar px-1">
+      <div className="mb-3 overflow-x-auto no-scrollbar px-1">
         <div className="min-w-max">
+
           <Tabs
             tabs={TABS.map(
               (tab) => `${tab} (${tabCounts[tab]})`,
@@ -334,7 +337,17 @@ export default function SalesOrdersPage() {
       <div className="space-y-3 px-1">
 
         {preparedOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-16 text-center">
+          <div
+            className="
+              flex flex-col items-center justify-center
+              rounded-2xl
+              border border-slate-200
+              bg-white
+              px-4 py-16
+              text-center
+              shadow-sm
+            "
+          >
 
             <div className="mb-3 rounded-full bg-slate-100 p-3 text-slate-400">
               <FileText size={24} />
@@ -359,12 +372,13 @@ export default function SalesOrdersPage() {
               }
               className="
                 w-full text-left
-                transition-transform duration-200
+                transition-all duration-200
                 active:scale-[0.99]
               "
             >
+
               {/* ======================================== */}
-              {/* CARD BASELINE */}
+              {/* CARD */}
               {/* ======================================== */}
 
               <div
@@ -397,6 +411,7 @@ export default function SalesOrdersPage() {
                     <p
                       className="
                         mt-0.5
+                        truncate
                         text-[11px]
                         font-medium
                         uppercase
@@ -418,6 +433,7 @@ export default function SalesOrdersPage() {
                       font-semibold
                       uppercase
                       tracking-wide
+                      whitespace-nowrap
                       ${getStatusClass(order.status)}
                     `}
                   >
@@ -435,7 +451,7 @@ export default function SalesOrdersPage() {
                   "
                 >
 
-                  {/* LABEL */}
+                  {/* LEFT */}
                   <div className="flex flex-col">
 
                     <span
@@ -462,14 +478,15 @@ export default function SalesOrdersPage() {
                   </div>
 
                   {/* RIGHT */}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
 
                     <span
                       className={`
                         rounded-full
-                        px-2 py-1
+                        px-2.5 py-1
                         text-[10px]
                         font-semibold
+                        whitespace-nowrap
                         ${
                           order.profit >= 0
                             ? "bg-emerald-50 text-emerald-600"
@@ -501,17 +518,16 @@ export default function SalesOrdersPage() {
           fixed inset-x-0 bottom-0
           z-[9999]
           px-4
-          pb-6
-          md:px-6
+          pb-5
         "
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
+        <div className="mx-auto flex max-w-2xl items-center gap-2.5">
 
           {/* SEARCH */}
           <div className="relative flex-1">
 
             <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
-              <Search size={18} strokeWidth={2.5} />
+              <Search size={16} strokeWidth={2.5} />
             </div>
 
             <input
@@ -520,12 +536,12 @@ export default function SalesOrdersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="
-                h-14 w-full rounded-full
+                h-12 w-full rounded-full
                 border border-white/70
                 bg-white
                 pl-11 pr-4
-                text-base
-                shadow-[0_10px_35px_rgba(0,0,0,0.18)]
+                text-sm
+                shadow-[0_10px_35px_rgba(0,0,0,0.14)]
                 focus:outline-none
                 focus:ring-2
                 focus:ring-orange-500/20
@@ -537,34 +553,34 @@ export default function SalesOrdersPage() {
           <button
             onClick={handleDownloadPDF}
             className="
-              flex h-14 w-14 flex-shrink-0
+              flex h-12 w-12 flex-shrink-0
               items-center justify-center
               rounded-full
               bg-white
               text-slate-700
-              shadow-[0_10px_35px_rgba(0,0,0,0.15)]
+              shadow-[0_10px_35px_rgba(0,0,0,0.12)]
               transition-all
               active:scale-95
             "
           >
-            <Download size={22} strokeWidth={2.2} />
+            <Download size={20} strokeWidth={2.3} />
           </button>
 
           {/* FAB */}
           <button
             onClick={() => navigate("/sales/create")}
             className="
-              flex h-14 w-14 flex-shrink-0
+              flex h-12 w-12 flex-shrink-0
               items-center justify-center
               rounded-full
               bg-orange-500
               text-white
-              shadow-[0_12px_30px_rgba(249,115,22,0.45)]
+              shadow-[0_12px_30px_rgba(249,115,22,0.38)]
               transition-all
               active:scale-95
             "
           >
-            <Plus size={28} strokeWidth={2.5} />
+            <Plus size={22} strokeWidth={2.5} />
           </button>
         </div>
       </div>
