@@ -1,4 +1,4 @@
-mimport { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -268,7 +268,7 @@ export default function SalesOrdersPage() {
         },
       });
 
-      doc.save(`SO_Report_${activeTab}.pdf`);
+      doc.save(`SO_Report_${activeTab}.pdf");
     } catch (err) {
       alert(
         "Sedang memuat sistem PDF, silakan coba beberapa detik lagi.",
@@ -285,7 +285,6 @@ export default function SalesOrdersPage() {
   if (loading) {
     return (
       <div className="min-w-0 space-y-3 px-1">
-
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
@@ -320,7 +319,7 @@ export default function SalesOrdersPage() {
 
             onChange={(value) => {
               const cleanValue = value.replace(
-                /\s\(\d+\)/,
+                /\s$begin:math:text$\\d\+$end:math:text$/,
                 "",
               );
 
@@ -445,7 +444,7 @@ export default function SalesOrdersPage() {
                 <div
                   className="
                     mt-3
-                    flex items-center justify-between
+                    flex items-end justify-between
                     border-t border-slate-100
                     pt-3
                   "
@@ -459,6 +458,7 @@ export default function SalesOrdersPage() {
                         text-[10px]
                         font-medium
                         uppercase
+                        tracking-wide
                         text-slate-400
                       "
                     >
@@ -467,8 +467,8 @@ export default function SalesOrdersPage() {
 
                     <span
                       className="
-                        mt-0.5
-                        text-sm
+                        mt-1
+                        text-[15px]
                         font-bold
                         text-slate-900
                       "
@@ -478,30 +478,10 @@ export default function SalesOrdersPage() {
                   </div>
 
                   {/* RIGHT */}
-                  <div className="flex items-center gap-2">
-
-                    <span
-                      className={`
-                        rounded-full
-                        px-2.5 py-1
-                        text-[10px]
-                        font-semibold
-                        whitespace-nowrap
-                        ${
-                          order.profit >= 0
-                            ? "bg-emerald-50 text-emerald-600"
-                            : "bg-red-50 text-red-600"
-                        }
-                      `}
-                    >
-                      {formatRupiah(order.profit)}
-                    </span>
-
-                    <ChevronRight
-                      size={16}
-                      className="text-slate-400"
-                    />
-                  </div>
+                  <ChevronRight
+                    size={18}
+                    className="text-slate-300"
+                  />
                 </div>
               </div>
             </button>
