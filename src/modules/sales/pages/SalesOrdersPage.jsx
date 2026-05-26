@@ -8,12 +8,12 @@ import {
   ChevronRight,
   FileText
 } from "lucide-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
-// Hapus Table import jika memang sudah tidak dipakai untuk mengurangi beban
 import Button from "@/shared/components/Button";
 import Input from "@/shared/components/Input";
 import Tabs from "@/shared/components/Tabs";
-
 import { getSalesOrders } from "../services/sales.service";
 
 // ========================================
@@ -77,7 +77,6 @@ export default function SalesOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "All");
   
-  // Filter States
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
 
@@ -122,7 +121,6 @@ export default function SalesOrdersPage() {
     }
 
     if (dateFilter) {
-      // Asumsi format tanggal YYYY-MM-DD
       data = data.filter((order) => {
         if (!order.created_at) return false;
         return order.created_at.startsWith(dateFilter);
@@ -167,49 +165,93 @@ export default function SalesOrdersPage() {
   }, [orders]);
 
   // ========================================
+  // DOWNLOAD PDF
+  // ========================================
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Judul PDF
+    doc.setFontSize(18);
+    doc.text("Sales Orders Report", 14, 22);
+    
+    // Info Filter
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    const filterInfo = `Date: ${dateFilter || "All Time"} | Status: ${activeTab}`;
+    doc.text(filterInfo, 14, 30);
+
+    // Tabel Data
+    const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
+    const tableRows = [];
+
+    preparedOrders.forEach(order => {
+      const orderDate = order.created_at ? order.created_at.split("T")[0] : "-";
+      const orderData = [
+        order.so_number,
+        order.customer_name,
+        orderDate,
+        order.status,
+        formatRupiah(order.revenue),
+        formatRupiah(order.profit)
+      ];
+      tableRows.push(orderData);
+    });
+
+    // Ringkasan Total
+    tableRows.push(["", "", "", "TOTAL:", formatRupiah(summary.revenue), formatRupiah(summary.profit)]);
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 35,
+      theme: 'grid',
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [41, 128, 185] },
+      columnStyles: {
+        4: { halign: 'right' },
+        5: { halign: 'right' }
+      }
+    });
+
+    // Nama file dinamis
+    const fileName = `SO_Report_${dateFilter || "All"}_${activeTab}.pdf`;
+    doc.save(fileName);
+  };
+
+  // ========================================
   // LOADING STATE
   // ========================================
 
   if (loading) {
     return (
       <div className="min-w-0 space-y-4">
-        {/* Mockup Sticky Header Loading */}
         <div className="h-28 animate-pulse rounded-2xl bg-slate-200" />
-        
-        {/* Mockup Summary Loading */}
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {[1, 2, 3].map((item) => (
             <div key={item} className="h-24 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
-        
-        {/* Mockup List Loading */}
         <div className="space-y-3">
           {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-28 animate-pulse rounded-2xl bg-slate-200" />
+            <div key={item} className="h-20 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
       </div>
     );
   }
 
-  // ========================================
-  // RENDER
-  // ========================================
-
   return (
-    <div className="min-w-0 pb-24 lg:pb-8"> {/* pb-24 untuk space FAB mobile */}
+    <div className="min-w-0 pb-24 lg:pb-8 relative">
       
       {/* ================================================= */}
-      {/* STICKY HEADER (Search, Filters, Download, Tabs) */}
+      {/* STICKY HEADER (top-20 menyesuaikan navbar utama) */}
       {/* ================================================= */}
       
-      <div className="sticky top-0 z-20 -mx-5 px-5 pb-4 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
+      <div className="sticky top-20 z-20 -mx-5 px-5 pb-4 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
         <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 md:p-4 border border-slate-200 shadow-sm">
           
-          {/* Top Actions: Search & Icon Buttons */}
           <div className="flex items-center gap-2">
-            {/* Search Input */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
                 <Search size={16} />
@@ -223,7 +265,6 @@ export default function SalesOrdersPage() {
               />
             </div>
 
-            {/* Date Filter (Native Date Picker Wrapper) */}
             <div className="relative flex-shrink-0">
               <input
                 type="date"
@@ -231,21 +272,22 @@ export default function SalesOrdersPage() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
-              <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100">
+              <button 
+                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${dateFilter ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+              >
                 <Calendar size={16} />
               </button>
             </div>
 
-            {/* Download Button */}
             <button 
-              onClick={() => console.log("Download Data")}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100"
+              onClick={handleDownloadPDF}
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 active:bg-slate-200"
+              title="Download PDF"
             >
               <Download size={16} />
             </button>
           </div>
 
-          {/* Tabs */}
           <div className="-mx-1 overflow-x-auto no-scrollbar">
             <div className="min-w-max px-1">
               <Tabs
@@ -258,7 +300,6 @@ export default function SalesOrdersPage() {
               />
             </div>
           </div>
-
         </div>
       </div>
 
@@ -266,7 +307,7 @@ export default function SalesOrdersPage() {
       {/* SUMMARY CARDS */}
       {/* ================================================= */}
       
-      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+      <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
         <SummaryCard title="Total Revenue" value={formatRupiah(summary.revenue)} />
         <SummaryCard title="Total HPP" value={formatRupiah(summary.hpp)} />
         <SummaryCard
@@ -277,7 +318,7 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* LIST DATA (MOBILE CARDS) */}
+      {/* LIST DATA (MOBILE CARDS) - RAMPING & HEADER CUSTOMER */}
       {/* ================================================= */}
       
       <div className="mt-4 space-y-3">
@@ -298,38 +339,28 @@ export default function SalesOrdersPage() {
               onClick={() => navigate(`/sales/orders/${order.id}`)}
               className="w-full text-left transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-2">
                 
-                {/* Card Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold text-blue-600 md:text-base">
-                      {order.so_number}
-                    </h3>
-                    <p className="mt-0.5 text-xs font-medium text-slate-600 md:text-sm truncate max-w-[180px] md:max-w-xs">
-                      {order.customer_name}
-                    </p>
-                  </div>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-wide ${getStatusClass(order.status)}`}
-                  >
-                    {order.status}
+                {/* Header: Nama Customer & Revenue */}
+                <div className="flex items-start justify-between">
+                  <h3 className="font-semibold text-slate-900 md:text-base truncate pr-2">
+                    {order.customer_name || "Unknown Customer"}
+                  </h3>
+                  <span className="font-bold text-slate-900 flex-shrink-0">
+                    {formatRupiah(order.revenue)}
                   </span>
                 </div>
 
-                {/* Card Footer */}
-                <div className="flex items-end justify-between pt-3 border-t border-slate-100">
-                  <div>
-                    <p className="text-[10px] md:text-xs font-medium text-slate-400 uppercase tracking-wider">
-                      Total Revenue
-                    </p>
-                    <p className="mt-0.5 text-sm md:text-base font-bold text-slate-900">
-                      {formatRupiah(order.revenue)}
-                    </p>
-                  </div>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-400">
-                    <ChevronRight size={16} />
-                  </div>
+                {/* Footer: SO Number & Status */}
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-blue-600 truncate">
+                    {order.so_number}
+                  </p>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] md:text-xs font-semibold uppercase tracking-wide ${getStatusClass(order.status)}`}
+                  >
+                    {order.status}
+                  </span>
                 </div>
 
               </div>
@@ -339,17 +370,16 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* FAB: CREATE BUTTON (Mobile Optimized) */}
+      {/* FAB: CREATE BUTTON (Fixed & Sticky Bottom Right) */}
       {/* ================================================= */}
       
-      <div className="fixed bottom-6 right-5 z-40 lg:bottom-8 lg:right-8">
+      <div className="fixed bottom-6 right-5 z-50 lg:bottom-8 lg:right-8">
         <button
           onClick={() => navigate("/sales/create")}
-          className="flex items-center justify-center gap-2 rounded-full bg-orange-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
         >
-          <Plus size={20} strokeWidth={2.5} />
-          {/* Teks hanya muncul di tablet/desktop, di HP hanya icon + */}
-          <span className="hidden md:block pr-2">Create Order</span>
+          <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
+          <span className="hidden md:block md:ml-2 text-sm font-semibold">Create Order</span>
         </button>
       </div>
 
