@@ -253,15 +253,15 @@ export default function AppLayout({ children }) {
         {/* HEADER */}
         {/* ===================================================== */}
 
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-24 items-start pt-6 pb-4 justify-between bg-gradient-to-b from-slate-100 via-slate-100/90 to-transparent px-4 lg:px-8 pointer-events-none">
           {/* LEFT */}
-          <div className="flex min-w-0 items-center gap-4">
+          <div className="flex min-w-0 items-center gap-4 pointer-events-auto">
             {/* MOBILE MENU */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white lg:hidden"
+              className="flex h-10 w-10 shrink-0 items-center justify-center text-slate-800 transition hover:text-slate-600 lg:hidden"
             >
-              <Menu size={18} />
+              <Menu size={24} />
             </button>
 
             {/* TITLE */}
@@ -279,7 +279,7 @@ export default function AppLayout({ children }) {
           </div>
 
           {/* RIGHT */}
-          <div className="relative flex items-center gap-3 lg:gap-4">
+          <div className="relative flex items-center gap-3 lg:gap-4 pointer-events-auto">
             {/* USER INFO (Desktop Only) */}
             <div className="hidden text-right lg:block">
               <p className="text-sm font-semibold text-slate-900">
@@ -291,7 +291,7 @@ export default function AppLayout({ children }) {
             {/* AVATAR TOGGLE */}
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-slate-600 transition hover:bg-slate-200"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm text-slate-600 transition hover:bg-slate-50"
             >
               <User size={20} />
             </button>
@@ -349,7 +349,7 @@ export default function AppLayout({ children }) {
         {/* PAGE */}
         {/* ===================================================== */}
 
-        <main className="relative min-w-0 flex-1 bg-slate-100 p-5 lg:p-8">
+        <main className="relative min-w-0 flex-1 bg-slate-100 px-5 pb-5 lg:px-8 lg:pb-8">
           <div
             className={`
               transform-gpu transition-all duration-300 ease-out
