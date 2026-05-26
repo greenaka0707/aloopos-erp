@@ -1,15 +1,18 @@
+import AppLayout from "@/layouts/AppLayout";
+import AppRoutes from "@/routes";
+
+import { useAuth } from "@/providers/AuthProvider";
+
 export default function App() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <AppRoutes />;
+  }
+
   return (
-    <div
-      style={{
-        background: "black",
-        color: "white",
-        minHeight: "100vh",
-        padding: "40px",
-        fontSize: "32px",
-      }}
-    >
-      APP JSX NORMAL
-    </div>
+    <AppLayout>
+      <AppRoutes />
+    </AppLayout>
   );
 }
