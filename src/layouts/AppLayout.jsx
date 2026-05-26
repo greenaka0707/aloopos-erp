@@ -53,54 +53,52 @@ export default function AppLayout({
   /* ===================================================== */
 
   const pageTitle = useMemo(() => {
-    if (
-      location.pathname.startsWith(
-        "/dashboard",
-      )
-    )
+    const path =
+      location.pathname.toLowerCase();
+
+    // DASHBOARD
+    if (path.includes("dashboard")) {
       return "Dashboard";
+    }
 
-    if (
-      location.pathname.startsWith(
-        "/inventory",
-      )
-    )
+    // INVENTORY
+    if (path.includes("inventory")) {
       return "Inventory";
+    }
 
+    // SALES
     if (
-      location.pathname.startsWith(
-        "/sales/orders",
-      )
-    )
+      path.includes("sales") ||
+      path.includes("order")
+    ) {
       return "Sales Orders";
+    }
 
+    // CREATE SALES
     if (
-      location.pathname.startsWith(
-        "/sales/create",
-      )
-    )
+      path.includes("create")
+    ) {
       return "Create Sales Order";
+    }
 
+    // MANUFACTURING
     if (
-      location.pathname.startsWith(
-        "/manufacturing",
-      )
-    )
+      path.includes("manufacturing")
+    ) {
       return "Manufacturing";
+    }
 
-    if (
-      location.pathname.startsWith(
-        "/finance",
-      )
-    )
+    // FINANCE
+    if (path.includes("finance")) {
       return "Finance";
+    }
 
+    // SETTINGS
     if (
-      location.pathname.startsWith(
-        "/settings",
-      )
-    )
+      path.includes("settings")
+    ) {
       return "Settings";
+    }
 
     return "ERP System";
   }, [location.pathname]);
@@ -167,7 +165,6 @@ export default function AppLayout({
           bg-white
           transition-all
           duration-300
-
           w-[280px]
 
           ${
@@ -607,8 +604,8 @@ export default function AppLayout({
               <h2
                 className="
                   truncate
-                  text-lg
-                  font-semibold
+                  text-xl
+                  font-bold
                   text-slate-900
                   lg:hidden
                 "
@@ -680,8 +677,8 @@ export default function AppLayout({
               className="
                 rounded-xl
                 bg-red-500
-                px-4
-                py-2
+                px-5
+                py-2.5
                 text-sm
                 font-medium
                 text-white
