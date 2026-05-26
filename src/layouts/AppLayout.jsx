@@ -119,7 +119,7 @@ export default function AppLayout({
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-slate-100 text-slate-900">
       {/* ===================================================== */}
       {/* MOBILE OVERLAY */}
       {/* ===================================================== */}
@@ -523,8 +523,10 @@ export default function AppLayout({
       <div
         className={`
           flex
+          min-h-screen
           min-w-0
           flex-col
+          overflow-x-hidden
           transition-all
           duration-300
 
@@ -684,7 +686,6 @@ export default function AppLayout({
             relative
             min-w-0
             flex-1
-            overflow-x-hidden
             bg-slate-100
             p-5
             lg:p-8
