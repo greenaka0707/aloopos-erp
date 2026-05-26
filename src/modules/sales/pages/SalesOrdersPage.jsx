@@ -9,7 +9,7 @@ import {
   FileText
 } from "lucide-react";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 import Button from "@/shared/components/Button";
 import Input from "@/shared/components/Input";
@@ -141,6 +141,7 @@ export default function SalesOrdersPage() {
     });
   }, [filteredOrders]);
 
+  // Summary dipertahankan hanya untuk kalkulasi PDF
   const summary = useMemo(() => {
     return preparedOrders.reduce(
       (acc, order) => {
@@ -196,9 +197,11 @@ export default function SalesOrdersPage() {
         tableRows.push(orderData);
       });
 
+      // Baris Total
       tableRows.push(["", "", "", "TOTAL:", formatRupiah(summary.revenue), formatRupiah(summary.profit)]);
 
-      doc.autoTable({
+      // Menggunakan autoTable dari import eksplisit
+      autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 35,
@@ -304,21 +307,7 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* SUMMARY CARDS */}
-      {/* ================================================= */}
-      
-      <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4 px-1">
-        <SummaryCard title="Total Revenue" value={formatRupiah(summary.revenue)} />
-        <SummaryCard title="Total HPP" value={formatRupiah(summary.hpp)} />
-        <SummaryCard
-          title="Gross Profit"
-          value={formatRupiah(summary.profit)}
-          valueClass="text-emerald-600"
-        />
-      </div>
-
-      {/* ================================================= */}
-      {/* LIST DATA (KEMBALI KE DESAIN LAMA YANG LEGA) */}
+      {/* LIST DATA */}
       {/* ================================================= */}
       
       <div className="mt-4 space-y-3 px-1">
@@ -375,38 +364,19 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* FAB: CREATE BUTTON */}
+      {/* FAB: STICKY CREATE BUTTON */}
       {/* ================================================= */}
       
-      <div className="fixed bottom-6 right-5 z-50 lg:bottom-8 lg:right-8">
+      <div className="sticky bottom-6 z-50 flex justify-end px-5 pointer-events-none lg:bottom-8 lg:px-8">
         <button
           onClick={() => navigate("/sales/create")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
+          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
         >
           <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
           <span className="hidden md:block md:ml-2 text-sm font-semibold">Create Order</span>
         </button>
       </div>
 
-    </div>
-  );
-}
-
-// ========================================
-// REUSABLE SUB-COMPONENTS
-// ========================================
-
-function SummaryCard({ title, value, valueClass = "" }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5 shadow-sm">
-      <p className="text-xs font-medium text-slate-500 md:text-sm">
-        {title}
-      </p>
-      <p
-        className={`mt-1.5 truncate text-xl font-bold text-slate-900 md:text-2xl ${valueClass}`}
-      >
-        {value}
-      </p>
     </div>
   );
 }
