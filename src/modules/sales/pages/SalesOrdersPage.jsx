@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Search, 
-  Calendar, 
   Download, 
   Plus, 
   ChevronRight,
@@ -11,8 +10,6 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-import Button from "@/shared/components/Button";
-import Input from "@/shared/components/Input";
 import Tabs from "@/shared/components/Tabs";
 import { getSalesOrders } from "../services/sales.service";
 
@@ -78,7 +75,6 @@ export default function SalesOrdersPage() {
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "All");
   
   const [search, setSearch] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
 
   // ========================================
   // LOAD DATA
@@ -120,15 +116,8 @@ export default function SalesOrdersPage() {
       );
     }
 
-    if (dateFilter) {
-      data = data.filter((order) => {
-        if (!order.created_at) return false;
-        return order.created_at.startsWith(dateFilter);
-      });
-    }
-
     return data;
-  }, [orders, activeTab, search, dateFilter]);
+  }, [orders, activeTab, search]);
 
   // ========================================
   // PREPARE & SUMMARY
@@ -178,7 +167,7 @@ export default function SalesOrdersPage() {
       
       doc.setFontSize(11);
       doc.setTextColor(100);
-      const filterInfo = `Date: ${dateFilter || "All Time"} | Status: ${activeTab}`;
+      const filterInfo = `Status: ${activeTab}`;
       doc.text(filterInfo, 14, 30);
 
       const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
@@ -200,7 +189,6 @@ export default function SalesOrdersPage() {
       // Baris Total
       tableRows.push(["", "", "", "TOTAL:", formatRupiah(summary.revenue), formatRupiah(summary.profit)]);
 
-      // Menggunakan autoTable dari import eksplisit
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
@@ -214,7 +202,7 @@ export default function SalesOrdersPage() {
         }
       });
 
-      const fileName = `SO_Report_${dateFilter || "All"}_${activeTab}.pdf`;
+      const fileName = `SO_Report_${activeTab}.pdf`;
       doc.save(fileName);
     } catch (err) {
       alert("Sedang memuat sistem PDF, silakan coba beberapa detik lagi.");
@@ -268,20 +256,6 @@ export default function SalesOrdersPage() {
               />
             </div>
 
-            <div className="relative flex-shrink-0">
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-              <button 
-                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${dateFilter ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
-              >
-                <Calendar size={16} />
-              </button>
-            </div>
-
             <button 
               onClick={handleDownloadPDF}
               className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 active:bg-slate-200"
@@ -318,7 +292,7 @@ export default function SalesOrdersPage() {
             </div>
             <h2 className="text-base font-semibold text-slate-900">No Sales Orders Found</h2>
             <p className="mt-1 text-sm text-slate-500">
-              {search || dateFilter ? "Try adjusting your filters" : "Create your first sales order"}
+              {search ? "Try adjusting your filters" : "Create your first sales order"}
             </p>
           </div>
         ) : (
@@ -364,13 +338,13 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ================================================= */}
-      {/* FAB: STICKY CREATE BUTTON */}
+      {/* FAB: FIXED CREATE BUTTON */}
       {/* ================================================= */}
       
-      <div className="sticky bottom-6 z-50 flex justify-end px-5 pointer-events-none lg:bottom-8 lg:px-8">
+      <div className="fixed bottom-6 right-6 z-50 lg:bottom-8 lg:right-8">
         <button
           onClick={() => navigate("/sales/create")}
-          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
         >
           <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
           <span className="hidden md:block md:ml-2 text-sm font-semibold">Create Order</span>
