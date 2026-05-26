@@ -308,7 +308,6 @@ export default function SalesOrdersPage() {
 
       <div className="mb-4 overflow-x-auto no-scrollbar px-1">
         <div className="min-w-max">
-
           <Tabs
             tabs={TABS.map(
               (tab) => `${tab} (${tabCounts[tab]})`,
@@ -361,24 +360,64 @@ export default function SalesOrdersPage() {
               className="
                 w-full text-left
                 transition-transform duration-200
-                hover:scale-[1.01]
                 active:scale-[0.99]
               "
             >
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              {/* ======================================== */}
+              {/* CARD BASELINE */}
+              {/* ======================================== */}
 
-                <div className="flex items-center justify-between">
+              <div
+                className="
+                  rounded-2xl
+                  border border-slate-200
+                  bg-white
+                  p-3.5
+                  shadow-sm
+                "
+              >
 
-                  <p className="truncate font-semibold text-blue-600 md:text-lg">
-                    {order.so_number}
-                  </p>
+                {/* HEADER */}
+                <div className="flex items-start justify-between gap-3">
 
+                  {/* LEFT */}
+                  <div className="min-w-0 flex-1">
+
+                    <h3
+                      className="
+                        truncate
+                        text-sm
+                        font-bold
+                        text-blue-600
+                      "
+                    >
+                      {order.so_number}
+                    </h3>
+
+                    <p
+                      className="
+                        mt-0.5
+                        text-[11px]
+                        font-medium
+                        uppercase
+                        tracking-wider
+                        text-slate-500
+                      "
+                    >
+                      {order.customer_name || "Unknown Customer"}
+                    </p>
+                  </div>
+
+                  {/* STATUS */}
                   <span
                     className={`
-                      inline-flex items-center rounded-full
+                      inline-flex items-center
+                      rounded-full
                       px-2.5 py-1
-                      text-[10px] font-semibold uppercase tracking-wide
-                      md:text-xs
+                      text-[10px]
+                      font-semibold
+                      uppercase
+                      tracking-wide
                       ${getStatusClass(order.status)}
                     `}
                   >
@@ -386,21 +425,60 @@ export default function SalesOrdersPage() {
                   </span>
                 </div>
 
-                <p className="mt-1 text-sm text-slate-600 md:text-base">
-                  {order.customer_name || "Unknown Customer"}
-                </p>
+                {/* FOOTER */}
+                <div
+                  className="
+                    mt-3
+                    flex items-center justify-between
+                    border-t border-slate-100
+                    pt-3
+                  "
+                >
 
-                <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                  {/* LABEL */}
+                  <div className="flex flex-col">
 
-                  <p className="text-xs font-medium text-slate-500 md:text-sm">
-                    TOTAL REVENUE
-                  </p>
+                    <span
+                      className="
+                        text-[10px]
+                        font-medium
+                        uppercase
+                        text-slate-400
+                      "
+                    >
+                      Total Revenue
+                    </span>
 
-                  <div className="flex items-center gap-1 text-slate-900">
-
-                    <p className="font-bold md:text-lg">
+                    <span
+                      className="
+                        mt-0.5
+                        text-sm
+                        font-bold
+                        text-slate-900
+                      "
+                    >
                       {formatRupiah(order.revenue)}
-                    </p>
+                    </span>
+                  </div>
+
+                  {/* RIGHT */}
+                  <div className="flex items-center gap-1">
+
+                    <span
+                      className={`
+                        rounded-full
+                        px-2 py-1
+                        text-[10px]
+                        font-semibold
+                        ${
+                          order.profit >= 0
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-red-50 text-red-600"
+                        }
+                      `}
+                    >
+                      {formatRupiah(order.profit)}
+                    </span>
 
                     <ChevronRight
                       size={16}
