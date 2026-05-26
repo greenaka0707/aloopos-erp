@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { 
-  Search, 
-  Download, 
-  Plus, 
+
+import {
+  Search,
+  Download,
+  Plus,
   ChevronRight,
-  FileText
+  FileText,
 } from "lucide-react";
+
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -17,7 +19,14 @@ import { getSalesOrders } from "../services/sales.service";
 // CONSTANTS
 // ========================================
 
-const TABS = ["All", "Pending", "Dikemas", "Dikirim", "Completed", "Void"];
+const TABS = [
+  "All",
+  "Pending",
+  "Dikemas",
+  "Dikirim",
+  "Completed",
+  "Void",
+];
 
 // ========================================
 // HELPERS
@@ -51,12 +60,16 @@ function getStatusClass(status) {
   switch (status) {
     case "COMPLETED":
       return "bg-emerald-100 text-emerald-700";
+
     case "DIKEMAS":
       return "bg-orange-100 text-orange-700";
+
     case "DIKIRIM":
       return "bg-blue-100 text-blue-700";
+
     case "VOID":
       return "bg-red-100 text-red-700";
+
     default:
       return "bg-yellow-100 text-yellow-700";
   }
@@ -72,8 +85,11 @@ export default function SalesOrdersPage() {
 
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "All");
-  
+
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "All",
+  );
+
   const [search, setSearch] = useState("");
 
   // ========================================
@@ -83,7 +99,9 @@ export default function SalesOrdersPage() {
   async function loadOrders() {
     try {
       setLoading(true);
+
       const data = await getSalesOrders();
+
       setOrders(data || []);
     } catch (error) {
       console.error(error);
@@ -104,15 +122,22 @@ export default function SalesOrdersPage() {
     let data = [...orders];
 
     if (activeTab !== "All") {
-      data = data.filter((order) => order.status === activeTab.toUpperCase());
+      data = data.filter(
+        (order) => order.status === activeTab.toUpperCase(),
+      );
     }
 
     if (search.trim()) {
       const keyword = search.toLowerCase();
+
       data = data.filter(
         (order) =>
-          String(order.so_number || "").toLowerCase().includes(keyword) ||
-          String(order.customer_name || "").toLowerCase().includes(keyword),
+          String(order.so_number || "")
+            .toLowerCase()
+            .includes(keyword) ||
+          String(order.customer_name || "")
+            .toLowerCase()
+            .includes(keyword),
       );
     }
 
@@ -120,28 +145,44 @@ export default function SalesOrdersPage() {
   }, [orders, activeTab, search]);
 
   // ========================================
-  // PREPARE & SUMMARY
+  // PREPARE DATA
   // ========================================
 
   const preparedOrders = useMemo(() => {
     return filteredOrders.map((order) => {
       const totals = calculateOrderTotals(order);
-      return { ...order, ...totals };
+
+      return {
+        ...order,
+        ...totals,
+      };
     });
   }, [filteredOrders]);
 
-  // Summary dipertahankan hanya untuk kalkulasi PDF
+  // ========================================
+  // SUMMARY
+  // ========================================
+
   const summary = useMemo(() => {
     return preparedOrders.reduce(
       (acc, order) => {
         acc.revenue += order.revenue;
         acc.hpp += order.hpp;
         acc.profit += order.profit;
+
         return acc;
       },
-      { revenue: 0, hpp: 0, profit: 0 },
+      {
+        revenue: 0,
+        hpp: 0,
+        profit: 0,
+      },
     );
   }, [preparedOrders]);
+
+  // ========================================
+  // TAB COUNTS
+  // ========================================
 
   const tabCounts = useMemo(() => {
     return {
@@ -161,71 +202,97 @@ export default function SalesOrdersPage() {
   const handleDownloadPDF = () => {
     try {
       const doc = new jsPDF();
-      
+
       doc.setFontSize(18);
       doc.text("Sales Orders Report", 14, 22);
-      
+
       doc.setFontSize(11);
       doc.setTextColor(100);
+
       const filterInfo = `Status: ${activeTab}`;
+
       doc.text(filterInfo, 14, 30);
 
-      const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
+      const tableColumn = [
+        "SO Number",
+        "Customer",
+        "Date",
+        "Status",
+        "Revenue",
+        "Profit",
+      ];
+
       const tableRows = [];
 
-      preparedOrders.forEach(order => {
-        const orderDate = order.created_at ? order.created_at.split("T")[0] : "-";
-        const orderData = [
+      preparedOrders.forEach((order) => {
+        const orderDate = order.created_at
+          ? order.created_at.split("T")[0]
+          : "-";
+
+        tableRows.push([
           order.so_number,
           order.customer_name,
           orderDate,
           order.status,
           formatRupiah(order.revenue),
-          formatRupiah(order.profit)
-        ];
-        tableRows.push(orderData);
+          formatRupiah(order.profit),
+        ]);
       });
 
-      // Baris Total
-      tableRows.push(["", "", "", "TOTAL:", formatRupiah(summary.revenue), formatRupiah(summary.profit)]);
+      tableRows.push([
+        "",
+        "",
+        "",
+        "TOTAL:",
+        formatRupiah(summary.revenue),
+        formatRupiah(summary.profit),
+      ]);
 
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 35,
-        theme: 'grid',
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [41, 128, 185] },
+        theme: "grid",
+
+        styles: {
+          fontSize: 9,
+        },
+
+        headStyles: {
+          fillColor: [41, 128, 185],
+        },
+
         columnStyles: {
-          4: { halign: 'right' },
-          5: { halign: 'right' }
-        }
+          4: { halign: "right" },
+          5: { halign: "right" },
+        },
       });
 
-      const fileName = `SO_Report_${activeTab}.pdf`;
-      doc.save(fileName);
+      doc.save(`SO_Report_${activeTab}.pdf`);
     } catch (err) {
-      alert("Sedang memuat sistem PDF, silakan coba beberapa detik lagi.");
+      alert(
+        "Sedang memuat sistem PDF, silakan coba beberapa detik lagi.",
+      );
+
       console.error(err);
     }
   };
 
   // ========================================
-  // LOADING STATE
+  // LOADING
   // ========================================
 
   if (loading) {
     return (
       <div className="min-w-0 space-y-4 p-4">
         <div className="h-28 animate-pulse rounded-2xl bg-slate-200" />
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          {[1, 2, 3].map((item) => (
-            <div key={item} className="h-24 animate-pulse rounded-2xl bg-slate-200" />
-          ))}
-        </div>
+
         <div className="space-y-3">
           {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-32 animate-pulse rounded-2xl bg-slate-200" />
+            <div
+              key={item}
+              className="h-32 animate-pulse rounded-2xl bg-slate-200"
+            />
           ))}
         </div>
       </div>
@@ -233,102 +300,112 @@ export default function SalesOrdersPage() {
   }
 
   return (
-    <div className="min-w-0 pb-24 lg:pb-8 relative">
-      
-      {/* ================================================= */}
-      {/* STICKY HEADER */}
-      {/* ================================================= */}
-      
-      <div className="sticky top-[75px] z-20 -mx-5 px-5 pb-4 pt-2 bg-slate-100 lg:-mx-8 lg:px-8">
-        <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 md:p-4 border border-slate-200 shadow-sm">
-          
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
-                <Search size={16} />
-              </div>
-              <input
-                type="text"
-                placeholder="Search SO or Customer..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+    <div className="relative min-w-0 pb-40">
 
-            <button 
-              onClick={handleDownloadPDF}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 active:bg-slate-200"
-              title="Download PDF"
-            >
-              <Download size={16} />
-            </button>
-          </div>
+      {/* ======================================== */}
+      {/* TABS */}
+      {/* ======================================== */}
 
-          <div className="-mx-1 overflow-x-auto no-scrollbar">
-            <div className="min-w-max px-1">
-              <Tabs
-                tabs={TABS.map((tab) => `${tab} (${tabCounts[tab]})`)}
-                value={`${activeTab} (${tabCounts[activeTab]})`}
-                onChange={(value) => {
-                  const cleanValue = value.replace(/\s\(\d+\)/, "");
-                  setActiveTab(cleanValue);
-                }}
-              />
-            </div>
-          </div>
+      <div className="mb-4 overflow-x-auto no-scrollbar px-1">
+        <div className="min-w-max">
+
+          <Tabs
+            tabs={TABS.map(
+              (tab) => `${tab} (${tabCounts[tab]})`,
+            )}
+
+            value={`${activeTab} (${tabCounts[activeTab]})`}
+
+            onChange={(value) => {
+              const cleanValue = value.replace(
+                /\s\(\d+\)/,
+                "",
+              );
+
+              setActiveTab(cleanValue);
+            }}
+          />
         </div>
       </div>
 
-      {/* ================================================= */}
-      {/* LIST DATA */}
-      {/* ================================================= */}
-      
-      <div className="mt-4 space-y-3 px-1">
+      {/* ======================================== */}
+      {/* LIST */}
+      {/* ======================================== */}
+
+      <div className="space-y-3 px-1">
+
         {preparedOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-16 px-4 text-center">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-16 text-center">
+
             <div className="mb-3 rounded-full bg-slate-100 p-3 text-slate-400">
               <FileText size={24} />
             </div>
-            <h2 className="text-base font-semibold text-slate-900">No Sales Orders Found</h2>
+
+            <h2 className="text-base font-semibold text-slate-900">
+              No Sales Orders Found
+            </h2>
+
             <p className="mt-1 text-sm text-slate-500">
-              {search ? "Try adjusting your filters" : "Create your first sales order"}
+              {search
+                ? "Try adjusting your filters"
+                : "Create your first sales order"}
             </p>
           </div>
         ) : (
           preparedOrders.map((order) => (
             <button
               key={order.id}
-              onClick={() => navigate(`/sales/orders/${order.id}`)}
-              className="w-full text-left transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
+              onClick={() =>
+                navigate(`/sales/orders/${order.id}`)
+              }
+              className="
+                w-full text-left
+                transition-transform duration-200
+                hover:scale-[1.01]
+                active:scale-[0.99]
+              "
             >
               <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold text-blue-600 md:text-lg truncate">
+
+                  <p className="truncate font-semibold text-blue-600 md:text-lg">
                     {order.so_number}
                   </p>
+
                   <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-wide ${getStatusClass(
-                      order.status,
-                    )}`}
+                    className={`
+                      inline-flex items-center rounded-full
+                      px-2.5 py-1
+                      text-[10px] font-semibold uppercase tracking-wide
+                      md:text-xs
+                      ${getStatusClass(order.status)}
+                    `}
                   >
                     {order.status}
                   </span>
                 </div>
-                
+
                 <p className="mt-1 text-sm text-slate-600 md:text-base">
                   {order.customer_name || "Unknown Customer"}
                 </p>
 
                 <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+
                   <p className="text-xs font-medium text-slate-500 md:text-sm">
                     TOTAL REVENUE
                   </p>
+
                   <div className="flex items-center gap-1 text-slate-900">
+
                     <p className="font-bold md:text-lg">
                       {formatRupiah(order.revenue)}
                     </p>
-                    <ChevronRight size={16} className="text-slate-400" />
+
+                    <ChevronRight
+                      size={16}
+                      className="text-slate-400"
+                    />
                   </div>
                 </div>
               </div>
@@ -337,20 +414,82 @@ export default function SalesOrdersPage() {
         )}
       </div>
 
-      {/* ================================================= */}
-      {/* FAB: FIXED CREATE BUTTON */}
-      {/* ================================================= */}
-      
-      <div className="fixed bottom-6 right-6 z-50 lg:bottom-8 lg:right-8">
-        <button
-          onClick={() => navigate("/sales/create")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] transition-transform hover:scale-105 hover:bg-orange-600 active:scale-95 md:h-auto md:w-auto md:px-5 md:py-3.5 md:rounded-2xl"
-        >
-          <Plus size={24} strokeWidth={2.5} className="md:h-5 md:w-5" />
-          <span className="hidden md:block md:ml-2 text-sm font-semibold">Create Order</span>
-        </button>
-      </div>
+      {/* ======================================== */}
+      {/* FLOATING SEARCH + ACTION */}
+      {/* ======================================== */}
 
+      <div
+        className="
+          fixed inset-x-0 bottom-0
+          z-[9999]
+          px-4
+          pb-6
+          md:px-6
+        "
+      >
+        <div className="mx-auto flex max-w-7xl items-center gap-3">
+
+          {/* SEARCH */}
+          <div className="relative flex-1">
+
+            <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
+              <Search size={18} strokeWidth={2.5} />
+            </div>
+
+            <input
+              type="text"
+              placeholder="Search SO or Customer..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="
+                h-14 w-full rounded-full
+                border border-white/70
+                bg-white
+                pl-11 pr-4
+                text-base
+                shadow-[0_10px_35px_rgba(0,0,0,0.18)]
+                focus:outline-none
+                focus:ring-2
+                focus:ring-orange-500/20
+              "
+            />
+          </div>
+
+          {/* PDF */}
+          <button
+            onClick={handleDownloadPDF}
+            className="
+              flex h-14 w-14 flex-shrink-0
+              items-center justify-center
+              rounded-full
+              bg-white
+              text-slate-700
+              shadow-[0_10px_35px_rgba(0,0,0,0.15)]
+              transition-all
+              active:scale-95
+            "
+          >
+            <Download size={22} strokeWidth={2.2} />
+          </button>
+
+          {/* FAB */}
+          <button
+            onClick={() => navigate("/sales/create")}
+            className="
+              flex h-14 w-14 flex-shrink-0
+              items-center justify-center
+              rounded-full
+              bg-orange-500
+              text-white
+              shadow-[0_12px_30px_rgba(249,115,22,0.45)]
+              transition-all
+              active:scale-95
+            "
+          >
+            <Plus size={28} strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
