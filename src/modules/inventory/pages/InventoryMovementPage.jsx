@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { ArrowDownLeft, ArrowUpRight, Package, RefreshCcw } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Package,
+  RefreshCcw,
+} from "lucide-react";
 
 import Card from "@/shared/components/Card";
 import Button from "@/shared/components/Button";
@@ -12,20 +17,30 @@ import { getMovements } from "../services/movement.service";
 /* STATS CARD */
 /* ===================================================== */
 
-function StatsCard({ title, value, icon, iconClassName = "", valueClassName = "" }) {
+function StatsCard({
+  title,
+  value,
+  icon,
+  iconClassName = "",
+  valueClassName = "",
+}) {
   return (
     <Card className="p-5">
       <div className="flex items-center justify-between">
+
         {/* LEFT */}
 
         <div>
-          <p className="text-sm text-slate-500">{title}</p>
+          <p className="text-sm text-slate-500">
+            {title}
+          </p>
 
           <h3
             className={`
-              mt-1
-              text-2xl
+              mt-2
+              text-3xl
               font-bold
+              tracking-tight
               ${valueClassName}
             `}
           >
@@ -37,8 +52,8 @@ function StatsCard({ title, value, icon, iconClassName = "", valueClassName = ""
 
         <div
           className={`
-            rounded-xl
-            p-3
+            rounded-2xl
+            p-4
             ${iconClassName}
           `}
         >
@@ -65,7 +80,9 @@ export default function InventoryMovementPage() {
 
       render: (row) => (
         <span className="text-slate-500">
-          {new Date(row.date || row.created_at).toLocaleString("id-ID", {
+          {new Date(
+            row.date || row.created_at,
+          ).toLocaleString("id-ID", {
             day: "2-digit",
             month: "short",
             year: "numeric",
@@ -80,7 +97,14 @@ export default function InventoryMovementPage() {
       key: "product",
       label: "Product",
 
-      render: (row) => <span className="font-medium text-slate-900">{row.product || row.product_name || row.name || "-"}</span>,
+      render: (row) => (
+        <span className="font-medium text-slate-900">
+          {row.product ||
+            row.product_name ||
+            row.name ||
+            "-"}
+        </span>
+      ),
     },
 
     {
@@ -90,25 +114,25 @@ export default function InventoryMovementPage() {
       render: (row) => (
         <span
           className={`
-          inline-flex
-          rounded-full
-          px-2.5
-          py-1
-          text-xs
-          font-semibold
+            inline-flex
+            rounded-full
+            px-2.5
+            py-1
+            text-xs
+            font-semibold
 
-          ${
-            row.type === "IN"
-              ? `
-                bg-emerald-100
-                text-emerald-600
-              `
-              : `
-                bg-red-100
-                text-red-500
-              `
-          }
-        `}
+            ${
+              row.type === "IN"
+                ? `
+                  bg-emerald-100
+                  text-emerald-600
+                `
+                : `
+                  bg-red-100
+                  text-red-500
+                `
+            }
+          `}
         >
           {row.type || "-"}
         </span>
@@ -119,7 +143,11 @@ export default function InventoryMovementPage() {
       key: "qty",
       label: "Qty",
 
-      render: (row) => <span className="font-medium text-slate-700">{Number(row.qty || 0)}</span>,
+      render: (row) => (
+        <span className="font-medium text-slate-700">
+          {Number(row.qty || 0)}
+        </span>
+      ),
     },
 
     {
@@ -127,13 +155,26 @@ export default function InventoryMovementPage() {
       label: "Reference",
 
       render: (row) => {
-        const reference = row.reference || row.reference_no || row.ref_no;
+        const reference =
+          row.reference ||
+          row.reference_no ||
+          row.ref_no;
 
         if (reference) {
-          return <span className="text-slate-500">{reference}</span>;
+          return (
+            <span className="text-slate-500">
+              {reference}
+            </span>
+          );
         }
 
-        return <span className="text-slate-400">{row.type === "IN" ? "Stock In" : "Stock Out"}</span>;
+        return (
+          <span className="text-slate-400">
+            {row.type === "IN"
+              ? "Stock In"
+              : "Stock Out"}
+          </span>
+        );
       },
     },
   ];
@@ -167,9 +208,21 @@ export default function InventoryMovementPage() {
   const summary = useMemo(() => {
     const totalMovement = movements.length;
 
-    const totalIn = movements.filter((item) => item.type === "IN").reduce((acc, item) => acc + Number(item.qty || 0), 0);
+    const totalIn = movements
+      .filter((item) => item.type === "IN")
+      .reduce(
+        (acc, item) =>
+          acc + Number(item.qty || 0),
+        0,
+      );
 
-    const totalOut = movements.filter((item) => item.type === "OUT").reduce((acc, item) => acc + Number(item.qty || 0), 0);
+    const totalOut = movements
+      .filter((item) => item.type === "OUT")
+      .reduce(
+        (acc, item) =>
+          acc + Number(item.qty || 0),
+        0,
+      );
 
     return {
       totalMovement,
@@ -179,24 +232,75 @@ export default function InventoryMovementPage() {
   }, [movements]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="relative min-w-0 pb-10">
+
       {/* ===================================================== */}
       {/* HEADER */}
       {/* ===================================================== */}
 
-      <div className="flex items-center justify-between">
+      <div
+        className="
+          mb-6
+          flex flex-col gap-4
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+        "
+      >
+
         {/* LEFT */}
 
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Inventory Movements</h1>
+        <div className="min-w-0">
+          <h1
+            className="
+              text-[44px]
+              font-black
+              leading-[0.95]
+              tracking-tight
+              text-slate-900
+              lg:text-3xl
+            "
+          >
+            Inventory
+            <br className="lg:hidden" />
+            {" "}Movements
+          </h1>
 
-          <p className="mt-1 text-sm text-slate-500">Track inventory stock movement and transaction activity</p>
+          <p
+            className="
+              mt-4
+              max-w-xl
+              text-lg
+              leading-relaxed
+              text-slate-500
+              lg:mt-2
+              lg:text-sm
+            "
+          >
+            Track inventory stock movement and
+            transaction activity
+          </p>
         </div>
 
         {/* RIGHT */}
 
-        <Button variant="secondary" onClick={loadMovements} loading={loading} className="gap-2">
-          <RefreshCcw size={16} />
+        <Button
+          variant="secondary"
+          onClick={loadMovements}
+          loading={loading}
+          className="
+            h-14
+            rounded-2xl
+            px-6
+            text-lg
+            font-semibold
+            shadow-sm
+            lg:h-auto
+            lg:px-4
+            lg:text-sm
+          "
+        >
+          <RefreshCcw size={18} />
           Refresh
         </Button>
       </div>
@@ -206,13 +310,14 @@ export default function InventoryMovementPage() {
       {/* ===================================================== */}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+
         {/* TOTAL */}
 
         <StatsCard
           title="Total Movements"
           value={summary.totalMovement}
           valueClassName="text-slate-900"
-          icon={<Package size={18} />}
+          icon={<Package size={22} />}
           iconClassName="
             bg-slate-100
             text-slate-700
@@ -225,7 +330,7 @@ export default function InventoryMovementPage() {
           title="Stock In"
           value={summary.totalIn}
           valueClassName="text-emerald-600"
-          icon={<ArrowDownLeft size={18} />}
+          icon={<ArrowDownLeft size={22} />}
           iconClassName="
             bg-emerald-100
             text-emerald-600
@@ -238,7 +343,7 @@ export default function InventoryMovementPage() {
           title="Stock Out"
           value={summary.totalOut}
           valueClassName="text-red-500"
-          icon={<ArrowUpRight size={18} />}
+          icon={<ArrowUpRight size={22} />}
           iconClassName="
             bg-red-100
             text-red-500
@@ -250,18 +355,28 @@ export default function InventoryMovementPage() {
       {/* TABLE */}
       {/* ===================================================== */}
 
-      <Card className="overflow-hidden p-0">
+      <Card className="mt-6 overflow-hidden p-0">
+
         {/* HEADER */}
 
-        <div className="border-b border-slate-200 px-6 py-5">
-          <h2 className="text-lg font-semibold text-slate-900">Movement History</h2>
+        <div className="border-b border-slate-200 px-6 py-6">
 
-          <p className="mt-1 text-sm text-slate-500">Inventory stock movement records</p>
+          <h2 className="text-2xl font-bold text-slate-900 lg:text-lg">
+            Movement History
+          </h2>
+
+          <p className="mt-2 text-base text-slate-500 lg:mt-1 lg:text-sm">
+            Inventory stock movement records
+          </p>
         </div>
 
         {/* TABLE */}
 
-        <Table columns={columns} data={movements} loading={loading} />
+        <Table
+          columns={columns}
+          data={movements}
+          loading={loading}
+        />
       </Card>
     </div>
   );
