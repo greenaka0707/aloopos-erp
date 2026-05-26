@@ -24,9 +24,17 @@ function formatRupiah(value = 0) {
 }
 
 function calculateOrderTotals(order) {
-  const revenue = order.items?.reduce((sum, item) => sum + Number(item.subtotal || 0), 0) || 0;
+  const revenue =
+    order.items?.reduce(
+      (sum, item) => sum + Number(item.subtotal || 0),
+      0,
+    ) || 0;
 
-  const hpp = order.items?.reduce((sum, item) => sum + Number(item.total_hpp || 0), 0) || 0;
+  const hpp =
+    order.items?.reduce(
+      (sum, item) => sum + Number(item.total_hpp || 0),
+      0,
+    ) || 0;
 
   return {
     revenue,
@@ -82,7 +90,9 @@ export default function SalesOrdersPage() {
 
   const [orders, setOrders] = useState([]);
 
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "All");
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "All",
+  );
 
   const [search, setSearch] = useState("");
 
@@ -116,7 +126,9 @@ export default function SalesOrdersPage() {
     let data = [...orders];
 
     if (activeTab !== "All") {
-      data = data.filter((order) => order.status === activeTab.toUpperCase());
+      data = data.filter(
+        (order) => order.status === activeTab.toUpperCase(),
+      );
     }
 
     if (search.trim()) {
@@ -213,6 +225,7 @@ export default function SalesOrdersPage() {
               text-blue-600
               transition
               hover:text-blue-700
+              whitespace-nowrap
             "
           >
             {row.so_number}
@@ -225,7 +238,11 @@ export default function SalesOrdersPage() {
 
         label: "Customer",
 
-        render: (row) => <span className="text-slate-700">{row.customer_name}</span>,
+        render: (row) => (
+          <span className="text-slate-700 whitespace-nowrap">
+            {row.customer_name}
+          </span>
+        ),
       },
 
       {
@@ -233,7 +250,11 @@ export default function SalesOrdersPage() {
 
         label: "Revenue",
 
-        render: (row) => <span className="font-medium text-slate-800">{formatRupiah(row.revenue)}</span>,
+        render: (row) => (
+          <span className="font-medium text-slate-800 whitespace-nowrap">
+            {formatRupiah(row.revenue)}
+          </span>
+        ),
       },
 
       {
@@ -251,6 +272,7 @@ export default function SalesOrdersPage() {
               py-1
               text-xs
               font-semibold
+              whitespace-nowrap
 
               ${getStatusClass(row.status)}
             `}
@@ -269,7 +291,7 @@ export default function SalesOrdersPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6 overflow-x-hidden">
         <div className="h-10 w-64 animate-pulse rounded-xl bg-slate-200" />
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -294,33 +316,53 @@ export default function SalesOrdersPage() {
   // ========================================
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 overflow-x-hidden">
       {/* HEADER */}
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Sales Orders</h1>
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Sales Orders
+          </h1>
 
-          <p className="mt-1 text-sm text-slate-500">Revenue and profit tracking</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Revenue and profit tracking
+          </p>
         </div>
 
-        <Button onClick={() => navigate("/sales/create")}>+ Create Sales Order</Button>
+        <Button
+          className="w-full lg:w-auto"
+          onClick={() => navigate("/sales/create")}
+        >
+          + Create Sales Order
+        </Button>
       </div>
 
       {/* SUMMARY */}
 
       <div className="grid gap-4 md:grid-cols-3">
-        <SummaryCard title="Total Revenue" value={formatRupiah(summary.revenue)} />
+        <SummaryCard
+          title="Total Revenue"
+          value={formatRupiah(summary.revenue)}
+        />
 
-        <SummaryCard title="Total HPP" value={formatRupiah(summary.hpp)} />
+        <SummaryCard
+          title="Total HPP"
+          value={formatRupiah(summary.hpp)}
+        />
 
-        <SummaryCard title="Gross Profit" value={formatRupiah(summary.profit)} valueClass="text-emerald-600" />
+        <SummaryCard
+          title="Gross Profit"
+          value={formatRupiah(summary.profit)}
+          valueClass="text-emerald-600"
+        />
       </div>
 
       {/* FILTER */}
 
       <div
         className="
+          overflow-hidden
           rounded-2xl
           border
           border-slate-200
@@ -328,20 +370,33 @@ export default function SalesOrdersPage() {
           p-4
         "
       >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="w-full lg:max-w-sm">
-            <Input placeholder="Search SO Number or Customer..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <div className="flex flex-col gap-4">
+          <div className="w-full">
+            <Input
+              placeholder="Search SO Number or Customer..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
 
-          <Tabs
-            tabs={TABS.map((tab) => `${tab} (${tabCounts[tab]})`)}
-            value={`${activeTab} (${tabCounts[activeTab]})`}
-            onChange={(value) => {
-              const cleanValue = value.replace(/\s\(\d+\)/, "");
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-max">
+              <Tabs
+                tabs={TABS.map(
+                  (tab) => `${tab} (${tabCounts[tab]})`,
+                )}
+                value={`${activeTab} (${tabCounts[activeTab]})`}
+                onChange={(value) => {
+                  const cleanValue = value.replace(
+                    /\s\(\d+\)/,
+                    "",
+                  );
 
-              setActiveTab(cleanValue);
-            }}
-          />
+                  setActiveTab(cleanValue);
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -358,19 +413,32 @@ export default function SalesOrdersPage() {
       >
         {preparedOrders.length === 0 ? (
           <div className="py-24 text-center">
-            <h2 className="text-xl font-semibold text-slate-900">No sales orders</h2>
+            <h2 className="text-xl font-semibold text-slate-900">
+              No sales orders
+            </h2>
 
-            <p className="mt-2 text-slate-500">Create your first sales order</p>
+            <p className="mt-2 text-slate-500">
+              Create your first sales order
+            </p>
           </div>
         ) : (
-          <Table columns={columns} data={preparedOrders} />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              data={preparedOrders}
+            />
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-function SummaryCard({ title, value, valueClass = "" }) {
+function SummaryCard({
+  title,
+  value,
+  valueClass = "",
+}) {
   return (
     <div
       className="
@@ -381,14 +449,18 @@ function SummaryCard({ title, value, valueClass = "" }) {
         p-6
       "
     >
-      <p className="text-sm text-slate-500">{title}</p>
+      <p className="text-sm text-slate-500">
+        {title}
+      </p>
 
       <p
         className={`
           mt-3
-          text-3xl
+          break-words
+          text-2xl
           font-bold
           text-slate-900
+          md:text-3xl
 
           ${valueClass}
         `}
