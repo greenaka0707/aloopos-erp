@@ -352,32 +352,225 @@ export default function InventoryMovementPage() {
       </div>
 
       {/* ===================================================== */}
-      {/* TABLE */}
+      {/* MOBILE CARD LIST */}
       {/* ===================================================== */}
 
-      <Card className="mt-6 overflow-hidden p-0">
+      <div className="mt-6 space-y-3 md:hidden">
 
-        {/* HEADER */}
+        {loading &&
+          [1, 2, 3, 4].map((item) => (
+            <div
+              key={item}
+              className="
+                h-[120px]
+                animate-pulse
+                rounded-2xl
+                bg-slate-200
+              "
+            />
+          ))}
 
-        <div className="border-b border-slate-200 px-6 py-6">
+        {!loading &&
+          movements.map((row, index) => (
+            <div
+              key={index}
+              className="
+                rounded-2xl
+                border border-slate-200
+                bg-white
+                p-4
+                shadow-sm
+              "
+            >
 
-          <h2 className="text-2xl font-bold text-slate-900 lg:text-lg">
-            Movement History
-          </h2>
+              {/* TOP */}
+              <div className="flex items-start justify-between gap-3">
 
-          <p className="mt-2 text-base text-slate-500 lg:mt-1 lg:text-sm">
-            Inventory stock movement records
-          </p>
-        </div>
+                {/* LEFT */}
+                <div className="min-w-0 flex-1">
 
-        {/* TABLE */}
+                  <h3 className="truncate text-sm font-bold text-slate-900">
+                    {row.product ||
+                      row.product_name ||
+                      row.name ||
+                      "-"}
+                  </h3>
 
-        <Table
-          columns={columns}
-          data={movements}
-          loading={loading}
-        />
-      </Card>
+                  <p
+                    className="
+                      mt-0.5
+                      text-[11px]
+                      font-medium
+                      uppercase
+                      tracking-wider
+                      text-slate-500
+                    "
+                  >
+                    {new Date(
+                      row.date || row.created_at,
+                    ).toLocaleString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+
+                {/* TYPE */}
+                <span
+                  className={`
+                    inline-flex items-center
+                    rounded-full
+                    px-2.5 py-1
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-wide
+                    whitespace-nowrap
+
+                    ${
+                      row.type === "IN"
+                        ? `
+                          bg-emerald-100
+                          text-emerald-600
+                        `
+                        : `
+                          bg-red-100
+                          text-red-500
+                        `
+                    }
+                  `}
+                >
+                  {row.type || "-"}
+                </span>
+              </div>
+
+              {/* FOOTER */}
+              <div
+                className="
+                  mt-4
+                  flex items-end justify-between
+                  border-t border-slate-100
+                  pt-4
+                "
+              >
+
+                {/* QTY */}
+                <div className="flex flex-col">
+
+                  <span
+                    className="
+                      text-[10px]
+                      font-medium
+                      uppercase
+                      tracking-wide
+                      text-slate-400
+                    "
+                  >
+                    Quantity
+                  </span>
+
+                  <span
+                    className={`
+                      mt-1
+                      text-lg
+                      font-bold
+
+                      ${
+                        row.type === "IN"
+                          ? "text-emerald-600"
+                          : "text-red-500"
+                      }
+                    `}
+                  >
+                    {Number(row.qty || 0)}
+                  </span>
+                </div>
+
+                {/* REFERENCE */}
+                <div className="flex flex-col text-right">
+
+                  <span
+                    className="
+                      text-[10px]
+                      font-medium
+                      uppercase
+                      tracking-wide
+                      text-slate-400
+                    "
+                  >
+                    Reference
+                  </span>
+
+                  <span
+                    className="
+                      mt-1
+                      text-xs
+                      font-medium
+                      text-slate-600
+                    "
+                  >
+                    {row.reference ||
+                      row.reference_no ||
+                      row.ref_no ||
+                      (row.type === "IN"
+                        ? "Stock In"
+                        : "Stock Out")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+
+        {!loading && movements.length === 0 && (
+          <div
+            className="
+              rounded-2xl
+              border border-slate-200
+              bg-white
+              px-4 py-16
+              text-center
+              text-sm
+              text-slate-500
+              shadow-sm
+            "
+          >
+            No movement history found.
+          </div>
+        )}
+      </div>
+
+      {/* ===================================================== */}
+      {/* DESKTOP TABLE */}
+      {/* ===================================================== */}
+
+      <div className="mt-6 hidden md:block">
+        <Card className="overflow-hidden p-0">
+
+          {/* HEADER */}
+
+          <div className="border-b border-slate-200 px-6 py-6">
+
+            <h2 className="text-2xl font-bold text-slate-900 lg:text-lg">
+              Movement History
+            </h2>
+
+            <p className="mt-2 text-base text-slate-500 lg:mt-1 lg:text-sm">
+              Inventory stock movement records
+            </p>
+          </div>
+
+          {/* TABLE */}
+
+          <Table
+            columns={columns}
+            data={movements}
+            loading={loading}
+          />
+        </Card>
+      </div>
     </div>
   );
 }
