@@ -7,7 +7,7 @@ import Logo from "@/assets/aloopos.svg";
 import {
   ChevronDown,
   Menu,
-  PanelLeftClose,
+ PanelLeftClose,
   X,
 } from "lucide-react";
 
@@ -179,9 +179,6 @@ export default function AppLayout({
 
         <div
           className={`
-            sticky
-            top-0
-            z-10
             relative
             flex
             items-center
@@ -554,10 +551,8 @@ export default function AppLayout({
             justify-between
             border-b
             border-slate-200
-            bg-white/95
+            bg-white
             px-4
-            shadow-sm
-            backdrop-blur-md
             lg:px-8
           "
         >
@@ -595,7 +590,7 @@ export default function AppLayout({
               <h2
                 className="
                   truncate
-                  text-xl
+                  text-2xl
                   font-bold
                   text-slate-900
                   lg:hidden
@@ -629,8 +624,7 @@ export default function AppLayout({
                   lg:block
                 "
               >
-                Inventory • Manufacturing
-                • Finance
+                Inventory • Manufacturing • Finance
               </p>
             </div>
           </div>
