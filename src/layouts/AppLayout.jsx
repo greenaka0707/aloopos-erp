@@ -1,115 +1,73 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import Logo from "@/assets/aloopos.svg";
-import { ChevronDown, Menu, PanelLeftClose, X, User, Search, ArrowLeft } from "lucide-react";
+import { ChevronDown, Menu, PanelLeftClose, X, User, LogOut } from "lucide-react";
 import { navigation } from "@/constants/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function AppLayout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const path = location.pathname.toLowerCase();
 
   const [openMenu, setOpenMenu] = useState(null);
   const [sidebarMini, setSidebarMini] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pageTransition, setPageTransition] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const showSearchIcon = ["sales", "purchase", "product"].some((p) => path.includes(p));
-
+  // Fungsi navigasi di-reset otomatis jika pindah path
   useEffect(() => {
-    setIsSearchOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    setPageTransition(true);
-    const timeout = setTimeout(() => setPageTransition(false), 120);
-    return () => clearTimeout(timeout);
+    setSidebarOpen(false);
   }, [location.pathname]);
 
   const isDesktop = useMemo(() => typeof window !== "undefined" && window.innerWidth >= 1024, []);
   const isMini = isDesktop && sidebarMini;
 
-  const pageTitle = useMemo(() => {
-    if (path.includes("dashboard")) return "Dashboard";
-    if (path.includes("inventory")) return "Inventory";
-    if (path.includes("sales") || path.includes("order")) return "Sales Orders";
-    if (path.includes("create")) return "Create Sales Order";
-    if (path.includes("manufacturing")) return "Manufacturing";
-    if (path.includes("finance")) return "Finance";
-    if (path.includes("settings")) return "Settings";
-    return "ERP System";
-  }, [path]);
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
-      {/* Mobile Overlay */}
+      
+      {/* MOBILE OVERLAY */}
       {sidebarOpen && (
         <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden" />
       )}
 
-      {/* SIDEBAR - KONTEN SUDAH DIKEMBALIKAN */}
-      <aside className={`fixed left-0 top-0 z-50 flex h-dvh flex-col border-r border-slate-200 bg-white transition-[width,transform] duration-300 ${isMini ? "lg:w-[88px]" : "lg:w-[280px]"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        <div className={`relative flex items-center border-b border-slate-200 px-5 py-5 ${isMini ? "justify-center" : "justify-between"}`}>
-          <img src={Logo} alt="Logo" className={`object-contain transition-[height] ${isMini ? "h-8" : "h-10"}`} />
-          {!isMini && <button onClick={() => setSidebarMini(true)} className="hidden lg:flex"><PanelLeftClose size={18} /></button>}
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden"><X size={18} /></button>
-        </div>
+      {/* SIDEBAR */}
+      <aside className={`fixed left-0 top-0 z-50 flex h-dvh flex-col border-r border-slate-200 bg-white transition-[width,transform] duration-300 w-[280px] ${isMini ? "lg:w-[88px]" : "lg:w-[280px]"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         
+        {/* LOGO AREA */}
+        <div className={`relative flex items-center border-b border-slate-200 bg-white px-5 py-5 ${isMini ? "justify-center" : "justify-between"}`}>
+          <img src={Logo} alt="Logo" className={`object-contain transition-[height] ${isMini ? "h-8" : "h-10"}`} />
+          {!isMini && <button onClick={() => setSidebarMini(true)} className="hidden h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 lg:flex"><PanelLeftClose size={18} /></button>}
+          {isMini && <button onClick={() => setSidebarMini(false)} className="absolute right-[-14px] top-6 hidden h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm lg:flex"><PanelLeftClose size={14} className="rotate-180" /></button>}
+          <button onClick={() => setSidebarOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 lg:hidden"><X size={18} /></button>
+        </div>
+
+        {/* NAVIGATION AREA - KODE INI YANG TADI MUNGKIN HILANG/KOMENTAR */}
         <nav className="flex-1 overflow-y-auto px-4 py-5">
-           {navigation.map((item) => (
-             <NavLink key={item.path} to={item.path} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">
-               {item.icon && <item.icon size={18} />}
-               {!isMini && <span>{item.label}</span>}
-             </NavLink>
-           ))}
+          <div className="flex flex-col gap-1">
+            {navigation.map((item) => (
+              <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items-center ${isMini ? "justify-center" : "gap-3"} rounded-2xl px-4 py-3 text-sm font-medium ${isActive ? "bg-blue-50 text-blue-600" : "text-slate-700 hover:bg-slate-100"}`}>
+                {item.icon && <item.icon size={18} strokeWidth={2} />}
+                {!isMini && <span>{item.label}</span>}
+              </NavLink>
+            ))}
+          </div>
         </nav>
       </aside>
 
+      {/* MAIN WRAPPER */}
       <div className={`relative flex min-h-screen min-w-0 flex-col transition-[margin] duration-300 ${isMini ? "lg:ml-[88px]" : "lg:ml-[280px]"}`}>
         
-        <header className={`fixed top-0 right-0 z-30 flex h-24 items-start justify-between bg-gradient-to-b from-slate-100 via-slate-100/80 to-transparent px-4 pt-6 pb-4 lg:px-8 pointer-events-none will-change-auto ${isMini ? "lg:left-[88px]" : "lg:left-[280px]"} left-0`}>
-          <div className="pointer-events-auto flex w-full min-w-0 items-center gap-4">
-            {isSearchOpen ? (
-              <div className="flex w-full items-center gap-3">
-                <button onClick={() => setIsSearchOpen(false)}><ArrowLeft size={24} /></button>
-                <input type="text" placeholder="Cari..." autoFocus className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none" />
-              </div>
-            ) : (
-              <>
-                <button onClick={() => setSidebarOpen(true)} className="flex h-10 w-10 items-center justify-center text-slate-800 lg:hidden pointer-events-auto">
-                  <Menu size={24} />
-                </button>
-                
-                <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-xl font-bold text-slate-900 lg:hidden">{pageTitle}</h2>
-                  <h2 className="hidden text-base font-semibold text-slate-900 lg:block lg:text-lg">Enterprise Manufacturing System</h2>
-                </div>
-
-                {showSearchIcon && (
-                  <button onClick={() => setIsSearchOpen(true)} className="text-slate-800 pointer-events-auto">
-                    <Search size={24} />
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-
-          {!isSearchOpen && (
-            <div className="pointer-events-auto relative flex items-center gap-3 ml-4">
-              <button onClick={() => setProfileOpen(!profileOpen)} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white">
-                <User size={20} />
-              </button>
-            </div>
-          )}
+        {/* HEADER */}
+        <header className="fixed top-0 right-0 z-30 flex h-24 items-start justify-between bg-slate-100/95 backdrop-blur-md px-4 pt-6 pb-4 lg:px-8 left-0 right-0">
+           <button onClick={() => setSidebarOpen(true)} className="flex h-10 w-10 items-center justify-center text-slate-800 lg:hidden">
+             <Menu size={24} />
+           </button>
+           {/* ... Header content lainnya ... */}
         </header>
 
         <main className="bg-slate-100 pt-24 px-4 pb-5 lg:px-8 lg:pb-8">
-          <div className={`transition-opacity duration-200 ${pageTransition ? "opacity-95" : "opacity-100"}`}>
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>
