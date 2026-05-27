@@ -3,7 +3,7 @@ import {
   MobileHeader,
   MobileSection,
   MobileList,
-  MobileListItem,
+  MobileTransactionCard,
 } from "@/shared/components/mobile";
 
 import {
@@ -18,18 +18,20 @@ export default function TestMobile() {
 
       <MobileSection title="Aktivitas">
         <MobileList>
-          <MobileListItem
+          <MobileTransactionCard
             icon={<ArrowUpRight size={18} />}
             title="Penjualan"
             subtitle="12 transaksi"
-            value="Rp 2.500.000"
+            amount="Rp 2.500.000"
+            meta="Hari ini"
           />
 
-          <MobileListItem
+          <MobileTransactionCard
             icon={<ArrowDownLeft size={18} />}
             title="Pembelian"
             subtitle="5 transaksi"
-            value="Rp 850.000"
+            amount="Rp 850.000"
+            meta="Hari ini"
           />
         </MobileList>
       </MobileSection>
