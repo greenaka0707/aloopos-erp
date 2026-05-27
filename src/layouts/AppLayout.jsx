@@ -533,25 +533,24 @@ export default function AppLayout({ children }) {
         <header
           className={`
             fixed
+            inset-x-0
             top-0
-            right-0
             z-30
 
             flex
-            h-24
+            h-[120px]
             items-start
             justify-between
 
             bg-gradient-to-b
             from-white
-            via-white/85
+            via-white
+            via-55%
             to-transparent
-
-            backdrop-blur-md
 
             px-4
             pt-6
-            pb-4
+            pb-6
 
             lg:px-8
 
@@ -562,8 +561,6 @@ export default function AppLayout({ children }) {
                 ? "lg:left-[88px]"
                 : "lg:left-[280px]"
             }
-
-            left-0
           `}
         >
 
@@ -688,15 +685,14 @@ export default function AppLayout({ children }) {
                 border
                 border-slate-200
 
-                bg-white/90
+                bg-white
 
                 text-slate-600
 
                 shadow-sm
-                backdrop-blur-md
 
                 transition-colors
-                hover:bg-white
+                hover:bg-slate-50
               "
             >
               <User size={20} />
