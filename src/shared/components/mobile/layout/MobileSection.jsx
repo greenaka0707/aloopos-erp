@@ -4,9 +4,9 @@ export default function MobileSection({
   children,
 }) {
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-zinc-900">
+        <h2 className="text-lg font-semibold text-zinc-900">
           {title}
         </h2>
 
