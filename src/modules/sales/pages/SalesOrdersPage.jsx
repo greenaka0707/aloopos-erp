@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   useNavigate,
@@ -96,6 +101,8 @@ export default function SalesOrdersPage() {
   const [searchParams] =
     useSearchParams();
 
+  const inputRef = useRef(null);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -111,8 +118,8 @@ export default function SalesOrdersPage() {
     );
 
   /* ===================================================== */
-  /* IOS KEYBOARD */
-/* ===================================================== */
+  /* IOS KEYBOARD FIX */
+  /* ===================================================== */
 
   const [
     keyboardHeight,
@@ -125,7 +132,7 @@ export default function SalesOrdersPage() {
 
     if (!viewport) return;
 
-    const handleResize = () => {
+    const handleViewport = () => {
       const height =
         window.innerHeight -
         viewport.height;
@@ -137,13 +144,56 @@ export default function SalesOrdersPage() {
 
     viewport.addEventListener(
       "resize",
-      handleResize,
+      handleViewport,
+    );
+
+    viewport.addEventListener(
+      "scroll",
+      handleViewport,
     );
 
     return () => {
       viewport.removeEventListener(
         "resize",
-        handleResize,
+        handleViewport,
+      );
+
+      viewport.removeEventListener(
+        "scroll",
+        handleViewport,
+      );
+    };
+  }, []);
+
+  /* ===================================================== */
+  /* IOS AUTO SCROLL PREVENT */
+  /* ===================================================== */
+
+  useEffect(() => {
+    const input = inputRef.current;
+
+    if (!input) return;
+
+    const handleFocus = () => {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+
+        document.body.scrollTop = 0;
+
+        document.documentElement.scrollTop =
+          0;
+      });
+    };
+
+    input.addEventListener(
+      "focus",
+      handleFocus,
+    );
+
+    return () => {
+      input.removeEventListener(
+        "focus",
+        handleFocus,
       );
     };
   }, []);
@@ -479,11 +529,9 @@ export default function SalesOrdersPage() {
               flex flex-col
               items-center
               justify-center
-
               rounded-2xl
               border border-slate-200
               bg-white
-
               px-4 py-16
               text-center
               shadow-sm
@@ -543,8 +591,6 @@ export default function SalesOrdersPage() {
                 "
               >
 
-                {/* CARD */}
-
                 <div
                   className="
                     rounded-2xl
@@ -554,8 +600,6 @@ export default function SalesOrdersPage() {
                     shadow-sm
                   "
                 >
-
-                  {/* HEADER */}
 
                   <div
                     className="
@@ -614,8 +658,6 @@ export default function SalesOrdersPage() {
                     </span>
                   </div>
 
-                  {/* FOOTER */}
-
                   <div
                     className="
                       mt-3
@@ -673,7 +715,7 @@ export default function SalesOrdersPage() {
       <div
         className="
           fixed
-          left-0 right-0
+          inset-x-0
           z-40
           px-4
           pointer-events-none
@@ -681,10 +723,7 @@ export default function SalesOrdersPage() {
         style={{
           bottom:
             keyboardHeight > 0
-              ? `${
-                  keyboardHeight +
-                  12
-                }px`
+              ? `${keyboardHeight + 12}px`
               : "12px",
         }}
       >
@@ -719,6 +758,7 @@ export default function SalesOrdersPage() {
             </div>
 
             <input
+              ref={inputRef}
               type="text"
               value={search}
               placeholder="Search SO or Customer..."
@@ -737,11 +777,8 @@ export default function SalesOrdersPage() {
                 border border-white/70
                 bg-white
                 pl-11 pr-4
-
                 text-base
-
                 shadow-[0_10px_35px_rgba(0,0,0,0.14)]
-
                 focus:outline-none
                 focus:ring-2
                 focus:ring-orange-500/20
