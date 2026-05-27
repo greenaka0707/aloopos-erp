@@ -8,3 +8,4 @@ export { default as MobileList } from "./lists/MobileList";
 export { default as MobileListItem } from "./lists/MobileListItem";
 
 export { default as MobileSection } from "./layout/MobileSection";
+export { default as MobileTransactionCard } from "./cards/MobileTransactionCard";
