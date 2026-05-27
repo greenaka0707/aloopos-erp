@@ -7,8 +7,8 @@ export default function MobileHeader({
     <div className="flex items-center gap-4 py-2">
       <button
         className="
-          h-14
-          w-14
+          h-12
+          w-12
           rounded-2xl
           bg-white
           border border-zinc-200
