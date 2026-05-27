@@ -17,11 +17,18 @@ import { useAuth } from "@/providers/AuthProvider";
 
 export default function AppLayout({ children }) {
   const { user, logout } = useAuth();
+
   const location = useLocation();
 
-  const [openMenu, setOpenMenu] = useState(null);
-  const [sidebarMini, setSidebarMini] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openMenu, setOpenMenu] =
+    useState(null);
+
+  const [sidebarMini, setSidebarMini] =
+    useState(false);
+
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
   const [pageTransition, setPageTransition] =
     useState(false);
 
@@ -40,7 +47,8 @@ export default function AppLayout({ children }) {
     return window.innerWidth >= 1024;
   }, []);
 
-  const isMini = isDesktop && sidebarMini;
+  const isMini =
+    isDesktop && sidebarMini;
 
   /* ===================================================== */
   /* PAGE TITLE */
@@ -69,7 +77,9 @@ export default function AppLayout({ children }) {
       return "Create Sales Order";
     }
 
-    if (path.includes("manufacturing")) {
+    if (
+      path.includes("manufacturing")
+    ) {
       return "Manufacturing";
     }
 
@@ -106,11 +116,30 @@ export default function AppLayout({ children }) {
     setSidebarOpen(false);
   }, [location.pathname]);
 
+  /* ===================================================== */
+  /* IOS SAFARI FIX */
+  /* ===================================================== */
+
+  useEffect(() => {
+    document.documentElement.style.height =
+      "100%";
+
+    document.body.style.height = "100%";
+
+    document.body.style.overflow =
+      "hidden";
+
+    return () => {
+      document.body.style.overflow =
+        "";
+    };
+  }, []);
+
   return (
     <div
       className="
-        min-h-dvh
-        overflow-x-hidden
+        fixed inset-0
+        overflow-hidden
         bg-slate-100
         text-slate-900
       "
@@ -141,7 +170,7 @@ export default function AppLayout({ children }) {
       <aside
         className={`
           fixed left-0 top-0 z-50
-          flex h-dvh flex-col
+          flex h-full flex-col
           border-r border-slate-200
           bg-white
           transition-all duration-300
@@ -181,8 +210,6 @@ export default function AppLayout({ children }) {
           `}
         >
 
-          {/* LOGO */}
-
           <img
             src={Logo}
             alt="Logo"
@@ -193,8 +220,6 @@ export default function AppLayout({ children }) {
               ${isMini ? "h-8" : "h-10"}
             `}
           />
-
-          {/* DESKTOP MINI BUTTON */}
 
           {!isMini && (
             <button
@@ -216,15 +241,15 @@ export default function AppLayout({ children }) {
             </button>
           )}
 
-          {/* MINI EXPAND */}
-
           {isMini && (
             <button
               onClick={() =>
                 setSidebarMini(false)
               }
               className="
-                absolute right-[-14px] top-6
+                absolute
+                right-[-14px]
+                top-6
                 hidden
                 h-7 w-7
                 items-center justify-center
@@ -242,8 +267,6 @@ export default function AppLayout({ children }) {
               />
             </button>
           )}
-
-          {/* MOBILE CLOSE */}
 
           <button
             onClick={() =>
@@ -279,10 +302,6 @@ export default function AppLayout({ children }) {
           <div className="flex flex-col gap-1">
 
             {navigation.map((item) => {
-              /* ======================================== */
-              /* SINGLE MENU */
-              /* ======================================== */
-
               if (!item.children) {
                 return (
                   <NavLink
@@ -310,7 +329,6 @@ export default function AppLayout({ children }) {
                       }
                     `}
                   >
-
                     {item.icon && (
                       <item.icon
                         size={18}
@@ -326,10 +344,6 @@ export default function AppLayout({ children }) {
                   </NavLink>
                 );
               }
-
-              /* ======================================== */
-              /* GROUP MENU */
-              /* ======================================== */
 
               const isGroupActive =
                 item.children.some((child) =>
@@ -465,16 +479,13 @@ export default function AppLayout({ children }) {
       </aside>
 
       {/* ===================================================== */}
-      {/* MAIN */}
+      {/* MAIN WRAPPER */}
       {/* ===================================================== */}
 
       <div
         className={`
-          flex
-          min-h-dvh
-          min-w-0
-          flex-col
-          overflow-x-hidden
+          relative
+          flex h-full min-w-0 flex-col
           transition-all duration-300
 
           ${
@@ -491,8 +502,9 @@ export default function AppLayout({ children }) {
 
         <header
           className="
-            sticky top-0 z-30
-            will-change-transform
+            fixed
+            top-0 left-0 right-0
+            z-30
 
             flex h-24
             items-start justify-between
@@ -519,8 +531,6 @@ export default function AppLayout({ children }) {
             "
           >
 
-            {/* MOBILE MENU */}
-
             <button
               onClick={() =>
                 setSidebarOpen(true)
@@ -538,8 +548,6 @@ export default function AppLayout({ children }) {
             >
               <Menu size={24} />
             </button>
-
-            {/* TITLE */}
 
             <div className="min-w-0">
 
@@ -591,8 +599,6 @@ export default function AppLayout({ children }) {
             "
           >
 
-            {/* USER INFO */}
-
             <div className="hidden text-right lg:block">
 
               <p
@@ -608,8 +614,6 @@ export default function AppLayout({ children }) {
                 Administrator
               </p>
             </div>
-
-            {/* AVATAR */}
 
             <button
               onClick={() =>
@@ -632,8 +636,6 @@ export default function AppLayout({ children }) {
             >
               <User size={20} />
             </button>
-
-            {/* DROPDOWN */}
 
             {profileOpen && (
               <>
@@ -742,13 +744,17 @@ export default function AppLayout({ children }) {
 
         <main
           className="
-            relative
-            min-w-0
             flex-1
+            overflow-y-auto
             overflow-x-hidden
+            overscroll-none
+
             bg-slate-100
+
+            pt-24
             px-4
             pb-5
+
             lg:px-8
             lg:pb-8
           "
@@ -756,6 +762,7 @@ export default function AppLayout({ children }) {
 
           <div
             className={`
+              min-h-full
               transition-opacity
               duration-300
               ease-out
