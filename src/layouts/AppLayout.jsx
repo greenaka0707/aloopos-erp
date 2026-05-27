@@ -538,19 +538,18 @@ export default function AppLayout({ children }) {
             z-30
 
             flex
-            h-[120px]
-            items-start
+            h-[88px]
+            items-center
             justify-between
 
             bg-gradient-to-b
             from-white
             via-white
-            via-55%
             to-transparent
 
             px-4
-            pt-6
-            pb-6
+            pt-1
+            pb-3
 
             lg:px-8
 
@@ -776,7 +775,7 @@ export default function AppLayout({ children }) {
           className="
             bg-slate-100
 
-            pt-24
+            pt-[72px]
             px-4
             pb-5
 
