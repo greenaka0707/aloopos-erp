@@ -12,11 +12,14 @@ export default function MobileListItem({
       onClick={onClick}
       className="
         w-full
-        rounded-3xl
-        border border-zinc-100
+        min-h-[92px]
+        rounded-[30px]
         bg-white
-        p-4
-        flex items-center gap-3
+        border border-zinc-100
+        px-5
+        py-4
+        flex items-center gap-4
+        shadow-sm
         active:scale-[0.99]
         transition
       "
@@ -24,10 +27,13 @@ export default function MobileListItem({
       {icon && (
         <div
           className="
-            h-12 w-12
+            h-16
+            w-16
             rounded-full
             bg-zinc-100
-            flex items-center justify-center
+            flex
+            items-center
+            justify-center
             shrink-0
           "
         >
@@ -35,13 +41,13 @@ export default function MobileListItem({
         </div>
       )}
 
-      <div className="flex-1 text-left min-w-0">
-        <p className="font-medium text-zinc-900 truncate">
+      <div className="flex-1 min-w-0 text-left">
+        <p className="text-xl font-semibold text-zinc-900 truncate">
           {title}
         </p>
 
         {subtitle && (
-          <p className="text-sm text-zinc-500 truncate">
+          <p className="text-base text-zinc-400 truncate">
             {subtitle}
           </p>
         )}
@@ -49,13 +55,13 @@ export default function MobileListItem({
 
       <div className="text-right shrink-0">
         {value && (
-          <p className="font-semibold text-zinc-900">
+          <p className="text-xl font-semibold text-zinc-900">
             {value}
           </p>
         )}
 
         {meta && (
-          <p className="text-xs text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {meta}
           </p>
         )}
