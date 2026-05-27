@@ -8,7 +8,7 @@ export default function MobilePage({
         className={`
           mx-auto
           w-full
-          max-w-md
+          max-w-lg
           px-5
           pt-5
           pb-32
