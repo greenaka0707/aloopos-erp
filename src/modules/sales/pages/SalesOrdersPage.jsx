@@ -93,6 +93,50 @@ export default function SalesOrdersPage() {
   const [search, setSearch] = useState("");
 
   // ========================================
+  // IOS KEYBOARD FIX
+  // ========================================
+
+  const [keyboardOffset, setKeyboardOffset] =
+    useState(0);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+
+    if (!viewport) return;
+
+    const handleViewport = () => {
+      const keyboardHeight =
+        window.innerHeight - viewport.height;
+
+      setKeyboardOffset(
+        keyboardHeight > 0 ? keyboardHeight : 0,
+      );
+    };
+
+    viewport.addEventListener(
+      "resize",
+      handleViewport,
+    );
+
+    viewport.addEventListener(
+      "scroll",
+      handleViewport,
+    );
+
+    return () => {
+      viewport.removeEventListener(
+        "resize",
+        handleViewport,
+      );
+
+      viewport.removeEventListener(
+        "scroll",
+        handleViewport,
+      );
+    };
+  }, []);
+
+  // ========================================
   // LOAD DATA
   // ========================================
 
@@ -301,7 +345,14 @@ export default function SalesOrdersPage() {
   }
 
   return (
-    <div className="relative min-w-0 pb-32">
+    <div
+      className="
+        relative
+        min-h-screen
+        overflow-x-hidden
+        pb-32
+      "
+    >
 
       {/* ======================================== */}
       {/* TABS */}
@@ -376,9 +427,7 @@ export default function SalesOrdersPage() {
               "
             >
 
-              {/* ======================================== */}
               {/* CARD */}
-              {/* ======================================== */}
 
               <div
                 className="
@@ -391,9 +440,9 @@ export default function SalesOrdersPage() {
               >
 
                 {/* HEADER */}
+
                 <div className="flex items-start justify-between gap-3">
 
-                  {/* LEFT */}
                   <div className="min-w-0 flex-1">
 
                     <h3
@@ -422,7 +471,6 @@ export default function SalesOrdersPage() {
                     </p>
                   </div>
 
-                  {/* STATUS */}
                   <span
                     className={`
                       inline-flex items-center
@@ -441,6 +489,7 @@ export default function SalesOrdersPage() {
                 </div>
 
                 {/* FOOTER */}
+
                 <div
                   className="
                     mt-3
@@ -450,7 +499,6 @@ export default function SalesOrdersPage() {
                   "
                 >
 
-                  {/* LEFT */}
                   <div className="flex flex-col">
 
                     <span
@@ -477,7 +525,6 @@ export default function SalesOrdersPage() {
                     </span>
                   </div>
 
-                  {/* RIGHT */}
                   <ChevronRight
                     size={18}
                     className="text-slate-300"
@@ -495,15 +542,18 @@ export default function SalesOrdersPage() {
 
       <div
         className="
-          fixed inset-x-0 bottom-0
+          fixed inset-x-0
           z-[9999]
           px-4
-          pb-5
         "
+        style={{
+          bottom: `calc(${keyboardOffset}px + env(safe-area-inset-bottom) + 12px)`,
+        }}
       >
         <div className="mx-auto flex max-w-2xl items-center gap-2.5">
 
           {/* SEARCH */}
+
           <div className="relative flex-1">
 
             <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
@@ -530,6 +580,7 @@ export default function SalesOrdersPage() {
           </div>
 
           {/* PDF */}
+
           <button
             onClick={handleDownloadPDF}
             className="
@@ -547,6 +598,7 @@ export default function SalesOrdersPage() {
           </button>
 
           {/* FAB */}
+
           <button
             onClick={() => navigate("/sales/create")}
             className="
