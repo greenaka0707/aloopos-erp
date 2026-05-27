@@ -1,7 +1,6 @@
 import {
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -101,8 +100,6 @@ export default function SalesOrdersPage() {
   const [searchParams] =
     useSearchParams();
 
-  const inputRef = useRef(null);
-
   const [loading, setLoading] =
     useState(true);
 
@@ -116,87 +113,6 @@ export default function SalesOrdersPage() {
     useState(
       searchParams.get("tab") || "All",
     );
-
-  /* ===================================================== */
-  /* IOS KEYBOARD FIX */
-  /* ===================================================== */
-
-  const [
-    keyboardHeight,
-    setKeyboardHeight,
-  ] = useState(0);
-
-  useEffect(() => {
-    const viewport =
-      window.visualViewport;
-
-    if (!viewport) return;
-
-    const handleViewport = () => {
-      const height =
-        window.innerHeight -
-        viewport.height;
-
-      setKeyboardHeight(
-        height > 150 ? height : 0,
-      );
-    };
-
-    viewport.addEventListener(
-      "resize",
-      handleViewport,
-    );
-
-    viewport.addEventListener(
-      "scroll",
-      handleViewport,
-    );
-
-    return () => {
-      viewport.removeEventListener(
-        "resize",
-        handleViewport,
-      );
-
-      viewport.removeEventListener(
-        "scroll",
-        handleViewport,
-      );
-    };
-  }, []);
-
-  /* ===================================================== */
-  /* IOS AUTO SCROLL PREVENT */
-  /* ===================================================== */
-
-  useEffect(() => {
-    const input = inputRef.current;
-
-    if (!input) return;
-
-    const handleFocus = () => {
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-
-        document.body.scrollTop = 0;
-
-        document.documentElement.scrollTop =
-          0;
-      });
-    };
-
-    input.addEventListener(
-      "focus",
-      handleFocus,
-    );
-
-    return () => {
-      input.removeEventListener(
-        "focus",
-        handleFocus,
-      );
-    };
-  }, []);
 
   /* ===================================================== */
   /* LOAD DATA */
@@ -478,12 +394,7 @@ export default function SalesOrdersPage() {
   /* ===================================================== */
 
   return (
-    <div
-      className="
-        relative
-        min-h-full
-      "
-    >
+    <div className="relative">
 
       {/* ======================================== */}
       {/* TABS */}
@@ -716,16 +627,12 @@ export default function SalesOrdersPage() {
         className="
           fixed
           inset-x-0
+          bottom-0
           z-40
           px-4
+          pb-[max(env(safe-area-inset-bottom),12px)]
           pointer-events-none
         "
-        style={{
-          bottom:
-            keyboardHeight > 0
-              ? `${keyboardHeight + 12}px`
-              : "12px",
-        }}
       >
 
         <div
@@ -758,7 +665,6 @@ export default function SalesOrdersPage() {
             </div>
 
             <input
-              ref={inputRef}
               type="text"
               value={search}
               placeholder="Search SO or Customer..."
@@ -770,6 +676,9 @@ export default function SalesOrdersPage() {
                   e.target.value,
                 )
               }
+              style={{
+                fontSize: "16px",
+              }}
               className="
                 h-12
                 w-full
@@ -777,7 +686,6 @@ export default function SalesOrdersPage() {
                 border border-white/70
                 bg-white
                 pl-11 pr-4
-                text-base
                 shadow-[0_10px_35px_rgba(0,0,0,0.14)]
                 focus:outline-none
                 focus:ring-2
