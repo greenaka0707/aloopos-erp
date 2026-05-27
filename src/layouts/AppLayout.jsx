@@ -116,29 +116,10 @@ export default function AppLayout({ children }) {
     setSidebarOpen(false);
   }, [location.pathname]);
 
-  /* ===================================================== */
-  /* IOS SAFARI FIX */
-  /* ===================================================== */
-
-  useEffect(() => {
-    document.documentElement.style.height =
-      "100%";
-
-    document.body.style.height = "100%";
-
-    document.body.style.overflow =
-      "hidden";
-
-    return () => {
-      document.body.style.overflow =
-        "";
-    };
-  }, []);
-
   return (
     <div
       className="
-        fixed inset-0
+        h-screen
         overflow-hidden
         bg-slate-100
         text-slate-900
@@ -216,7 +197,6 @@ export default function AppLayout({ children }) {
             className={`
               object-contain
               transition-all duration-300
-
               ${isMini ? "h-8" : "h-10"}
             `}
           />
@@ -501,9 +481,10 @@ export default function AppLayout({ children }) {
         {/* ===================================================== */}
 
         <header
-          className="
+          className={`
             fixed
-            top-0 left-0 right-0
+            top-0
+            right-0
             z-30
 
             flex h-24
@@ -518,7 +499,15 @@ export default function AppLayout({ children }) {
             lg:px-8
 
             pointer-events-none
-          "
+
+            ${
+              isMini
+                ? "lg:left-[88px]"
+                : "lg:left-[280px]"
+            }
+
+            left-0
+          `}
         >
 
           {/* LEFT */}
