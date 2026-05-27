@@ -6,3 +6,5 @@ export { default as MobileCard } from "./cards/MobileCard";
 
 export { default as MobileList } from "./lists/MobileList";
 export { default as MobileListItem } from "./lists/MobileListItem";
+
+export { default as MobileSection } from "./layout/MobileSection";
