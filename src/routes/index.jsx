@@ -35,6 +35,8 @@ import LoginPage from "@/pages/LoginPage";
 
 import { useAuth } from "@/providers/AuthProvider";
 
+import TestMobile from "@/pages/TestMobile";
+
 export default function AppRoutes() {
   const { user } = useAuth();
 
@@ -133,6 +135,11 @@ export default function AppRoutes() {
 
       <Route path="/finance/payables" element={<PayablesPage />} />
 
+
+      <Route
+  path="/test-mobile"
+  element={<TestMobile />}
+/>
       {/* =========================================
           FALLBACK
       ========================================= */}
