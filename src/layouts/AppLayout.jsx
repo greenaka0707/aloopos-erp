@@ -542,7 +542,7 @@ export default function AppLayout({ children }) {
             items-start
             justify-between
 
-            bg-slate-100/95
+            bg-gradient-to-b from-slate-100/95 via-slate-100/80 to-transparent
             backdrop-blur-md
 
             px-4
