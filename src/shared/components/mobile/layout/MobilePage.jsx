@@ -3,14 +3,15 @@ export default function MobilePage({
   className = "",
 }) {
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-zinc-100">
       <div
         className={`
           mx-auto
+          w-full
           max-w-md
-          px-4
-          pt-4
-          pb-28
+          px-5
+          pt-5
+          pb-32
           space-y-6
           ${className}
         `}
