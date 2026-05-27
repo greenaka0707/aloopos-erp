@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import Logo from "@/assets/aloopos.svg";
-import { ChevronDown, Menu, PanelLeftClose, X, User, LogOut, Search, ArrowLeft } from "lucide-react";
+import { ChevronDown, Menu, PanelLeftClose, X, User, Search, ArrowLeft } from "lucide-react";
 import { navigation } from "@/constants/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -17,7 +17,6 @@ export default function AppLayout({ children }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // Constants for visibility
   const showSearchIcon = ["sales", "purchase", "product"].some((p) => path.includes(p));
 
   useEffect(() => {
@@ -51,25 +50,36 @@ export default function AppLayout({ children }) {
         <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden" />
       )}
 
-      {/* Sidebar (Logika mapping navigation Anda di sini) */}
+      {/* SIDEBAR - KONTEN SUDAH DIKEMBALIKAN */}
       <aside className={`fixed left-0 top-0 z-50 flex h-dvh flex-col border-r border-slate-200 bg-white transition-[width,transform] duration-300 ${isMini ? "lg:w-[88px]" : "lg:w-[280px]"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        {/* ... Konten Sidebar (Logo & Nav) Anda ... */}
+        <div className={`relative flex items-center border-b border-slate-200 px-5 py-5 ${isMini ? "justify-center" : "justify-between"}`}>
+          <img src={Logo} alt="Logo" className={`object-contain transition-[height] ${isMini ? "h-8" : "h-10"}`} />
+          {!isMini && <button onClick={() => setSidebarMini(true)} className="hidden lg:flex"><PanelLeftClose size={18} /></button>}
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden"><X size={18} /></button>
+        </div>
+        
+        <nav className="flex-1 overflow-y-auto px-4 py-5">
+           {navigation.map((item) => (
+             <NavLink key={item.path} to={item.path} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">
+               {item.icon && <item.icon size={18} />}
+               {!isMini && <span>{item.label}</span>}
+             </NavLink>
+           ))}
+        </nav>
       </aside>
 
       <div className={`relative flex min-h-screen min-w-0 flex-col transition-[margin] duration-300 ${isMini ? "lg:ml-[88px]" : "lg:ml-[280px]"}`}>
         
-        {/* HEADER */}
         <header className={`fixed top-0 right-0 z-30 flex h-24 items-start justify-between bg-gradient-to-b from-slate-100 via-slate-100/80 to-transparent px-4 pt-6 pb-4 lg:px-8 pointer-events-none will-change-auto ${isMini ? "lg:left-[88px]" : "lg:left-[280px]"} left-0`}>
-          
           <div className="pointer-events-auto flex w-full min-w-0 items-center gap-4">
             {isSearchOpen ? (
               <div className="flex w-full items-center gap-3">
-                <button onClick={() => setIsSearchOpen(false)} className="text-slate-800"><ArrowLeft size={24} /></button>
-                <input type="text" placeholder="Cari..." autoFocus className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                <button onClick={() => setIsSearchOpen(false)}><ArrowLeft size={24} /></button>
+                <input type="text" placeholder="Cari..." autoFocus className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none" />
               </div>
             ) : (
               <>
-                <button onClick={() => setSidebarOpen(true)} className="flex h-10 w-10 shrink-0 items-center justify-center text-slate-800 lg:hidden">
+                <button onClick={() => setSidebarOpen(true)} className="flex h-10 w-10 items-center justify-center text-slate-800 lg:hidden pointer-events-auto">
                   <Menu size={24} />
                 </button>
                 
@@ -79,7 +89,7 @@ export default function AppLayout({ children }) {
                 </div>
 
                 {showSearchIcon && (
-                  <button onClick={() => setIsSearchOpen(true)} className="text-slate-800">
+                  <button onClick={() => setIsSearchOpen(true)} className="text-slate-800 pointer-events-auto">
                     <Search size={24} />
                   </button>
                 )}
@@ -88,8 +98,8 @@ export default function AppLayout({ children }) {
           </div>
 
           {!isSearchOpen && (
-            <div className="pointer-events-auto relative flex items-center gap-3 lg:gap-4 ml-4">
-              <button onClick={() => setProfileOpen(!profileOpen)} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm">
+            <div className="pointer-events-auto relative flex items-center gap-3 ml-4">
+              <button onClick={() => setProfileOpen(!profileOpen)} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white">
                 <User size={20} />
               </button>
             </div>
