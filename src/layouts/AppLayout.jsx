@@ -103,7 +103,7 @@ export default function AppLayout({ children }) {
 
     const timeout = setTimeout(() => {
       setPageTransition(false);
-    }, 150);
+    }, 120);
 
     return () => clearTimeout(timeout);
   }, [location.pathname]);
@@ -149,11 +149,23 @@ export default function AppLayout({ children }) {
 
       <aside
         className={`
-          fixed left-0 top-0 z-50
-          flex h-screen flex-col
-          border-r border-slate-200
+          fixed
+          left-0
+          top-0
+          z-50
+
+          flex
+          h-dvh
+          flex-col
+
+          border-r
+          border-slate-200
+
           bg-white
-          transition-all duration-300
+
+          transition-[width,transform]
+          duration-300
+
           w-[280px]
 
           ${
@@ -195,7 +207,9 @@ export default function AppLayout({ children }) {
             alt="Logo"
             className={`
               object-contain
-              transition-all duration-300
+              transition-[height]
+              duration-300
+
               ${isMini ? "h-8" : "h-10"}
             `}
           />
@@ -207,11 +221,13 @@ export default function AppLayout({ children }) {
               }
               className="
                 hidden
-                h-9 w-9
-                items-center justify-center
+                h-9
+                w-9
+                items-center
+                justify-center
                 rounded-xl
                 text-slate-500
-                transition
+                transition-colors
                 hover:bg-slate-100
                 lg:flex
               "
@@ -229,14 +245,22 @@ export default function AppLayout({ children }) {
                 absolute
                 right-[-14px]
                 top-6
+
                 hidden
-                h-7 w-7
-                items-center justify-center
+                h-7
+                w-7
+
+                items-center
+                justify-center
+
                 rounded-full
-                border border-slate-200
+                border
+                border-slate-200
+
                 bg-white
                 text-slate-600
                 shadow-sm
+
                 lg:flex
               "
             >
@@ -253,11 +277,13 @@ export default function AppLayout({ children }) {
             }
             className="
               flex
-              h-9 w-9
-              items-center justify-center
+              h-9
+              w-9
+              items-center
+              justify-center
               rounded-xl
               text-slate-500
-              transition
+              transition-colors
               hover:bg-slate-100
               lg:hidden
             "
@@ -290,6 +316,7 @@ export default function AppLayout({ children }) {
                       isActive,
                     }) => `
                       flex items-center
+
                       ${
                         isMini
                           ? "justify-center"
@@ -298,8 +325,11 @@ export default function AppLayout({ children }) {
 
                       rounded-2xl
                       px-4 py-3
-                      text-sm font-medium
-                      transition-all
+
+                      text-sm
+                      font-medium
+
+                      transition-colors
 
                       ${
                         isActive
@@ -352,7 +382,9 @@ export default function AppLayout({ children }) {
                       )
                     }
                     className={`
-                      flex w-full items-center
+                      flex
+                      w-full
+                      items-center
 
                       ${
                         isMini
@@ -362,8 +394,11 @@ export default function AppLayout({ children }) {
 
                       rounded-2xl
                       px-4 py-3
-                      text-sm font-semibold
-                      transition-all
+
+                      text-sm
+                      font-semibold
+
+                      transition-colors
 
                       ${
                         isGroupActive
@@ -404,6 +439,7 @@ export default function AppLayout({ children }) {
                         size={16}
                         className={`
                           transition-transform
+                          duration-200
                           ${
                             isOpen
                               ? "rotate-180"
@@ -417,9 +453,16 @@ export default function AppLayout({ children }) {
                   {!isMini && isOpen && (
                     <div
                       className="
-                        mt-1 ml-3
-                        flex flex-col gap-1
-                        border-l border-slate-200
+                        mt-1
+                        ml-3
+
+                        flex
+                        flex-col
+                        gap-1
+
+                        border-l
+                        border-slate-200
+
                         pl-4
                       "
                     >
@@ -434,8 +477,11 @@ export default function AppLayout({ children }) {
                             }) => `
                               rounded-xl
                               px-4 py-3
-                              text-sm font-medium
-                              transition-all
+
+                              text-sm
+                              font-medium
+
+                              transition-colors
 
                               ${
                                 isActive
@@ -464,8 +510,13 @@ export default function AppLayout({ children }) {
       <div
         className={`
           relative
-          flex min-w-0 flex-col
-          transition-all duration-300
+          flex
+          min-h-screen
+          min-w-0
+          flex-col
+
+          transition-[margin]
+          duration-300
 
           ${
             isMini
@@ -486,18 +537,23 @@ export default function AppLayout({ children }) {
             right-0
             z-30
 
-            flex h-24
-            items-start justify-between
+            flex
+            h-24
+            items-start
+            justify-between
 
-            bg-gradient-to-b
-            from-slate-100
-            via-slate-100/90
-            to-transparent
+            bg-slate-100/95
+            backdrop-blur-md
 
-            px-4 pt-6 pb-4
+            px-4
+            pt-6
+            pb-4
+
             lg:px-8
 
             pointer-events-none
+
+            will-change-auto
 
             ${
               isMini
@@ -514,8 +570,10 @@ export default function AppLayout({ children }) {
           <div
             className="
               pointer-events-auto
-              flex min-w-0
-              items-center gap-4
+              flex
+              min-w-0
+              items-center
+              gap-4
             "
           >
 
@@ -525,11 +583,13 @@ export default function AppLayout({ children }) {
               }
               className="
                 flex
-                h-10 w-10
+                h-10
+                w-10
                 shrink-0
-                items-center justify-center
+                items-center
+                justify-center
                 text-slate-800
-                transition
+                transition-colors
                 hover:text-slate-600
                 lg:hidden
               "
@@ -542,7 +602,8 @@ export default function AppLayout({ children }) {
               <h2
                 className="
                   truncate
-                  text-xl font-bold
+                  text-xl
+                  font-bold
                   text-slate-900
                   lg:hidden
                 "
@@ -553,7 +614,8 @@ export default function AppLayout({ children }) {
               <h2
                 className="
                   hidden
-                  text-base font-semibold
+                  text-base
+                  font-semibold
                   text-slate-900
                   lg:block lg:text-lg
                 "
@@ -564,8 +626,10 @@ export default function AppLayout({ children }) {
 
               <p
                 className="
-                  mt-1 hidden
-                  text-sm text-slate-500
+                  mt-1
+                  hidden
+                  text-sm
+                  text-slate-500
                   lg:block
                 "
               >
@@ -581,7 +645,8 @@ export default function AppLayout({ children }) {
             className="
               pointer-events-auto
               relative
-              flex items-center
+              flex
+              items-center
               gap-3
               lg:gap-4
             "
@@ -591,7 +656,8 @@ export default function AppLayout({ children }) {
 
               <p
                 className="
-                  text-sm font-semibold
+                  text-sm
+                  font-semibold
                   text-slate-900
                 "
               >
@@ -611,19 +677,95 @@ export default function AppLayout({ children }) {
               }
               className="
                 flex
-                h-10 w-10
-                items-center justify-center
+                h-10
+                w-10
+                items-center
+                justify-center
+
                 rounded-full
-                border border-slate-200
+                border
+                border-slate-200
+
                 bg-white
+
                 text-slate-600
+
                 shadow-sm
-                transition
+
+                transition-colors
                 hover:bg-slate-50
               "
             >
               <User size={20} />
             </button>
+
+            {profileOpen && (
+              <>
+                <div
+                  className="
+                    fixed inset-0 z-40
+                  "
+                  onClick={() =>
+                    setProfileOpen(false)
+                  }
+                />
+
+                <div
+                  className="
+                    absolute
+                    right-0
+                    top-14
+                    z-50
+
+                    w-48
+
+                    rounded-2xl
+                    border
+                    border-slate-100
+
+                    bg-white
+
+                    p-2
+
+                    shadow-lg
+                    ring-1
+                    ring-black/5
+                  "
+                >
+
+                  <button
+                    onClick={() => {
+                      setProfileOpen(
+                        false,
+                      );
+
+                      logout();
+                    }}
+                    className="
+                      flex
+                      w-full
+                      items-center
+                      gap-2
+
+                      rounded-xl
+
+                      px-3 py-2.5
+
+                      text-sm
+                      font-medium
+
+                      text-red-600
+
+                      transition-colors
+                      hover:bg-red-50
+                    "
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </header>
 
@@ -634,6 +776,7 @@ export default function AppLayout({ children }) {
         <main
           className="
             bg-slate-100
+
             pt-24
             px-4
             pb-5
@@ -646,7 +789,7 @@ export default function AppLayout({ children }) {
           <div
             className={`
               transition-opacity
-              duration-300
+              duration-200
               ease-out
 
               ${
