@@ -8,7 +8,6 @@ import {
   Menu,
   PanelLeftClose,
   X,
-  User,
   LogOut,
 } from "lucide-react";
 
@@ -30,9 +29,6 @@ export default function AppLayout({ children }) {
     useState(false);
 
   const [pageTransition, setPageTransition] =
-    useState(false);
-
-  const [profileOpen, setProfileOpen] =
     useState(false);
 
   /* ===================================================== */
@@ -58,7 +54,10 @@ export default function AppLayout({ children }) {
     const path =
       location.pathname.toLowerCase();
 
-    if (path.includes("dashboard")) {
+    if (
+      path === "/" ||
+      path === "/dashboard"
+    ) {
       return "Dashboard";
     }
 
@@ -501,6 +500,79 @@ export default function AppLayout({ children }) {
             })}
           </div>
         </nav>
+
+        {/* ===================================================== */}
+        {/* SIDEBAR FOOTER */}
+        {/* ===================================================== */}
+
+        <div
+          className="
+            border-t
+            border-slate-200
+            p-4
+          "
+        >
+
+          <div
+            className={`
+              flex
+              items-center
+
+              ${
+                isMini
+                  ? "justify-center"
+                  : "justify-between"
+              }
+            `}
+          >
+
+            {!isMini && (
+              <div className="min-w-0">
+
+                <p
+                  className="
+                    truncate
+                    text-sm
+                    font-semibold
+                    text-slate-900
+                  "
+                >
+                  {user?.email || "Admin"}
+                </p>
+
+                <p
+                  className="
+                    text-xs
+                    text-slate-500
+                  "
+                >
+                  Administrator
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={logout}
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+
+                rounded-2xl
+
+                bg-red-50
+                text-red-600
+
+                transition-colors
+                hover:bg-red-100
+              "
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        </div>
       </aside>
 
       {/* ===================================================== */}
@@ -600,7 +672,7 @@ export default function AppLayout({ children }) {
               <h2
                 className="
                   truncate
-                  text-xl
+                  text-2xl
                   font-bold
                   text-slate-900
                   lg:hidden
@@ -635,135 +707,6 @@ export default function AppLayout({ children }) {
                 Finance
               </p>
             </div>
-          </div>
-
-          {/* RIGHT */}
-
-          <div
-            className="
-              pointer-events-auto
-              relative
-              flex
-              items-center
-              gap-3
-              lg:gap-4
-            "
-          >
-
-            <div className="hidden text-right lg:block">
-
-              <p
-                className="
-                  text-sm
-                  font-semibold
-                  text-slate-900
-                "
-              >
-                {user?.email || "Admin"}
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Administrator
-              </p>
-            </div>
-
-            <button
-              onClick={() =>
-                setProfileOpen(
-                  !profileOpen,
-                )
-              }
-              className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-
-                rounded-full
-                border
-                border-slate-200
-
-                bg-white
-
-                text-slate-600
-
-                shadow-sm
-
-                transition-colors
-                hover:bg-slate-50
-              "
-            >
-              <User size={20} />
-            </button>
-
-            {profileOpen && (
-              <>
-                <div
-                  className="
-                    fixed inset-0 z-40
-                  "
-                  onClick={() =>
-                    setProfileOpen(false)
-                  }
-                />
-
-                <div
-                  className="
-                    absolute
-                    right-0
-                    top-14
-                    z-50
-
-                    w-48
-
-                    rounded-2xl
-                    border
-                    border-slate-100
-
-                    bg-white
-
-                    p-2
-
-                    shadow-lg
-                    ring-1
-                    ring-black/5
-                  "
-                >
-
-                  <button
-                    onClick={() => {
-                      setProfileOpen(
-                        false,
-                      );
-
-                      logout();
-                    }}
-                    className="
-                      flex
-                      w-full
-                      items-center
-                      gap-2
-
-                      rounded-xl
-
-                      px-3 py-2.5
-
-                      text-sm
-                      font-medium
-
-                      text-red-600
-
-                      transition-colors
-                      hover:bg-red-50
-                    "
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         </header>
 
