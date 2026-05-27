@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+
+import {
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import {
   Search,
@@ -13,11 +17,12 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import Tabs from "@/shared/components/Tabs";
+
 import { getSalesOrders } from "../services/sales.service";
 
-// ========================================
-// CONSTANTS
-// ========================================
+/* ===================================================== */
+/* CONSTANTS */
+/* ===================================================== */
 
 const TABS = [
   "All",
@@ -28,24 +33,30 @@ const TABS = [
   "Void",
 ];
 
-// ========================================
-// HELPERS
-// ========================================
+/* ===================================================== */
+/* HELPERS */
+/* ===================================================== */
 
 function formatRupiah(value = 0) {
-  return `Rp ${Math.round(value).toLocaleString("id-ID")}`;
+  return `Rp ${Math.round(value).toLocaleString(
+    "id-ID",
+  )}`;
 }
 
 function calculateOrderTotals(order) {
   const revenue =
     order.items?.reduce(
-      (sum, item) => sum + Number(item.subtotal || 0),
+      (sum, item) =>
+        sum +
+        Number(item.subtotal || 0),
       0,
     ) || 0;
 
   const hpp =
     order.items?.reduce(
-      (sum, item) => sum + Number(item.total_hpp || 0),
+      (sum, item) =>
+        sum +
+        Number(item.total_hpp || 0),
       0,
     ) || 0;
 
@@ -75,32 +86,78 @@ function getStatusClass(status) {
   }
 }
 
-// ========================================
-// COMPONENT
-// ========================================
+/* ===================================================== */
+/* COMPONENT */
+/* ===================================================== */
 
 export default function SalesOrdersPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
-  const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
+  const [searchParams] =
+    useSearchParams();
 
-  const [activeTab, setActiveTab] = useState(
-    searchParams.get("tab") || "All",
-  );
+  const [loading, setLoading] =
+    useState(true);
 
-  const [search, setSearch] = useState("");
+  const [orders, setOrders] =
+    useState([]);
 
-  // ========================================
-  // LOAD DATA
-  // ========================================
+  const [search, setSearch] =
+    useState("");
+
+  const [activeTab, setActiveTab] =
+    useState(
+      searchParams.get("tab") || "All",
+    );
+
+  /* ===================================================== */
+  /* IOS KEYBOARD */
+/* ===================================================== */
+
+  const [
+    keyboardHeight,
+    setKeyboardHeight,
+  ] = useState(0);
+
+  useEffect(() => {
+    const viewport =
+      window.visualViewport;
+
+    if (!viewport) return;
+
+    const handleResize = () => {
+      const height =
+        window.innerHeight -
+        viewport.height;
+
+      setKeyboardHeight(
+        height > 150 ? height : 0,
+      );
+    };
+
+    viewport.addEventListener(
+      "resize",
+      handleResize,
+    );
+
+    return () => {
+      viewport.removeEventListener(
+        "resize",
+        handleResize,
+      );
+    };
+  }, []);
+
+  /* ===================================================== */
+  /* LOAD DATA */
+  /* ===================================================== */
 
   async function loadOrders() {
     try {
       setLoading(true);
 
-      const data = await getSalesOrders();
+      const data =
+        await getSalesOrders();
 
       setOrders(data || []);
     } catch (error) {
@@ -114,31 +171,33 @@ export default function SalesOrdersPage() {
     loadOrders();
   }, []);
 
-  // ========================================
-  // FILTERED DATA
-  // ========================================
+  /* ===================================================== */
+  /* FILTERED DATA */
+  /* ===================================================== */
 
   const filteredOrders = useMemo(() => {
     let data = [...orders];
 
-    // FILTER TAB
     if (activeTab !== "All") {
       data = data.filter(
         (order) =>
-          order.status === activeTab.toUpperCase(),
+          order.status ===
+          activeTab.toUpperCase(),
       );
     }
 
-    // FILTER SEARCH
     if (search.trim()) {
-      const keyword = search.toLowerCase();
+      const keyword =
+        search.toLowerCase();
 
       data = data.filter(
         (order) =>
           String(order.so_number || "")
             .toLowerCase()
             .includes(keyword) ||
-          String(order.customer_name || "")
+          String(
+            order.customer_name || "",
+          )
             .toLowerCase()
             .includes(keyword),
       );
@@ -147,31 +206,38 @@ export default function SalesOrdersPage() {
     return data;
   }, [orders, activeTab, search]);
 
-  // ========================================
-  // PREPARED ORDERS
-  // ========================================
+  /* ===================================================== */
+  /* PREPARED DATA */
+  /* ===================================================== */
 
   const preparedOrders = useMemo(() => {
-    return filteredOrders.map((order) => {
-      const totals = calculateOrderTotals(order);
+    return filteredOrders.map(
+      (order) => {
+        const totals =
+          calculateOrderTotals(order);
 
-      return {
-        ...order,
-        ...totals,
-      };
-    });
+        return {
+          ...order,
+          ...totals,
+        };
+      },
+    );
   }, [filteredOrders]);
 
-  // ========================================
-  // SUMMARY
-  // ========================================
+  /* ===================================================== */
+  /* SUMMARY */
+  /* ===================================================== */
 
   const summary = useMemo(() => {
     return preparedOrders.reduce(
       (acc, order) => {
-        acc.revenue += order.revenue;
+        acc.revenue +=
+          order.revenue;
+
         acc.hpp += order.hpp;
-        acc.profit += order.profit;
+
+        acc.profit +=
+          order.profit;
 
         return acc;
       },
@@ -183,27 +249,32 @@ export default function SalesOrdersPage() {
     );
   }, [preparedOrders]);
 
-  // ========================================
-  // TAB COUNTS
-  // ========================================
+  /* ===================================================== */
+  /* TAB COUNTS */
+  /* ===================================================== */
 
   const tabCounts = useMemo(() => {
     return {
       All: orders.length,
+
       Pending: orders.filter(
-        (o) => o.status === "PENDING",
+        (o) =>
+          o.status === "PENDING",
       ).length,
 
       Dikemas: orders.filter(
-        (o) => o.status === "DIKEMAS",
+        (o) =>
+          o.status === "DIKEMAS",
       ).length,
 
       Dikirim: orders.filter(
-        (o) => o.status === "DIKIRIM",
+        (o) =>
+          o.status === "DIKIRIM",
       ).length,
 
       Completed: orders.filter(
-        (o) => o.status === "COMPLETED",
+        (o) =>
+          o.status === "COMPLETED",
       ).length,
 
       Void: orders.filter(
@@ -212,18 +283,24 @@ export default function SalesOrdersPage() {
     };
   }, [orders]);
 
-  // ========================================
-  // DOWNLOAD PDF
-  // ========================================
+  /* ===================================================== */
+  /* DOWNLOAD PDF */
+  /* ===================================================== */
 
   const handleDownloadPDF = () => {
     try {
       const doc = new jsPDF();
 
       doc.setFontSize(18);
-      doc.text("Sales Orders Report", 14, 22);
+
+      doc.text(
+        "Sales Orders Report",
+        14,
+        22,
+      );
 
       doc.setFontSize(11);
+
       doc.setTextColor(100);
 
       doc.text(
@@ -243,34 +320,50 @@ export default function SalesOrdersPage() {
 
       const tableRows = [];
 
-      preparedOrders.forEach((order) => {
-        const orderDate = order.created_at
-          ? order.created_at.split("T")[0]
-          : "-";
+      preparedOrders.forEach(
+        (order) => {
+          const orderDate =
+            order.created_at
+              ? order.created_at.split(
+                  "T",
+                )[0]
+              : "-";
 
-        tableRows.push([
-          order.so_number,
-          order.customer_name,
-          orderDate,
-          order.status,
-          formatRupiah(order.revenue),
-          formatRupiah(order.profit),
-        ]);
-      });
+          tableRows.push([
+            order.so_number,
+            order.customer_name,
+            orderDate,
+            order.status,
+            formatRupiah(
+              order.revenue,
+            ),
+            formatRupiah(
+              order.profit,
+            ),
+          ]);
+        },
+      );
 
       tableRows.push([
         "",
         "",
         "",
         "TOTAL",
-        formatRupiah(summary.revenue),
-        formatRupiah(summary.profit),
+        formatRupiah(
+          summary.revenue,
+        ),
+        formatRupiah(
+          summary.profit,
+        ),
       ]);
 
       autoTable(doc, {
         head: [tableColumn],
+
         body: tableRows,
+
         startY: 35,
+
         theme: "grid",
 
         styles: {
@@ -278,12 +371,19 @@ export default function SalesOrdersPage() {
         },
 
         headStyles: {
-          fillColor: [41, 128, 185],
+          fillColor: [
+            41, 128, 185,
+          ],
         },
 
         columnStyles: {
-          4: { halign: "right" },
-          5: { halign: "right" },
+          4: {
+            halign: "right",
+          },
+
+          5: {
+            halign: "right",
+          },
         },
       });
 
@@ -299,38 +399,39 @@ export default function SalesOrdersPage() {
     }
   };
 
-  // ========================================
-  // LOADING
-  // ========================================
+  /* ===================================================== */
+  /* LOADING */
+  /* ===================================================== */
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        {[1, 2, 3, 4].map((item) => (
-          <div
-            key={item}
-            className="
-              h-[120px]
-              animate-pulse
-              rounded-2xl
-              bg-slate-200
-            "
-          />
-        ))}
+      <div className="space-y-3 pb-32">
+        {[1, 2, 3, 4].map(
+          (item) => (
+            <div
+              key={item}
+              className="
+                h-[120px]
+                animate-pulse
+                rounded-2xl
+                bg-slate-200
+              "
+            />
+          ),
+        )}
       </div>
     );
   }
 
-  // ========================================
-  // RENDER
-  // ========================================
+  /* ===================================================== */
+  /* RENDER */
+  /* ===================================================== */
 
   return (
     <div
       className="
         relative
-        min-h-dvh
-        overflow-x-hidden
+        min-h-full
       "
     >
 
@@ -339,6 +440,7 @@ export default function SalesOrdersPage() {
       {/* ======================================== */}
 
       <div className="mb-3 overflow-x-auto no-scrollbar">
+
         <div className="min-w-max">
 
           <Tabs
@@ -356,7 +458,9 @@ export default function SalesOrdersPage() {
                   "",
                 );
 
-              setActiveTab(cleanValue);
+              setActiveTab(
+                cleanValue,
+              );
             }}
           />
         </div>
@@ -366,15 +470,20 @@ export default function SalesOrdersPage() {
       {/* LIST */}
       {/* ======================================== */}
 
-      <div className="space-y-3 pb-28">
+      <div className="space-y-3 pb-32">
 
-        {preparedOrders.length === 0 ? (
+        {preparedOrders.length ===
+        0 ? (
           <div
             className="
-              flex flex-col items-center justify-center
+              flex flex-col
+              items-center
+              justify-center
+
               rounded-2xl
               border border-slate-200
               bg-white
+
               px-4 py-16
               text-center
               shadow-sm
@@ -416,157 +525,173 @@ export default function SalesOrdersPage() {
             </p>
           </div>
         ) : (
-          preparedOrders.map((order) => (
-            <button
-              key={order.id}
-              onClick={() =>
-                navigate(
-                  `/sales/orders/${order.id}`,
-                )
-              }
-              className="
-                w-full
-                text-left
-                transition-all
-                duration-200
-                active:scale-[0.99]
-              "
-            >
-
-              {/* CARD */}
-
-              <div
+          preparedOrders.map(
+            (order) => (
+              <button
+                key={order.id}
+                onClick={() =>
+                  navigate(
+                    `/sales/orders/${order.id}`,
+                  )
+                }
                 className="
-                  rounded-2xl
-                  border border-slate-200
-                  bg-white
-                  p-3.5
-                  shadow-sm
+                  w-full
+                  text-left
+                  transition-all
+                  duration-200
+                  active:scale-[0.99]
                 "
               >
 
-                {/* HEADER */}
+                {/* CARD */}
 
                 <div
                   className="
-                    flex items-start justify-between
-                    gap-3
+                    rounded-2xl
+                    border border-slate-200
+                    bg-white
+                    p-3.5
+                    shadow-sm
                   "
                 >
 
-                  <div className="min-w-0 flex-1">
+                  {/* HEADER */}
 
-                    <h3
-                      className="
-                        truncate
-                        text-sm
-                        font-bold
-                        text-blue-600
-                      "
-                    >
-                      {order.so_number}
-                    </h3>
-
-                    <p
-                      className="
-                        mt-0.5
-                        truncate
-                        text-[11px]
-                        font-medium
-                        uppercase
-                        tracking-wider
-                        text-slate-500
-                      "
-                    >
-                      {order.customer_name ||
-                        "Unknown Customer"}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`
-                      inline-flex items-center
-                      rounded-full
-                      px-2.5 py-1
-                      text-[10px]
-                      font-semibold
-                      uppercase
-                      tracking-wide
-                      whitespace-nowrap
-                      ${getStatusClass(order.status)}
-                    `}
+                  <div
+                    className="
+                      flex items-start
+                      justify-between
+                      gap-3
+                    "
                   >
-                    {order.status}
-                  </span>
-                </div>
 
-                {/* FOOTER */}
+                    <div className="min-w-0 flex-1">
 
-                <div
-                  className="
-                    mt-3
-                    flex items-end justify-between
-                    border-t border-slate-100
-                    pt-3
-                  "
-                >
+                      <h3
+                        className="
+                          truncate
+                          text-sm
+                          font-bold
+                          text-blue-600
+                        "
+                      >
+                        {
+                          order.so_number
+                        }
+                      </h3>
 
-                  <div className="flex flex-col">
+                      <p
+                        className="
+                          mt-0.5
+                          truncate
+                          text-[11px]
+                          font-medium
+                          uppercase
+                          tracking-wider
+                          text-slate-500
+                        "
+                      >
+                        {order.customer_name ||
+                          "Unknown Customer"}
+                      </p>
+                    </div>
 
                     <span
-                      className="
+                      className={`
+                        inline-flex
+                        items-center
+                        rounded-full
+                        px-2.5 py-1
                         text-[10px]
-                        font-medium
+                        font-semibold
                         uppercase
                         tracking-wide
-                        text-slate-400
-                      "
+                        whitespace-nowrap
+                        ${getStatusClass(order.status)}
+                      `}
                     >
-                      Total Revenue
-                    </span>
-
-                    <span
-                      className="
-                        mt-1
-                        text-[15px]
-                        font-bold
-                        text-slate-900
-                      "
-                    >
-                      {formatRupiah(
-                        order.revenue,
-                      )}
+                      {order.status}
                     </span>
                   </div>
 
-                  <ChevronRight
-                    size={18}
-                    className="text-slate-300"
-                  />
+                  {/* FOOTER */}
+
+                  <div
+                    className="
+                      mt-3
+                      flex items-end
+                      justify-between
+                      border-t border-slate-100
+                      pt-3
+                    "
+                  >
+
+                    <div className="flex flex-col">
+
+                      <span
+                        className="
+                          text-[10px]
+                          font-medium
+                          uppercase
+                          tracking-wide
+                          text-slate-400
+                        "
+                      >
+                        Total Revenue
+                      </span>
+
+                      <span
+                        className="
+                          mt-1
+                          text-[15px]
+                          font-bold
+                          text-slate-900
+                        "
+                      >
+                        {formatRupiah(
+                          order.revenue,
+                        )}
+                      </span>
+                    </div>
+
+                    <ChevronRight
+                      size={18}
+                      className="text-slate-300"
+                    />
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))
+              </button>
+            ),
+          )
         )}
       </div>
 
       {/* ======================================== */}
-      {/* SEARCH BAR */}
+      {/* FLOATING SEARCH */}
       {/* ======================================== */}
 
       <div
         className="
-          sticky
-          bottom-0
+          fixed
+          left-0 right-0
           z-40
-          mt-6
           px-4
-          pb-[calc(env(safe-area-inset-bottom)+12px)]
+          pointer-events-none
         "
+        style={{
+          bottom:
+            keyboardHeight > 0
+              ? `${
+                  keyboardHeight +
+                  12
+                }px`
+              : "12px",
+        }}
       >
 
         <div
           className="
+            pointer-events-auto
             mx-auto
             flex
             max-w-2xl
@@ -595,10 +720,15 @@ export default function SalesOrdersPage() {
 
             <input
               type="text"
-              placeholder="Search SO or Customer..."
               value={search}
+              placeholder="Search SO or Customer..."
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
               onChange={(e) =>
-                setSearch(e.target.value)
+                setSearch(
+                  e.target.value,
+                )
               }
               className="
                 h-12
@@ -607,8 +737,11 @@ export default function SalesOrdersPage() {
                 border border-white/70
                 bg-white
                 pl-11 pr-4
+
                 text-base
+
                 shadow-[0_10px_35px_rgba(0,0,0,0.14)]
+
                 focus:outline-none
                 focus:ring-2
                 focus:ring-orange-500/20
@@ -619,7 +752,9 @@ export default function SalesOrdersPage() {
           {/* PDF */}
 
           <button
-            onClick={handleDownloadPDF}
+            onClick={
+              handleDownloadPDF
+            }
             className="
               flex
               h-12 w-12
@@ -643,7 +778,9 @@ export default function SalesOrdersPage() {
 
           <button
             onClick={() =>
-              navigate("/sales/create")
+              navigate(
+                "/sales/create",
+              )
             }
             className="
               flex
