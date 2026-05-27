@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+
 import Logo from "@/assets/aloopos.svg";
 
 import {
@@ -21,15 +22,21 @@ export default function AppLayout({ children }) {
   const [openMenu, setOpenMenu] = useState(null);
   const [sidebarMini, setSidebarMini] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [pageTransition, setPageTransition] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [pageTransition, setPageTransition] =
+    useState(false);
+
+  const [profileOpen, setProfileOpen] =
+    useState(false);
 
   /* ===================================================== */
   /* RESPONSIVE */
   /* ===================================================== */
 
   const isDesktop = useMemo(() => {
-    if (typeof window === "undefined") return false;
+    if (typeof window === "undefined") {
+      return false;
+    }
+
     return window.innerWidth >= 1024;
   }, []);
 
@@ -40,16 +47,39 @@ export default function AppLayout({ children }) {
   /* ===================================================== */
 
   const pageTitle = useMemo(() => {
-    const path = location.pathname.toLowerCase();
+    const path =
+      location.pathname.toLowerCase();
 
-    if (path.includes("dashboard")) return "Dashboard";
-    if (path.includes("inventory")) return "Inventory";
-    if (path.includes("sales") || path.includes("order"))
+    if (path.includes("dashboard")) {
+      return "Dashboard";
+    }
+
+    if (path.includes("inventory")) {
+      return "Inventory";
+    }
+
+    if (
+      path.includes("sales") ||
+      path.includes("order")
+    ) {
       return "Sales Orders";
-    if (path.includes("create")) return "Create Sales Order";
-    if (path.includes("manufacturing")) return "Manufacturing";
-    if (path.includes("finance")) return "Finance";
-    if (path.includes("settings")) return "Settings";
+    }
+
+    if (path.includes("create")) {
+      return "Create Sales Order";
+    }
+
+    if (path.includes("manufacturing")) {
+      return "Manufacturing";
+    }
+
+    if (path.includes("finance")) {
+      return "Finance";
+    }
+
+    if (path.includes("settings")) {
+      return "Settings";
+    }
 
     return "ERP System";
   }, [location.pathname]);
@@ -77,7 +107,14 @@ export default function AppLayout({ children }) {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div
+      className="
+        min-h-dvh
+        overflow-x-hidden
+        bg-slate-100
+        text-slate-900
+      "
+    >
 
       {/* ===================================================== */}
       {/* MOBILE OVERLAY */}
@@ -85,8 +122,15 @@ export default function AppLayout({ children }) {
 
       {sidebarOpen && (
         <div
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={() =>
+            setSidebarOpen(false)
+          }
+          className="
+            fixed inset-0 z-40
+            bg-black/40
+            backdrop-blur-sm
+            lg:hidden
+          "
         />
       )}
 
@@ -96,12 +140,19 @@ export default function AppLayout({ children }) {
 
       <aside
         className={`
-          fixed left-0 top-0 z-50 flex h-screen flex-col
-          border-r border-slate-200 bg-white
+          fixed left-0 top-0 z-50
+          flex h-dvh flex-col
+          border-r border-slate-200
+          bg-white
           transition-all duration-300
           w-[280px]
 
-          ${isMini ? "lg:w-[88px]" : "lg:w-[280px]"}
+          ${
+            isMini
+              ? "lg:w-[88px]"
+              : "lg:w-[280px]"
+          }
+
           ${
             sidebarOpen
               ? "translate-x-0"
@@ -116,31 +167,48 @@ export default function AppLayout({ children }) {
 
         <div
           className={`
-            relative flex items-center
+            relative
+            flex items-center
             border-b border-slate-200
-            bg-white px-5 py-5
-            ${isMini ? "justify-center" : "justify-between"}
+            bg-white
+            px-5 py-5
+
+            ${
+              isMini
+                ? "justify-center"
+                : "justify-between"
+            }
           `}
         >
 
           {/* LOGO */}
+
           <img
             src={Logo}
             alt="Logo"
             className={`
-              object-contain transition-all duration-300
+              object-contain
+              transition-all duration-300
+
               ${isMini ? "h-8" : "h-10"}
             `}
           />
 
           {/* DESKTOP MINI BUTTON */}
+
           {!isMini && (
             <button
-              onClick={() => setSidebarMini(true)}
+              onClick={() =>
+                setSidebarMini(true)
+              }
               className="
-                hidden h-9 w-9 items-center justify-center
-                rounded-xl text-slate-500
-                transition hover:bg-slate-100
+                hidden
+                h-9 w-9
+                items-center justify-center
+                rounded-xl
+                text-slate-500
+                transition
+                hover:bg-slate-100
                 lg:flex
               "
             >
@@ -149,14 +217,22 @@ export default function AppLayout({ children }) {
           )}
 
           {/* MINI EXPAND */}
+
           {isMini && (
             <button
-              onClick={() => setSidebarMini(false)}
+              onClick={() =>
+                setSidebarMini(false)
+              }
               className="
                 absolute right-[-14px] top-6
-                hidden h-7 w-7 items-center justify-center
-                rounded-full border border-slate-200
-                bg-white text-slate-600 shadow-sm
+                hidden
+                h-7 w-7
+                items-center justify-center
+                rounded-full
+                border border-slate-200
+                bg-white
+                text-slate-600
+                shadow-sm
                 lg:flex
               "
             >
@@ -168,12 +244,19 @@ export default function AppLayout({ children }) {
           )}
 
           {/* MOBILE CLOSE */}
+
           <button
-            onClick={() => setSidebarOpen(false)}
+            onClick={() =>
+              setSidebarOpen(false)
+            }
             className="
-              flex h-9 w-9 items-center justify-center
-              rounded-xl text-slate-500
-              transition hover:bg-slate-100
+              flex
+              h-9 w-9
+              items-center justify-center
+              rounded-xl
+              text-slate-500
+              transition
+              hover:bg-slate-100
               lg:hidden
             "
           >
@@ -185,69 +268,107 @@ export default function AppLayout({ children }) {
         {/* NAVIGATION */}
         {/* ===================================================== */}
 
-        <nav className="flex-1 overflow-y-auto px-4 py-5">
+        <nav
+          className="
+            flex-1
+            overflow-y-auto
+            px-4 py-5
+          "
+        >
+
           <div className="flex flex-col gap-1">
 
             {navigation.map((item) => {
+              /* ======================================== */
+              /* SINGLE MENU */
+              /* ======================================== */
+
               if (!item.children) {
                 return (
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    className={({ isActive }) =>
-                      `
-                        flex items-center
-                        ${isMini ? "justify-center" : "gap-3"}
+                    className={({
+                      isActive,
+                    }) => `
+                      flex items-center
+                      ${
+                        isMini
+                          ? "justify-center"
+                          : "gap-3"
+                      }
 
-                        rounded-2xl px-4 py-3
-                        text-sm font-medium
-                        transition-all
+                      rounded-2xl
+                      px-4 py-3
+                      text-sm font-medium
+                      transition-all
 
-                        ${
-                          isActive
-                            ? "bg-blue-50 text-blue-600"
-                            : "text-slate-700 hover:bg-slate-100"
-                        }
-                      `
-                    }
+                      ${
+                        isActive
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-slate-700 hover:bg-slate-100"
+                      }
+                    `}
                   >
+
                     {item.icon && (
-                      <item.icon size={18} strokeWidth={2} />
+                      <item.icon
+                        size={18}
+                        strokeWidth={2}
+                      />
                     )}
 
-                    {!isMini && <span>{item.label}</span>}
+                    {!isMini && (
+                      <span>
+                        {item.label}
+                      </span>
+                    )}
                   </NavLink>
                 );
               }
 
-              const isGroupActive = item.children.some((child) =>
-                location.pathname.startsWith(child.path)
-              );
+              /* ======================================== */
+              /* GROUP MENU */
+              /* ======================================== */
+
+              const isGroupActive =
+                item.children.some((child) =>
+                  location.pathname.startsWith(
+                    child.path,
+                  ),
+                );
 
               const isOpen =
                 openMenu === item.label ||
-                (openMenu === null && isGroupActive);
+                (openMenu === null &&
+                  isGroupActive);
 
               return (
-                <div key={item.label} className="mt-2">
+                <div
+                  key={item.label}
+                  className="mt-2"
+                >
 
                   <button
                     onClick={() =>
                       setOpenMenu(
-                        openMenu === item.label
+                        openMenu ===
+                          item.label
                           ? null
-                          : item.label
+                          : item.label,
                       )
                     }
                     className={`
                       flex w-full items-center
+
                       ${
                         isMini
                           ? "justify-center"
                           : "justify-between"
                       }
 
-                      rounded-2xl px-4 py-3
+                      rounded-2xl
+                      px-4 py-3
                       text-sm font-semibold
                       transition-all
 
@@ -262,6 +383,7 @@ export default function AppLayout({ children }) {
                     <div
                       className={`
                         flex items-center
+
                         ${
                           isMini
                             ? "justify-center"
@@ -269,11 +391,19 @@ export default function AppLayout({ children }) {
                         }
                       `}
                     >
+
                       {item.icon && (
-                        <item.icon size={18} strokeWidth={2} />
+                        <item.icon
+                          size={18}
+                          strokeWidth={2}
+                        />
                       )}
 
-                      {!isMini && <span>{item.label}</span>}
+                      {!isMini && (
+                        <span>
+                          {item.label}
+                        </span>
+                      )}
                     </div>
 
                     {!isMini && (
@@ -281,22 +411,36 @@ export default function AppLayout({ children }) {
                         size={16}
                         className={`
                           transition-transform
-                          ${isOpen ? "rotate-180" : ""}
+                          ${
+                            isOpen
+                              ? "rotate-180"
+                              : ""
+                          }
                         `}
                       />
                     )}
                   </button>
 
                   {!isMini && isOpen && (
-                    <div className="mt-1 ml-3 flex flex-col gap-1 border-l border-slate-200 pl-4">
+                    <div
+                      className="
+                        mt-1 ml-3
+                        flex flex-col gap-1
+                        border-l border-slate-200
+                        pl-4
+                      "
+                    >
 
-                      {item.children.map((child) => (
-                        <NavLink
-                          key={child.path}
-                          to={child.path}
-                          className={({ isActive }) =>
-                            `
-                              rounded-xl px-4 py-3
+                      {item.children.map(
+                        (child) => (
+                          <NavLink
+                            key={child.path}
+                            to={child.path}
+                            className={({
+                              isActive,
+                            }) => `
+                              rounded-xl
+                              px-4 py-3
                               text-sm font-medium
                               transition-all
 
@@ -305,12 +449,12 @@ export default function AppLayout({ children }) {
                                   ? "bg-blue-50 text-blue-600"
                                   : "text-slate-600 hover:bg-slate-100"
                               }
-                            `
-                          }
-                        >
-                          {child.label}
-                        </NavLink>
-                      ))}
+                            `}
+                          >
+                            {child.label}
+                          </NavLink>
+                        ),
+                      )}
                     </div>
                   )}
                 </div>
@@ -326,11 +470,18 @@ export default function AppLayout({ children }) {
 
       <div
         className={`
-          flex min-h-screen min-w-0 flex-col
-          overflow-x-clip
+          flex
+          min-h-dvh
+          min-w-0
+          flex-col
+          overflow-x-hidden
           transition-all duration-300
 
-          ${isMini ? "lg:ml-[88px]" : "lg:ml-[280px]"}
+          ${
+            isMini
+              ? "lg:ml-[88px]"
+              : "lg:ml-[280px]"
+          }
         `}
       >
 
@@ -341,7 +492,11 @@ export default function AppLayout({ children }) {
         <header
           className="
             sticky top-0 z-30
-            flex h-24 items-start justify-between
+            will-change-transform
+
+            flex h-24
+            items-start justify-between
+
             bg-gradient-to-b
             from-slate-100
             via-slate-100/90
@@ -355,16 +510,29 @@ export default function AppLayout({ children }) {
         >
 
           {/* LEFT */}
-          <div className="pointer-events-auto flex min-w-0 items-center gap-4">
+
+          <div
+            className="
+              pointer-events-auto
+              flex min-w-0
+              items-center gap-4
+            "
+          >
 
             {/* MOBILE MENU */}
+
             <button
-              onClick={() => setSidebarOpen(true)}
+              onClick={() =>
+                setSidebarOpen(true)
+              }
               className="
-                flex h-10 w-10 shrink-0
+                flex
+                h-10 w-10
+                shrink-0
                 items-center justify-center
                 text-slate-800
-                transition hover:text-slate-600
+                transition
+                hover:text-slate-600
                 lg:hidden
               "
             >
@@ -372,27 +540,67 @@ export default function AppLayout({ children }) {
             </button>
 
             {/* TITLE */}
+
             <div className="min-w-0">
-              <h2 className="truncate text-xl font-bold text-slate-900 lg:hidden">
+
+              <h2
+                className="
+                  truncate
+                  text-xl font-bold
+                  text-slate-900
+                  lg:hidden
+                "
+              >
                 {pageTitle}
               </h2>
 
-              <h2 className="hidden text-base font-semibold text-slate-900 lg:block lg:text-lg">
-                Enterprise Manufacturing System
+              <h2
+                className="
+                  hidden
+                  text-base font-semibold
+                  text-slate-900
+                  lg:block lg:text-lg
+                "
+              >
+                Enterprise Manufacturing
+                System
               </h2>
 
-              <p className="mt-1 hidden text-sm text-slate-500 lg:block">
-                Inventory • Manufacturing • Finance
+              <p
+                className="
+                  mt-1 hidden
+                  text-sm text-slate-500
+                  lg:block
+                "
+              >
+                Inventory • Manufacturing •
+                Finance
               </p>
             </div>
           </div>
 
           {/* RIGHT */}
-          <div className="pointer-events-auto relative flex items-center gap-3 lg:gap-4">
+
+          <div
+            className="
+              pointer-events-auto
+              relative
+              flex items-center
+              gap-3
+              lg:gap-4
+            "
+          >
 
             {/* USER INFO */}
+
             <div className="hidden text-right lg:block">
-              <p className="text-sm font-semibold text-slate-900">
+
+              <p
+                className="
+                  text-sm font-semibold
+                  text-slate-900
+                "
+              >
                 {user?.email || "Admin"}
               </p>
 
@@ -402,39 +610,66 @@ export default function AppLayout({ children }) {
             </div>
 
             {/* AVATAR */}
+
             <button
-              onClick={() => setProfileOpen(!profileOpen)}
+              onClick={() =>
+                setProfileOpen(
+                  !profileOpen,
+                )
+              }
               className="
-                flex h-10 w-10 items-center justify-center
-                rounded-full border border-slate-200
-                bg-white text-slate-600 shadow-sm
-                transition hover:bg-slate-50
+                flex
+                h-10 w-10
+                items-center justify-center
+                rounded-full
+                border border-slate-200
+                bg-white
+                text-slate-600
+                shadow-sm
+                transition
+                hover:bg-slate-50
               "
             >
               <User size={20} />
             </button>
 
             {/* DROPDOWN */}
+
             {profileOpen && (
               <>
                 <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setProfileOpen(false)}
+                  className="
+                    fixed inset-0 z-40
+                  "
+                  onClick={() =>
+                    setProfileOpen(false)
+                  }
                 />
 
                 <div
                   className="
                     absolute right-0 top-14 z-50
-                    w-48 rounded-2xl
+                    w-48
+                    rounded-2xl
                     border border-slate-100
-                    bg-white p-2
-                    shadow-lg ring-1 ring-black/5
+                    bg-white
+                    p-2
+                    shadow-lg
+                    ring-1 ring-black/5
                   "
                 >
 
                   <div className="px-3 py-2 lg:hidden">
-                    <p className="truncate text-sm font-semibold text-slate-900">
-                      {user?.email || "Admin"}
+
+                    <p
+                      className="
+                        truncate
+                        text-sm font-semibold
+                        text-slate-900
+                      "
+                    >
+                      {user?.email ||
+                        "Admin"}
                     </p>
 
                     <p className="text-xs text-slate-500">
@@ -442,17 +677,29 @@ export default function AppLayout({ children }) {
                     </p>
                   </div>
 
-                  <div className="my-1 border-t border-slate-100 lg:hidden" />
+                  <div
+                    className="
+                      my-1 border-t
+                      border-slate-100
+                      lg:hidden
+                    "
+                  />
 
                   <button
-                    onClick={() => {
-                      setProfileOpen(false);
-                    }}
+                    onClick={() =>
+                      setProfileOpen(
+                        false,
+                      )
+                    }
                     className="
-                      flex w-full items-center gap-2
-                      rounded-xl px-3 py-2.5
-                      text-sm font-medium text-slate-700
-                      transition hover:bg-slate-50
+                      flex w-full
+                      items-center gap-2
+                      rounded-xl
+                      px-3 py-2.5
+                      text-sm font-medium
+                      text-slate-700
+                      transition
+                      hover:bg-slate-50
                     "
                   >
                     <User size={16} />
@@ -463,14 +710,21 @@ export default function AppLayout({ children }) {
 
                   <button
                     onClick={() => {
-                      setProfileOpen(false);
+                      setProfileOpen(
+                        false,
+                      );
+
                       logout();
                     }}
                     className="
-                      flex w-full items-center gap-2
-                      rounded-xl px-3 py-2.5
-                      text-sm font-medium text-red-600
-                      transition hover:bg-red-50
+                      flex w-full
+                      items-center gap-2
+                      rounded-xl
+                      px-3 py-2.5
+                      text-sm font-medium
+                      text-red-600
+                      transition
+                      hover:bg-red-50
                     "
                   >
                     <LogOut size={16} />
@@ -486,11 +740,31 @@ export default function AppLayout({ children }) {
         {/* PAGE */}
         {/* ===================================================== */}
 
-        <main className="relative min-w-0 flex-1 bg-slate-100 px-4 pb-5 lg:px-8 lg:pb-8">
+        <main
+          className="
+            relative
+            min-w-0
+            flex-1
+            overflow-x-hidden
+            bg-slate-100
+            px-4
+            pb-5
+            lg:px-8
+            lg:pb-8
+          "
+        >
+
           <div
             className={`
-              transition-opacity duration-300 ease-out
-              ${pageTransition ? "opacity-95" : "opacity-100"}
+              transition-opacity
+              duration-300
+              ease-out
+
+              ${
+                pageTransition
+                  ? "opacity-95"
+                  : "opacity-100"
+              }
             `}
           >
             {children}
