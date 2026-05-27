@@ -93,50 +93,6 @@ export default function SalesOrdersPage() {
   const [search, setSearch] = useState("");
 
   // ========================================
-  // IOS KEYBOARD FIX
-  // ========================================
-
-  const [keyboardOffset, setKeyboardOffset] =
-    useState(0);
-
-  useEffect(() => {
-    const viewport = window.visualViewport;
-
-    if (!viewport) return;
-
-    const handleViewport = () => {
-      const keyboardHeight =
-        window.innerHeight - viewport.height;
-
-      setKeyboardOffset(
-        keyboardHeight > 0 ? keyboardHeight : 0,
-      );
-    };
-
-    viewport.addEventListener(
-      "resize",
-      handleViewport,
-    );
-
-    viewport.addEventListener(
-      "scroll",
-      handleViewport,
-    );
-
-    return () => {
-      viewport.removeEventListener(
-        "resize",
-        handleViewport,
-      );
-
-      viewport.removeEventListener(
-        "scroll",
-        handleViewport,
-      );
-    };
-  }, []);
-
-  // ========================================
   // LOAD DATA
   // ========================================
 
@@ -159,18 +115,21 @@ export default function SalesOrdersPage() {
   }, []);
 
   // ========================================
-  // FILTERED
+  // FILTERED DATA
   // ========================================
 
   const filteredOrders = useMemo(() => {
     let data = [...orders];
 
+    // FILTER TAB
     if (activeTab !== "All") {
       data = data.filter(
-        (order) => order.status === activeTab.toUpperCase(),
+        (order) =>
+          order.status === activeTab.toUpperCase(),
       );
     }
 
+    // FILTER SEARCH
     if (search.trim()) {
       const keyword = search.toLowerCase();
 
@@ -189,7 +148,7 @@ export default function SalesOrdersPage() {
   }, [orders, activeTab, search]);
 
   // ========================================
-  // PREPARE DATA
+  // PREPARED ORDERS
   // ========================================
 
   const preparedOrders = useMemo(() => {
@@ -231,11 +190,25 @@ export default function SalesOrdersPage() {
   const tabCounts = useMemo(() => {
     return {
       All: orders.length,
-      Pending: orders.filter((o) => o.status === "PENDING").length,
-      Dikemas: orders.filter((o) => o.status === "DIKEMAS").length,
-      Dikirim: orders.filter((o) => o.status === "DIKIRIM").length,
-      Completed: orders.filter((o) => o.status === "COMPLETED").length,
-      Void: orders.filter((o) => o.status === "VOID").length,
+      Pending: orders.filter(
+        (o) => o.status === "PENDING",
+      ).length,
+
+      Dikemas: orders.filter(
+        (o) => o.status === "DIKEMAS",
+      ).length,
+
+      Dikirim: orders.filter(
+        (o) => o.status === "DIKIRIM",
+      ).length,
+
+      Completed: orders.filter(
+        (o) => o.status === "COMPLETED",
+      ).length,
+
+      Void: orders.filter(
+        (o) => o.status === "VOID",
+      ).length,
     };
   }, [orders]);
 
@@ -253,9 +226,11 @@ export default function SalesOrdersPage() {
       doc.setFontSize(11);
       doc.setTextColor(100);
 
-      const filterInfo = `Status: ${activeTab}`;
-
-      doc.text(filterInfo, 14, 30);
+      doc.text(
+        `Status: ${activeTab}`,
+        14,
+        30,
+      );
 
       const tableColumn = [
         "SO Number",
@@ -287,7 +262,7 @@ export default function SalesOrdersPage() {
         "",
         "",
         "",
-        "TOTAL:",
+        "TOTAL",
         formatRupiah(summary.revenue),
         formatRupiah(summary.profit),
       ]);
@@ -312,13 +287,15 @@ export default function SalesOrdersPage() {
         },
       });
 
-      doc.save(`SO_Report_${activeTab}.pdf`);
-    } catch (err) {
-      alert(
-        "Sedang memuat sistem PDF, silakan coba beberapa detik lagi.",
+      doc.save(
+        `SO_Report_${activeTab}.pdf`,
       );
+    } catch (error) {
+      console.error(error);
 
-      console.error(err);
+      alert(
+        "Sedang memuat sistem PDF, silakan coba lagi.",
+      );
     }
   };
 
@@ -328,7 +305,7 @@ export default function SalesOrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-w-0 space-y-3">
+      <div className="space-y-3">
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
@@ -344,13 +321,16 @@ export default function SalesOrdersPage() {
     );
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <div
       className="
         relative
-        min-h-screen
+        min-h-dvh
         overflow-x-hidden
-        pb-32
       "
     >
 
@@ -363,16 +343,18 @@ export default function SalesOrdersPage() {
 
           <Tabs
             tabs={TABS.map(
-              (tab) => `${tab} (${tabCounts[tab]})`,
+              (tab) =>
+                `${tab} (${tabCounts[tab]})`,
             )}
 
             value={`${activeTab} (${tabCounts[activeTab]})`}
 
             onChange={(value) => {
-              const cleanValue = value.replace(
-                /\s\(\d+\)$/,
-                "",
-              );
+              const cleanValue =
+                value.replace(
+                  /\s\(\d+\)$/,
+                  "",
+                );
 
               setActiveTab(cleanValue);
             }}
@@ -384,7 +366,7 @@ export default function SalesOrdersPage() {
       {/* LIST */}
       {/* ======================================== */}
 
-      <div className="space-y-3">
+      <div className="space-y-3 pb-28">
 
         {preparedOrders.length === 0 ? (
           <div
@@ -399,15 +381,35 @@ export default function SalesOrdersPage() {
             "
           >
 
-            <div className="mb-3 rounded-full bg-slate-100 p-3 text-slate-400">
+            <div
+              className="
+                mb-3
+                rounded-full
+                bg-slate-100
+                p-3
+                text-slate-400
+              "
+            >
               <FileText size={24} />
             </div>
 
-            <h2 className="text-base font-semibold text-slate-900">
+            <h2
+              className="
+                text-base
+                font-semibold
+                text-slate-900
+              "
+            >
               No Sales Orders Found
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p
+              className="
+                mt-1
+                text-sm
+                text-slate-500
+              "
+            >
               {search
                 ? "Try adjusting your filters"
                 : "Create your first sales order"}
@@ -418,11 +420,15 @@ export default function SalesOrdersPage() {
             <button
               key={order.id}
               onClick={() =>
-                navigate(`/sales/orders/${order.id}`)
+                navigate(
+                  `/sales/orders/${order.id}`,
+                )
               }
               className="
-                w-full text-left
-                transition-all duration-200
+                w-full
+                text-left
+                transition-all
+                duration-200
                 active:scale-[0.99]
               "
             >
@@ -441,7 +447,12 @@ export default function SalesOrdersPage() {
 
                 {/* HEADER */}
 
-                <div className="flex items-start justify-between gap-3">
+                <div
+                  className="
+                    flex items-start justify-between
+                    gap-3
+                  "
+                >
 
                   <div className="min-w-0 flex-1">
 
@@ -467,7 +478,8 @@ export default function SalesOrdersPage() {
                         text-slate-500
                       "
                     >
-                      {order.customer_name || "Unknown Customer"}
+                      {order.customer_name ||
+                        "Unknown Customer"}
                     </p>
                   </div>
 
@@ -521,7 +533,9 @@ export default function SalesOrdersPage() {
                         text-slate-900
                       "
                     >
-                      {formatRupiah(order.revenue)}
+                      {formatRupiah(
+                        order.revenue,
+                      )}
                     </span>
                   </div>
 
@@ -537,36 +551,59 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ======================================== */}
-      {/* FLOATING SEARCH + ACTION */}
+      {/* SEARCH BAR */}
       {/* ======================================== */}
 
       <div
         className="
-          fixed inset-x-0
-          z-[9999]
+          sticky
+          bottom-0
+          z-40
+          mt-6
           px-4
+          pb-[calc(env(safe-area-inset-bottom)+12px)]
         "
-        style={{
-          bottom: `calc(${keyboardOffset}px + env(safe-area-inset-bottom) + 12px)`,
-        }}
       >
-        <div className="mx-auto flex max-w-2xl items-center gap-2.5">
+
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-2xl
+            items-center
+            gap-2.5
+          "
+        >
 
           {/* SEARCH */}
 
           <div className="relative flex-1">
 
-            <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400">
-              <Search size={16} strokeWidth={2.5} />
+            <div
+              className="
+                pointer-events-none
+                absolute inset-y-0 left-4
+                flex items-center
+                text-slate-400
+              "
+            >
+              <Search
+                size={16}
+                strokeWidth={2.5}
+              />
             </div>
 
             <input
               type="text"
               placeholder="Search SO or Customer..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
               className="
-                h-12 w-full rounded-full
+                h-12
+                w-full
+                rounded-full
                 border border-white/70
                 bg-white
                 pl-11 pr-4
@@ -584,7 +621,9 @@ export default function SalesOrdersPage() {
           <button
             onClick={handleDownloadPDF}
             className="
-              flex h-12 w-12 flex-shrink-0
+              flex
+              h-12 w-12
+              flex-shrink-0
               items-center justify-center
               rounded-full
               bg-white
@@ -594,15 +633,22 @@ export default function SalesOrdersPage() {
               active:scale-95
             "
           >
-            <Download size={20} strokeWidth={2.3} />
+            <Download
+              size={20}
+              strokeWidth={2.3}
+            />
           </button>
 
           {/* FAB */}
 
           <button
-            onClick={() => navigate("/sales/create")}
+            onClick={() =>
+              navigate("/sales/create")
+            }
             className="
-              flex h-12 w-12 flex-shrink-0
+              flex
+              h-12 w-12
+              flex-shrink-0
               items-center justify-center
               rounded-full
               bg-orange-500
@@ -612,7 +658,10 @@ export default function SalesOrdersPage() {
               active:scale-95
             "
           >
-            <Plus size={22} strokeWidth={2.5} />
+            <Plus
+              size={22}
+              strokeWidth={2.5}
+            />
           </button>
         </div>
       </div>
