@@ -542,8 +542,12 @@ export default function AppLayout({ children }) {
             items-start
             justify-between
 
-            bg-gradient-to-b from-slate-100 via-slate-100/80 to-transparent
-            backdrop-blur-none
+            bg-gradient-to-b
+            from-white
+            via-white/85
+            to-transparent
+
+            backdrop-blur-md
 
             px-4
             pt-6
@@ -552,8 +556,6 @@ export default function AppLayout({ children }) {
             lg:px-8
 
             pointer-events-none
-
-            will-change-auto
 
             ${
               isMini
@@ -686,14 +688,15 @@ export default function AppLayout({ children }) {
                 border
                 border-slate-200
 
-                bg-white
+                bg-white/90
 
                 text-slate-600
 
                 shadow-sm
+                backdrop-blur-md
 
                 transition-colors
-                hover:bg-slate-50
+                hover:bg-white
               "
             >
               <User size={20} />
