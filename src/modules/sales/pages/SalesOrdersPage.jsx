@@ -520,7 +520,7 @@ export default function SalesOrdersPage() {
                 border border-white/70
                 bg-white
                 pl-11 pr-4
-                text-sm
+                text-base
                 shadow-[0_10px_35px_rgba(0,0,0,0.14)]
                 focus:outline-none
                 focus:ring-2
