@@ -119,8 +119,7 @@ export default function AppLayout({ children }) {
   return (
     <div
       className="
-        h-screen
-        overflow-hidden
+        min-h-screen
         bg-slate-100
         text-slate-900
       "
@@ -151,7 +150,7 @@ export default function AppLayout({ children }) {
       <aside
         className={`
           fixed left-0 top-0 z-50
-          flex h-full flex-col
+          flex h-screen flex-col
           border-r border-slate-200
           bg-white
           transition-all duration-300
@@ -465,7 +464,7 @@ export default function AppLayout({ children }) {
       <div
         className={`
           relative
-          flex h-full min-w-0 flex-col
+          flex min-w-0 flex-col
           transition-all duration-300
 
           ${
@@ -625,105 +624,6 @@ export default function AppLayout({ children }) {
             >
               <User size={20} />
             </button>
-
-            {profileOpen && (
-              <>
-                <div
-                  className="
-                    fixed inset-0 z-40
-                  "
-                  onClick={() =>
-                    setProfileOpen(false)
-                  }
-                />
-
-                <div
-                  className="
-                    absolute right-0 top-14 z-50
-                    w-48
-                    rounded-2xl
-                    border border-slate-100
-                    bg-white
-                    p-2
-                    shadow-lg
-                    ring-1 ring-black/5
-                  "
-                >
-
-                  <div className="px-3 py-2 lg:hidden">
-
-                    <p
-                      className="
-                        truncate
-                        text-sm font-semibold
-                        text-slate-900
-                      "
-                    >
-                      {user?.email ||
-                        "Admin"}
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      Administrator
-                    </p>
-                  </div>
-
-                  <div
-                    className="
-                      my-1 border-t
-                      border-slate-100
-                      lg:hidden
-                    "
-                  />
-
-                  <button
-                    onClick={() =>
-                      setProfileOpen(
-                        false,
-                      )
-                    }
-                    className="
-                      flex w-full
-                      items-center gap-2
-                      rounded-xl
-                      px-3 py-2.5
-                      text-sm font-medium
-                      text-slate-700
-                      transition
-                      hover:bg-slate-50
-                    "
-                  >
-                    <User size={16} />
-                    Profile
-                  </button>
-
-                  <div className="my-1 border-t border-slate-100" />
-
-                  <button
-                    onClick={() => {
-                      setProfileOpen(
-                        false,
-                      );
-
-                      logout();
-                    }}
-                    className="
-                      flex w-full
-                      items-center gap-2
-                      rounded-xl
-                      px-3 py-2.5
-                      text-sm font-medium
-                      text-red-600
-                      transition
-                      hover:bg-red-50
-                    "
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         </header>
 
@@ -733,13 +633,7 @@ export default function AppLayout({ children }) {
 
         <main
           className="
-            flex-1
-            overflow-y-auto
-            overflow-x-hidden
-            overscroll-none
-
             bg-slate-100
-
             pt-24
             px-4
             pb-5
@@ -751,7 +645,6 @@ export default function AppLayout({ children }) {
 
           <div
             className={`
-              min-h-full
               transition-opacity
               duration-300
               ease-out
