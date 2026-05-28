@@ -4,9 +4,11 @@ export default function MobileSection({
   children,
 }) {
   return (
-    <section className="space-y-4">
+    // Mengurangi space-y-4 menjadi space-y-2 agar lebih rapat
+    <section className="space-y-2">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-zinc-900">
+        {/* Mengurangi ukuran font dari text-lg ke text-sm/base agar lebih proporsional */}
+        <h2 className="text-sm font-semibold text-zinc-500 m-0">
           {title}
         </h2>
 
