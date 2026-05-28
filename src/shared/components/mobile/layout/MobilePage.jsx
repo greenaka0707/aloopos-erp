@@ -1,9 +1,6 @@
-export default function MobilePage({
-  children,
-  className = "",
-}) {
+export function MobilePage({ children, className = "" }) {
   return (
-    <div className="min-h-screen bg-zinc-100">
+    <div className="min-h-screen bg-zinc-50">
       <div
         className={`
           w-full
