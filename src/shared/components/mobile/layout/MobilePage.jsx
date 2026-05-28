@@ -3,17 +3,16 @@ export default function MobilePage({
   className = "",
 }) {
   return (
-    // Kita gunakan bg-zinc-50 agar lebih bersih, zinc-100 seringkali terlalu gelap untuk background mobile
     <div className="min-h-screen bg-zinc-50">
       <div
         className={`
-          mx-auto           // PENTING: Membuat konten ke tengah
-          w-full            // Full width di HP
-          max-w-sm          // Membatasi lebar agar kartu tidak "bengkak" melebar
-          px-4              // Padding lebih rapat (16px) dibanding px-5 (20px)
-          py-4              // Padding atas lebih rapat
-          pb-24             // Padding bawah lebih proporsional
-          space-y-4         // Jarak antar section lebih rapat (16px)
+          mx-auto 
+          w-full 
+          max-w-sm 
+          px-4      // Gunakan px-4, jangan px-5 (lebih rapat)
+          pt-4      // Gunakan pt-4, jangan pt-5
+          pb-8      // Gunakan pb-8, jangan pb-32 (terlalu jauh ke bawah)
+          space-y-4 // Gunakan space-y-4, jangan space-y-5
           ${className}
         `}
       >
