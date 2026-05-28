@@ -1,34 +1,16 @@
-import { Menu } from "lucide-react";
-
-export default function MobileHeader({
-  title,
-}) {
+export default function MobileHeader({ title, showBack = false }) {
   return (
-    <div className="flex items-center gap-4">
-      <button
-        className="
-          h-11
-          w-11
-          rounded-2xl
-          bg-white
-          border border-zinc-100
-          flex items-center justify-center
-          shadow-[0_1px_4px_rgba(0,0,0,0.03)]
-          shrink-0
-        "
-      >
-        <Menu size={20} />
-      </button>
-
-      <div>
-        <p className="text-sm text-zinc-400">
-          Welcome back
-        </p>
-
-        <h1 className="text-2xl font-semibold text-zinc-900 leading-tight">
-          {title}
-        </h1>
-      </div>
-    </div>
+    <header className="flex items-center py-4 mb-2">
+      {/* Jika ingin menambahkan tombol back, bisa di sini */}
+      {showBack && (
+        <button className="mr-3 p-1 rounded-full hover:bg-zinc-200">
+          {/* Tambahkan ikon chevron-left di sini */}
+        </button>
+      )}
+      
+      <h1 className="text-xl font-bold text-zinc-900 m-0">
+        {title}
+      </h1>
+    </header>
   );
 }
