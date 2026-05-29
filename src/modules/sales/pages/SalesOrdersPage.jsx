@@ -8,8 +8,15 @@ import Toolbar from "@/shared/components/desktop/Toolbar";
 import StatCard from "@/shared/components/desktop/StatCard";
 import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
 
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
+
+const doc = new jsPDF();
+
+autoTable(doc, {
+  head: [tableColumn],
+  body: tableRows,
+});
 
 import { getSalesOrders } from "../services/sales.service";
 
