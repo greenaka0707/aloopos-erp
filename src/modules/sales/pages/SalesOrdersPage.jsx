@@ -231,6 +231,11 @@ export default function SalesOrdersPage() {
           o.status === "PENDING",
       ).length,
 
+      Campuran: orders.filter(
+        (o) =>
+          o.status === "DIKEMAS",
+      ).length,
+
       Dikemas: orders.filter(
         (o) =>
           o.status === "DIKEMAS",
@@ -254,82 +259,83 @@ export default function SalesOrdersPage() {
 
 
   const columns = [
-  {
-    key: "so_number",
-    label: "SO Number",
-  },
+    {
+      key: "so_number",
+      label: "SO Number",
+    },
 
-  {
-    key: "customer_name",
-    label: "Customer",
-  },
+    {
+      key: "customer_name",
+      label: "Customer",
+    },
 
-  {
-    key: "status",
-    label: "Status",
+    {
+      key: "status",
+      label: "Status",
 
-    render: (row) => (
-      <span
-        className={`
-          inline-flex
-          rounded-full
-          px-2 py-1
-          text-xs
-          font-semibold
-          ${getStatusClass(row.status)}
-        `}
-      >
-        {row.status}
-      </span>
-    ),
-  },
+      render: (row) => (
+        <span
+          className={`
+            inline-flex
+            rounded-full
+            px-2 py-1
+            text-xs
+            font-semibold
+            ${getStatusClass(row.status)}
+          `}
+        >
+          {row.status}
+        </span>
+      ),
+    },
 
-  {
-    key: "revenue",
-    label: "Revenue",
+    {
+      key: "revenue",
+      label: "Revenue",
 
-    render: (row) =>
-      formatRupiah(row.revenue),
-  },
+      render: (row) =>
+        formatRupiah(row.revenue),
+    },
 
-  {
-    key: "profit",
-    label: "Profit",
+    {
+      key: "profit",
+      label: "Profit",
 
-    render: (row) => (
-      <span
-        className={
-          row.profit >= 0
-            ? "font-semibold text-emerald-600"
-            : "font-semibold text-red-600"
-        }
-      >
-        {formatRupiah(row.profit)}
-      </span>
-    ),
-  },
+      render: (row) => (
+        <span
+          className={
+            row.profit >= 0
+              ? "font-semibold text-emerald-600"
+              : "font-semibold text-red-600"
+          }
+        >
+          {formatRupiah(row.profit)}
+        </span>
+      ),
+    },
 
-  {
-    key: "detail",
-    label: "Action",
+    {
+      key: "detail",
+      label: "Action",
 
-    render: (row) => (
-      <button
-        onClick={() =>
-          navigate(
-            `/sales/orders/${row.id}`,
-          )
-        }
-        className="
-          text-blue-600
-          font-medium
-        "
-      >
-        Detail
-      </button>
-    ),
-  },
-];
+      render: (row) => (
+        <button
+          onClick={() =>
+            navigate(
+              `/sales/orders/${row.id}`,
+            )
+          }
+          className="
+            text-blue-600
+            font-medium
+          "
+        >
+          Detail
+        </button>
+      ),
+    },
+  ];
+  
   /* ===================================================== */
   /* DOWNLOAD PDF */
   /* ===================================================== */
@@ -474,168 +480,134 @@ export default function SalesOrdersPage() {
   /* RENDER */
   /* ===================================================== */
 
- return (
-  <div className="space-y-6">
+  return (
+    <div className="space-y-6">
 
-    <PageHeader
-      title="Sales Orders"
-      description="Manage sales order transactions"
-      actions={
-        <button
-          onClick={() =>
-            navigate("/sales/create")
-          }
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-lg
-            bg-blue-600
-            px-4
-            py-2
-            text-sm
-            font-medium
-            text-white
-          "
-        >
-          <Plus size={16} />
-          Tambah Order
-        </button>
-      }
-    />
-
-    <div className="grid gap-4 lg:grid-cols-3">
-
-      <StatCard
-        title="Revenue"
-        value={formatRupiah(summary.revenue)}
-      />
-
-      <StatCard
-        title="HPP"
-        value={formatRupiah(summary.hpp)}
-      />
-
-      <StatCard
-        title="Profit"
-        value={formatRupiah(summary.profit)}
-      />
-
-    </div>
-
-    <DesktopTabs
-      tabs={TABS.map(
-        (tab) =>
-          `${tab} (${tabCounts[tab]})`,
-      )}
-      value={`${activeTab} (${tabCounts[activeTab]})`}
-      onChange={(value) => {
-        const cleanValue =
-          value.replace(
-            /\s\(\d+\)$/,
-            "",
-          );
-
-        setActiveTab(cleanValue);
-      }}
-    />
-
-    <Toolbar
-      left={
-        <div className="relative">
-          <Search
-            size={16}
-            className="
-              absolute
-              left-3
-              top-1/2
-              -translate-y-1/2
-              text-slate-400
-            "
-          />
-
-          <input
-            type="text"
-            value={search}
-            placeholder="Cari SO atau Customer..."
-            onChange={(e) =>
-              setSearch(e.target.value)
+      <PageHeader
+        title="Sales Orders"
+        description="Manage sales order transactions"
+        actions={
+          <button
+            onClick={() =>
+              navigate("/sales/create")
             }
             className="
-              h-10
-              w-[320px]
+              inline-flex
+              items-center
+              gap-2
+              rounded-lg
+              bg-blue-600
+              px-4
+              py-2
+              text-sm
+              font-medium
+              text-white
+            "
+          >
+            <Plus size={16} />
+            Tambah Order
+          </button>
+        }
+      />
+
+      <div className="grid gap-4 lg:grid-cols-3">
+
+        <StatCard
+          title="Revenue"
+          value={formatRupiah(summary.revenue)}
+        />
+
+        <StatCard
+          title="HPP"
+          value={formatRupiah(summary.hpp)}
+        />
+
+        <StatCard
+          title="Profit"
+          value={formatRupiah(summary.profit)}
+        />
+
+      </div>
+
+      <DesktopTabs
+        tabs={TABS.map(
+          (tab) =>
+            `${tab} (${tabCounts[tab] || 0})`,
+        )}
+        value={`${activeTab} (${tabCounts[activeTab] || 0})`}
+        onChange={(value) => {
+          const cleanValue =
+            value.replace(
+              /\s\(\d+\)$/,
+              "",
+            );
+
+          setActiveTab(cleanValue);
+        }}
+      />
+
+      <Toolbar
+        left={
+          <div className="relative">
+            <Search
+              size={16}
+              className="
+                absolute
+                left-3
+                top-1/2
+                -translate-y-1/2
+                text-slate-400
+              "
+            />
+
+            <input
+              type="text"
+              value={search}
+              placeholder="Cari SO atau Customer..."
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              className="
+                h-10
+                w-[320px]
+                rounded-lg
+                border
+                border-slate-300
+                pl-10
+                pr-3
+                text-sm
+              "
+            />
+          </div>
+        }
+
+        right={
+          <button
+            onClick={handleDownloadPDF}
+            className="
+              inline-flex
+              items-center
+              gap-2
               rounded-lg
               border
               border-slate-300
-              pl-10
-              pr-3
+              px-4
+              py-2
               text-sm
             "
-          />
-        </div>
-      }
+          >
+            <Download size={16} />
+            Export PDF
+          </button>
+        }
+      />
 
-      right={
-        <button
-          onClick={handleDownloadPDF}
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-lg
-            border
-            border-slate-300
-            px-4
-            py-2
-            text-sm
-          "
-        >
-          <Download size={16} />
-          Export PDF
-        </button>
-      }
-    />
+      <DataTable
+        columns={columns}
+        data={preparedOrders}
+        emptyMessage="Belum ada Sales Order"
+      />
 
-    <DataTable
-      columns={columns}
-      data={preparedOrders}
-      emptyMessage="Belum ada Sales Order"
-    />
-
-  </div>
-);
-
-      {/* ======================================== */}
-      {/* TABS */}
-      {/* ======================================== */}
-
-      <div className="mb-3 overflow-x-auto no-scrollbar">
-
-        <div className="min-w-max">
-
-          <DesktopTabs
-            tabs={TABS.map(
-              (tab) =>
-                `${tab} (${tabCounts[tab]})`,
-            )}
-
-            value={`${activeTab} (${tabCounts[activeTab]})`}
-
-            onChange={(value) => {
-              const cleanValue =
-                value.replace(
-                  /\s\(\d+\)$/,
-                  "",
-                );
-
-              setActiveTab(
-                cleanValue,
-              );
-            }}
-          />
-        </div>
-      </div>
-
-     
-
-    
+    </div>
+  );
+}
