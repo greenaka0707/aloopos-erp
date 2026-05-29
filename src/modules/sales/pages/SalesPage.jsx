@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate, useParams } from "react-router-dom";
 
-import Button from "@/shared/components/Button";
-import Input from "@/shared/components/Input";
-import Table from "@/shared/components/Table";
-import Tabs from "@/shared/components/Tabs";
+import Button from "@/shared/components/common/Button";
+import Input from "@/shared/components/common/Input";
 
 import { supabase } from "@/lib/supabase";
 
-import { createSalesOrder, getSalesOrderById, updateSalesOrder } from "../services/sales.service";
+import {
+  createSalesOrder,
+  getSalesOrderById,
+  updateSalesOrder,
+} from "../services/sales.service";
 
 export default function SalesPage() {
   const navigate = useNavigate();
