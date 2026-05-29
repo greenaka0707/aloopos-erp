@@ -165,12 +165,12 @@ export default function AppLayout({ children }) {
           transition-[width,transform]
           duration-300
 
-          w-[280px]
+         w-[260px]
 
           ${
             isMini
-              ? "lg:w-[88px]"
-              : "lg:w-[280px]"
+              ? "lg:w-[72px]"
+              : "lg:w-[260px]"
           }
 
           ${
@@ -185,13 +185,16 @@ export default function AppLayout({ children }) {
         {/* LOGO */}
         {/* ===================================================== */}
 
-        <div
-          className={`
-            relative
-            flex items-center
-            border-b border-slate-200
-            bg-white
-            px-5 py-5
+      <div
+         className={`
+          relative
+          flex
+          h-[72px]
+          items-center
+          border-b
+          border-slate-200
+          bg-white
+          px-5
 
             ${
               isMini
@@ -209,7 +212,7 @@ export default function AppLayout({ children }) {
               transition-[height]
               duration-300
 
-              ${isMini ? "h-8" : "h-10"}
+              ${isMini ? "h-7" : "h-8"}
             `}
           />
 
@@ -243,7 +246,8 @@ export default function AppLayout({ children }) {
               className="
                 absolute
                 right-[-14px]
-                top-6
+              top-1/2
+          -translate-y-1/2
 
                 hidden
                 h-7
@@ -599,7 +603,7 @@ export default function AppLayout({ children }) {
           ${
             isMini
               ? "lg:ml-[88px]"
-              : "lg:ml-[280px]"
+              : "lg:ml-[260px]"
           }
         `}
       >
@@ -627,9 +631,9 @@ export default function AppLayout({ children }) {
     px-8
 
     ${
-      isMini
-        ? "left-0 lg:left-[88px]"
-        : "left-0 lg:left-[280px]"
+     isMini
+      ? "left-0 lg:left-[72px]"
+      : "left-0 lg:left-[260px]"
     }
   `}
 >
