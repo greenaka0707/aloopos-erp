@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import Modal from "@/shared/components/Modal";
+import Modal from "@/shared/components/common/Modal";
 
 import { executeProduction, getProductionOrderById, receiveProduction } from "../services/production-order.service";
 
