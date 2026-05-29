@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import Modal from "@/shared/components/Modal";
+import Modal from "@/shared/components/common/Modal";
 
 import BOMForm from "../components/BOMForm";
 
