@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Button from "@/shared/components/Button";
+import Button from "@/shared/components/common/Button";
 
 import { getSalesOrderById, updateSalesStatus, voidSalesOrder } from "../services/sales.service";
 
