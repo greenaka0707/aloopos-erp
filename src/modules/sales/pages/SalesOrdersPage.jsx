@@ -60,7 +60,12 @@ export default function SalesOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "All");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "All"
+  );
 
   /* ===================================================== */
   /* LOAD DATA */
@@ -94,19 +99,52 @@ export default function SalesOrdersPage() {
     }));
   }, [orders]);
 
-  const filteredOrders = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-    const tabUpper = activeTab.toUpperCase();
+ const filteredOrders = useMemo(() => {
+  const keyword = search.trim().toLowerCase();
+  const tabUpper = activeTab.toUpperCase();
 
-    return processedOrders.filter((order) => {
-      const matchTab = activeTab === "All" || order.status === tabUpper;
-      const matchSearch = !keyword || 
-        String(order.so_number || "").toLowerCase().includes(keyword) ||
-        String(order.customer_name || "").toLowerCase().includes(keyword);
+  return processedOrders.filter((order) => {
+    const orderDate = order.created_at
+      ? new Date(order.created_at)
+      : null;
 
-      return matchTab && matchSearch;
-    });
-  }, [processedOrders, activeTab, search]);
+    const matchTab =
+      activeTab === "All" ||
+      order.status === tabUpper;
+
+    const matchSearch =
+      !keyword ||
+      String(order.so_number || "")
+        .toLowerCase()
+        .includes(keyword) ||
+      String(order.customer_name || "")
+        .toLowerCase()
+        .includes(keyword);
+
+    const matchFrom =
+      !dateFrom ||
+      (orderDate &&
+        orderDate >= new Date(dateFrom));
+
+    const matchTo =
+      !dateTo ||
+      (orderDate &&
+        orderDate <= new Date(`${dateTo}T23:59:59`));
+
+    return (
+      matchTab &&
+      matchSearch &&
+      matchFrom &&
+      matchTo
+    );
+  });
+}, [
+  processedOrders,
+  activeTab,
+  search,
+  dateFrom,
+  dateTo,
+]);
 
   /* ===================================================== */
   /* SUMMARY & COUNTS */
@@ -184,6 +222,12 @@ export default function SalesOrdersPage() {
       doc.setTextColor(100);
       doc.text(`Status: ${activeTab}`, 14, 30);
 
+      doc.text(
+  `Periode: ${dateFrom || "-"} s/d ${dateTo || "-"}`,
+  14,
+  36
+);
+
       const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
       
       const tableRows = filteredOrders.map((order) => [
@@ -205,7 +249,7 @@ export default function SalesOrdersPage() {
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
-        startY: 35,
+        startY: 42,
         theme: "grid",
         styles: { fontSize: 9 },
         headStyles: { fillColor: [41, 128, 185] },
@@ -264,39 +308,58 @@ export default function SalesOrdersPage() {
         }}
       />
 
-      <Toolbar
-        left={
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              placeholder="Cari SO atau Customer..."
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 w-[320px] rounded-lg border border-slate-300 pl-10 pr-3 text-sm"
-            />
-          </div>
-        }
-        right={
-          <button
-            onClick={handleDownloadPDF}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm"
-          >
-            <Download size={16} />
-            Export PDF
-          </button>
-        }
+    <Toolbar
+  left={
+    <div className="flex items-center gap-3">
+      <div className="relative">
+        <Search
+          size={16}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+        />
+
+        <input
+          type="text"
+          value={search}
+          placeholder="Cari SO atau Customer..."
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-10 w-[260px] rounded-lg border border-slate-300 pl-10 pr-3 text-sm"
+        />
+      </div>
+
+      <input
+        type="date"
+        value={dateFrom}
+        onChange={(e) => setDateFrom(e.target.value)}
+        className="h-10 rounded-lg border border-slate-300 px-3 text-sm"
       />
 
-      <DataTable
-        columns={columns}
-        data={filteredOrders}
-        emptyMessage="Belum ada Sales Order"
-             onRowClick={(row) => {
-            console.log("ROW:", row);
-            navigate(`/sales/orders/${row.id}`);
-          }}
+      <input
+        type="date"
+        value={dateTo}
+        onChange={(e) => setDateTo(e.target.value)}
+        className="h-10 rounded-lg border border-slate-300 px-3 text-sm"
       />
+
+      <button
+        onClick={() => {
+          setSearch("");
+          setDateFrom("");
+          setDateTo("");
+          setActiveTab("All");
+        }}
+        className="h-10 rounded-lg border border-slate-300 px-4 text-sm hover:bg-slate-50"
+      >
+        Reset
+      </button>
     </div>
-  );
-}
+  }
+  right={
+    <button
+      onClick={handleDownloadPDF}
+      className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm"
+    >
+      <Download size={16} />
+      Export PDF
+    </button>
+  }
+/>
