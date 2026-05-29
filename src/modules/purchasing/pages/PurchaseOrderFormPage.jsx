@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import Button from "@/shared/components/Button";
-import Input from "@/shared/components/Input";
+import Button from "@/shared/components/common/Button";
+import Input from "@/shared/components/common/Input";
 
 import { createPurchaseOrder } from "@/modules/purchasing/services/purchasing.service";
 
