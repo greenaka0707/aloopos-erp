@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import Button from "@/shared/components/Button";
+import Button from "@/shared/components/common/Button";
+import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
+import DataTable from "@/shared/components/desktop/DataTable";
 
 import { supabase } from "@/lib/supabase";
 
-import Tabs from "@/shared/components/Tabs";
 
-import Table from "@/shared/components/Table";
 
 export default function PurchasingPage() {
   const [orders, setOrders] = useState([]);
