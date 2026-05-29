@@ -1,4 +1,4 @@
-import JournalTable from "../components/JournalTable";
+import DataTable from "@/shared/components/desktop/DataTable";
 
 import { useJournalEntries } from "../hooks/useJournalEntries";
 
