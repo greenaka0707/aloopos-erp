@@ -6,9 +6,9 @@ import {
   RefreshCcw,
 } from "lucide-react";
 
-import Card from "@/shared/components/Card";
-import Button from "@/shared/components/Button";
-import Table from "@/shared/components/Table";
+import Card from "@/shared/components/common/Card";
+import Button from "@/shared/components/common/Button";
+import DataTable from "@/shared/components/desktop/DataTable";
 
 import { getMovements } from "../services/movement.service";
 
