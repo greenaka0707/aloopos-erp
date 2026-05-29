@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { useAuth } from "@/providers/AuthProvider";
 
-import Button from "@/shared/components/Button";
-import Input from "@/shared/components/Input";
+import Button from "@/shared/components/common/Button";
+import Input from "@/shared/components/common/Input";
 
 export default function LoginPage() {
   const { login } = useAuth();
