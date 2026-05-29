@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+
 import {
   Boxes,
   Factory,
@@ -12,28 +12,11 @@ import {
 
 // SESUAIKAN JIKA IMPORT DEFAULT: import supabase from "@/lib/supabase";
 import { supabase } from "@/lib/supabase"; 
+import PageHeader from "@/shared/components/desktop/PageHeader";
+import StatCard from "@/shared/components/desktop/StatCard";
 import Card from "@/shared/components/common/Card";
 
-function StatsCard({ title, value, icon, growth, iconClassName = "", linkTo }) {
-  return (
-    <Link to={linkTo} className="block transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
-      <Card className="relative overflow-hidden px-4 py-4 md:px-5 md:py-5 hover:border-blue-200 hover:shadow-md transition-all">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xs md:text-sm font-medium text-slate-500">{title}</p>
-            <h2 className="mt-2 md:mt-3 text-2xl md:text-3xl font-bold tracking-tight text-slate-900">{value}</h2>
-            <div className="mt-3 md:mt-4 inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-1 text-[10px] md:text-xs font-semibold text-emerald-600">
-              <TrendingUp size={12} /> {growth}
-            </div>
-          </div>
-          <div className={`rounded-xl md:rounded-2xl p-2.5 md:p-3 ${iconClassName}`}>
-            {icon}
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-}
+
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -129,8 +112,12 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-5 md:gap-8">
+      <PageHeader
+  title="Dashboard"
+  description="Ringkasan aktivitas sistem"
+/>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 md:gap-5">
-        <StatsCard
+        <StatCard
           title="Total Products"
           value={loading ? "..." : stats.totalProducts}
           growth="+0%"
@@ -138,7 +125,7 @@ export default function DashboardPage() {
           iconClassName="bg-blue-50 text-blue-600"
           linkTo="/inventory"
         />
-        <StatsCard
+        <StatCard
           title="Sales Orders"
           value={loading ? "..." : stats.salesOrders}
           growth="+0%"
@@ -146,7 +133,7 @@ export default function DashboardPage() {
           iconClassName="bg-emerald-50 text-emerald-600"
           linkTo="/sales"
         />
-        <StatsCard
+        <StatCard
           title="Manufacturing Orders"
           value={loading ? "..." : stats.manufacturingOrders}
           growth="+0%"
@@ -154,7 +141,7 @@ export default function DashboardPage() {
           iconClassName="bg-orange-50 text-orange-600"
           linkTo="/manufacturing"
         />
-        <StatsCard
+        <StatCard
           title="Inventory Value"
           value={loading ? "..." : formatRupiah(stats.inventoryValue)}
           growth="+0%"
