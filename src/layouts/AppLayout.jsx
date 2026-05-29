@@ -628,36 +628,60 @@ export default function AppLayout({ children }) {
     }
   `}
 >
-  {/* LEFT */}
+{/* LEFT */}
 
-  <div
+<div
+  className="
+    flex
+    items-center
+    gap-8
+  "
+>
+  <nav
     className="
-      flex
-      min-w-0
+      hidden
+      lg:flex
       items-center
-      gap-4
+      gap-6
     "
   >
     <button
-      onClick={() =>
-        setSidebarOpen(true)
-      }
       className="
-        flex
-        h-10
-        w-10
-        shrink-0
-        items-center
-        justify-center
-        text-slate-800
+        text-sm
+        font-medium
+        text-slate-600
+        hover:text-slate-900
         transition-colors
-        hover:text-slate-600
-        lg:hidden
       "
     >
-      <Menu size={24} />
+      Jual
     </button>
 
+    <button
+      className="
+        text-sm
+        font-medium
+        text-slate-600
+        hover:text-slate-900
+        transition-colors
+      "
+    >
+      Beli
+    </button>
+
+    <button
+      className="
+        text-sm
+        font-medium
+        text-slate-600
+        hover:text-slate-900
+        transition-colors
+      "
+    >
+      Produksi
+    </button>
+  </nav>
+</div>
     {/* MOBILE */}
 
     <h2
