@@ -618,8 +618,7 @@ export default function AppLayout({ children }) {
     border-b
     border-slate-200
 
-    px-4
-    lg:px-8
+    px-8
 
     ${
       isMini
@@ -628,93 +627,34 @@ export default function AppLayout({ children }) {
     }
   `}
 >
-{/* LEFT */}
+  {/* LEFT */}
 
-<div
-  className="
-    flex
-    items-center
-    gap-8
-  "
->
   <nav
     className="
       hidden
       lg:flex
       items-center
-      gap-6
+      gap-8
     "
   >
-    <button
-      className="
-        text-sm
-        font-medium
-        text-slate-600
-        hover:text-slate-900
-        transition-colors
-      "
-    >
+    <button className="text-sm font-medium text-slate-600 hover:text-slate-900">
       Jual
     </button>
 
-    <button
-      className="
-        text-sm
-        font-medium
-        text-slate-600
-        hover:text-slate-900
-        transition-colors
-      "
-    >
+    <button className="text-sm font-medium text-slate-600 hover:text-slate-900">
       Beli
     </button>
 
-    <button
-      className="
-        text-sm
-        font-medium
-        text-slate-600
-        hover:text-slate-900
-        transition-colors
-      "
-    >
+    <button className="text-sm font-medium text-slate-600 hover:text-slate-900">
       Produksi
     </button>
   </nav>
-</div>
-    {/* MOBILE */}
-
-    <h2
-      className="
-        truncate
-        text-2xl
-        font-bold
-        text-slate-900
-        lg:hidden
-      "
-    >
-      {pageTitle}
-    </h2>
-
-    {/* DESKTOP */}
-
-    <div className="hidden lg:block min-w-0">
-      <h1 className="text-2xl font-bold text-slate-900">
-        {pageTitle}
-      </h1>
-
-      <p className="text-sm text-slate-500">
-        Ringkasan aktivitas sistem
-      </p>
-    </div>
-  </div>
 
   {/* RIGHT */}
 
   <div
     className="
-      hidden
-      lg:flex
+      flex
       items-center
       gap-4
     "
@@ -728,7 +668,6 @@ export default function AppLayout({ children }) {
         justify-center
         rounded-xl
         hover:bg-slate-100
-        transition-colors
       "
     >
       🔔
@@ -748,14 +687,7 @@ export default function AppLayout({ children }) {
         py-2
       "
     >
-      <div
-        className="
-          h-8
-          w-8
-          rounded-full
-          bg-slate-200
-        "
-      />
+      <div className="h-8 w-8 rounded-full bg-slate-200" />
 
       <div>
         <p className="text-sm font-semibold">
