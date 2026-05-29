@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "@/shared/components/common/Button";
 
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import { getSalesOrderById, updateSalesStatus, voidSalesOrder } from "../services/sales.service";
 
 // ========================================
@@ -159,6 +162,53 @@ export default function SalesOrderDetailPage() {
     );
   }
 
+  function handleDownloadInvoice() {
+  const doc = new jsPDF();
+
+  doc.setFontSize(20);
+  doc.text("INVOICE", 14, 20);
+
+  doc.setFontSize(11);
+
+  doc.text(`No Invoice : ${order.so_number}`, 14, 35);
+  doc.text(`Tanggal : ${order.order_date}`, 14, 42);
+
+  doc.text(`Customer : ${order.customer_name}`, 14, 55);
+  doc.text(`Sales : ${order.sales_name || "-"}`, 14, 62);
+
+  const rows =
+    order.items?.map((item) => [
+      item.product?.name,
+      item.qty,
+      formatRupiah(item.price),
+      formatRupiah(item.subtotal),
+    ]) || [];
+
+  autoTable(doc, {
+    startY: 75,
+    head: [["Produk", "Qty", "Harga", "Subtotal"]],
+    body: rows,
+  });
+
+  const finalY = doc.lastAutoTable.finalY + 15;
+
+  doc.text(
+    `Total : ${formatRupiah(totals.revenue)}`,
+    140,
+    finalY
+  );
+
+  doc.text(
+    `Status Pembayaran : ${
+      order.is_paid ? "LUNAS" : "BELUM LUNAS"
+    }`,
+    14,
+    finalY + 15
+  );
+
+  doc.save(`Invoice_${order.so_number}.pdf`);
+}
+
   // ========================================
   // RENDER
   // ========================================
@@ -186,14 +236,30 @@ export default function SalesOrderDetailPage() {
             <p className="mt-2 text-sm text-slate-500">Sales order detail information</p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={() => navigate(`/sales/orders/edit/${order.id}`)}>Edit</Button>
-            {order.status !== "VOID" && (
-              <Button variant="danger" onClick={handleVoid} disabled={saving}>
-                Void
-              </Button>
-            )}
-          </div>
+         <div className="flex flex-wrap gap-2">
+  <Button
+    variant="secondary"
+    onClick={handleDownloadInvoice}
+  >
+    Download Invoice
+  </Button>
+
+  <Button
+    onClick={() => navigate(`/sales/orders/edit/${order.id}`)}
+  >
+    Edit
+  </Button>
+
+  {order.status !== "VOID" && (
+    <Button
+      variant="danger"
+      onClick={handleVoid}
+      disabled={saving}
+    >
+      Void
+    </Button>
+  )}
+</div>
         </div>
       </div>
 
