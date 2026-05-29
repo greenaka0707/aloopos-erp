@@ -261,7 +261,14 @@ export default function SalesOrdersPage() {
         },
       });
 
-      doc.save(`SO_Report_${activeTab}.pdf`);
+      const period =
+  dateFrom && dateTo
+    ? `${dateFrom}_${dateTo}`
+    : "all";
+
+doc.save(
+  `SO_Report_${activeTab}_${period}.pdf`
+);
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Sedang memuat sistem PDF, silakan coba lagi.");
