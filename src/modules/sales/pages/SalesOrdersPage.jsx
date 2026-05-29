@@ -50,7 +50,6 @@ function formatRupiah(value = 0) {
   )}`;
 }
 
-// Tetap dipertahankan (FIXED)
 function calculateOrderTotals(order) {
   const revenue =
     order.items?.reduce(
@@ -75,7 +74,6 @@ function calculateOrderTotals(order) {
   };
 }
 
-// Tetap dipertahankan (FIXED)
 function getStatusClass(status) {
   switch (status) {
     case "COMPLETED":
@@ -181,7 +179,7 @@ export default function SalesOrdersPage() {
   }, [orders]);
 
   /* ===================================================== */
-  /* COLUMNS (REFOUNDED: CLEANED ACTION BUTTON) */
+  /* COLUMNS (FIXED) */
   /* ===================================================== */
   const columns = [
     {
@@ -225,7 +223,6 @@ export default function SalesOrdersPage() {
         </span>
       ),
     },
-    // Kolom "Action" dihapus karena sekarang satu baris utuh bisa diklik langsung.
   ];
 
   /* ===================================================== */
@@ -346,12 +343,12 @@ export default function SalesOrdersPage() {
         }
       />
 
-      {/* UPDATE DI SINI: Ditambahkan prop onRowClick */}
+      {/* BERHASIL DIPERBARUI: Menyesuaikan URL ke rute detail yang tepat */}
       <DataTable
         columns={columns}
         data={preparedOrders}
         emptyMessage="Belum ada Sales Order"
-        onRowClick={(row) => navigate(`/sales/orders/${row.id}`)}
+        onRowClick={(row) => navigate(`/sales/${row.id}`)}
       />
     </div>
   );
