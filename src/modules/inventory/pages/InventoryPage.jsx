@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Pencil, Trash2, Plus } from "lucide-react";
 
-import Button from "@/shared/components/Button";
-import Input from "@/shared/components/Input";
-import Modal from "@/shared/components/Modal";
-import Table from "@/shared/components/Table";
+import Button from "@/shared/components/common/Button";
+import Input from "@/shared/components/common/Input";
+import Modal from "@/shared/components/common/Modal";
+import DataTable from "@/shared/components/desktop/DataTable";
+
+
 import { supabase } from "@/lib/supabase";
 
 export default function InventoryPage() {
