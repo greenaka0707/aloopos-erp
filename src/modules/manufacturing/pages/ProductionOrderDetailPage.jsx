@@ -5,7 +5,7 @@ import Modal from "@/shared/components/common/Modal";
 
 import { executeProduction, getProductionOrderById, receiveProduction } from "../services/production-order.service";
 
-import Tabs from "@/shared/components/Tabs";
+import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
 
 import { STATUS_TABS } from "../constants/status";
 
