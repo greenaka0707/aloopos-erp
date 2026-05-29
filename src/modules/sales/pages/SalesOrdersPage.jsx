@@ -292,7 +292,10 @@ export default function SalesOrdersPage() {
         columns={columns}
         data={filteredOrders}
         emptyMessage="Belum ada Sales Order"
-        onRowClick={(row) => navigate(`/sales/${row.id}`)}
+       onRowClick={(row) => {
+  console.log(row);
+  navigate(`/sales/${row.id}`);
+}}
       />
     </div>
   );
