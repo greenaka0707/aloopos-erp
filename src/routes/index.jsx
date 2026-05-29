@@ -31,6 +31,8 @@ import ReceivePaymentPage from "@/modules/receivable/pages/ReceivePaymentPage";
 
 import PayablesPage from "@/modules/payable/pages/PayablesPage";
 
+import DesignSystemPage from "@/pages/dev/DesignSystemPage";
+
 import LoginPage from "@/pages/LoginPage";
 
 import { useAuth } from "@/providers/AuthProvider";
@@ -137,9 +139,14 @@ export default function AppRoutes() {
 
 
       <Route
-  path="/test-mobile"
-  element={<TestMobile />}
-/>
+        path="/test-mobile"
+        element={<TestMobile />}
+      />
+
+      <Route
+        path="/dev/design-system"
+        element={<DesignSystemPage />}
+      />
       {/* =========================================
           FALLBACK
       ========================================= */}
