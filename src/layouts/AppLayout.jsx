@@ -602,113 +602,149 @@ export default function AppLayout({ children }) {
         {/* HEADER */}
         {/* ===================================================== */}
 
-        <header
-          className={`
-            fixed
-            inset-x-0
-            top-0
-            z-30
+       <header
+  className={`
+    fixed
+    top-0
+    right-0
+    z-30
 
-            flex
-            h-[88px]
-            items-center
-            justify-between
+    flex
+    h-[72px]
+    items-center
+    justify-between
 
-            bg-gradient-to-b
-            from-white
-            via-white
-            to-transparent
+    bg-white
+    border-b
+    border-slate-200
 
-            px-4
-            pt-1
-            pb-3
+    px-4
+    lg:px-8
 
-            lg:px-8
+    ${
+      isMini
+        ? "left-0 lg:left-[88px]"
+        : "left-0 lg:left-[280px]"
+    }
+  `}
+>
+  {/* LEFT */}
 
-            pointer-events-none
+  <div
+    className="
+      flex
+      min-w-0
+      items-center
+      gap-4
+    "
+  >
+    <button
+      onClick={() =>
+        setSidebarOpen(true)
+      }
+      className="
+        flex
+        h-10
+        w-10
+        shrink-0
+        items-center
+        justify-center
+        text-slate-800
+        transition-colors
+        hover:text-slate-600
+        lg:hidden
+      "
+    >
+      <Menu size={24} />
+    </button>
 
-            ${
-              isMini
-                ? "lg:left-[88px]"
-                : "lg:left-[280px]"
-            }
-          `}
-        >
+    {/* MOBILE */}
 
-          {/* LEFT */}
+    <h2
+      className="
+        truncate
+        text-2xl
+        font-bold
+        text-slate-900
+        lg:hidden
+      "
+    >
+      {pageTitle}
+    </h2>
 
-          <div
-            className="
-              pointer-events-auto
-              flex
-              min-w-0
-              items-center
-              gap-4
-            "
-          >
+    {/* DESKTOP */}
 
-            <button
-              onClick={() =>
-                setSidebarOpen(true)
-              }
-              className="
-                flex
-                h-10
-                w-10
-                shrink-0
-                items-center
-                justify-center
-                text-slate-800
-                transition-colors
-                hover:text-slate-600
-                lg:hidden
-              "
-            >
-              <Menu size={24} />
-            </button>
+    <div className="hidden lg:block min-w-0">
+      <h1 className="text-2xl font-bold text-slate-900">
+        {pageTitle}
+      </h1>
 
-            <div className="min-w-0">
+      <p className="text-sm text-slate-500">
+        Ringkasan aktivitas sistem
+      </p>
+    </div>
+  </div>
 
-              <h2
-                className="
-                  truncate
-                  text-2xl
-                  font-bold
-                  text-slate-900
-                  lg:hidden
-                "
-              >
-                {pageTitle}
-              </h2>
+  {/* RIGHT */}
 
-              <h2
-                className="
-                  hidden
-                  text-base
-                  font-semibold
-                  text-slate-900
-                  lg:block lg:text-lg
-                "
-              >
-                Enterprise Manufacturing
-                System
-              </h2>
+  <div
+    className="
+      hidden
+      lg:flex
+      items-center
+      gap-4
+    "
+  >
+    <button
+      className="
+        flex
+        h-10
+        w-10
+        items-center
+        justify-center
+        rounded-xl
+        hover:bg-slate-100
+        transition-colors
+      "
+    >
+      🔔
+    </button>
 
-              <p
-                className="
-                  mt-1
-                  hidden
-                  text-sm
-                  text-slate-500
-                  lg:block
-                "
-              >
-                Inventory • Manufacturing •
-                Finance
-              </p>
-            </div>
-          </div>
-        </header>
+    <div
+      className="
+        flex
+        items-center
+        gap-3
+
+        rounded-xl
+        border
+        border-slate-200
+
+        px-3
+        py-2
+      "
+    >
+      <div
+        className="
+          h-8
+          w-8
+          rounded-full
+          bg-slate-200
+        "
+      />
+
+      <div>
+        <p className="text-sm font-semibold">
+          {user?.email || "Admin"}
+        </p>
+
+        <p className="text-xs text-slate-500">
+          Administrator
+        </p>
+      </div>
+    </div>
+  </div>
+</header>
 
         {/* ===================================================== */}
         {/* PAGE */}
@@ -718,7 +754,7 @@ export default function AppLayout({ children }) {
           className="
             bg-slate-100
 
-            pt-[72px]
+            pt-[88px]
             px-4
             pb-5
 
