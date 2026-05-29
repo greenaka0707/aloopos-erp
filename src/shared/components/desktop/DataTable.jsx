@@ -2,6 +2,7 @@ export default function DataTable({
   columns = [],
   data = [],
   emptyMessage = "Belum ada data",
+  onRowClick,
 }) {
   return (
     <div
@@ -53,11 +54,17 @@ export default function DataTable({
             ) : (
               data.map((row, index) => (
                 <tr
-                  key={index}
-                  className="
+                  key={row.id || index}
+                  onClick={() => onRowClick?.(row)}
+                  className={`
                     border-t
                     border-slate-100
-                  "
+                    ${
+                      onRowClick
+                        ? "cursor-pointer hover:bg-slate-50 transition-colors"
+                        : ""
+                    }
+                  `}
                 >
                   {columns.map((column) => (
                     <td
