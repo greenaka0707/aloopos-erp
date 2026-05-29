@@ -295,212 +295,218 @@ export default function AppLayout({ children }) {
         {/* NAVIGATION */}
         {/* ===================================================== */}
 
-        <nav
-          className="
-            flex-1
-            overflow-y-auto
-            px-4 py-5
-          "
-        >
+      <nav
+  className="
+    flex-1
+    overflow-y-auto
+    px-4 py-5
+  "
+>
+  <div className="flex flex-col gap-4">
 
-          <div className="flex flex-col gap-1">
+    {navigation.map((section) => (
+      <div
+        key={section.section}
+        className="space-y-1"
+      >
+        {!isMini && (
+          <p
+            className="
+              px-3
+              pb-2
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-wider
+              text-slate-400
+            "
+          >
+            {section.section}
+          </p>
+        )}
 
-            {navigation.map((item) => {
-              if (!item.children) {
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({
-                      isActive,
-                    }) => `
-                      flex items-center
+        {section.items.map((item) => {
+          if (!item.children) {
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => `
+                  flex items-center
 
-                      ${
-                        isMini
-                          ? "justify-center"
-                          : "gap-3"
-                      }
+                  ${
+                    isMini
+                      ? "justify-center"
+                      : "gap-3"
+                  }
 
-                      rounded-2xl
-                      px-4 py-3
+                  rounded-xl
+                  px-3
+                  py-2.5
 
-                      text-sm
-                      font-medium
+                  text-sm
+                  font-medium
 
-                      transition-colors
+                  transition-colors
 
-                      ${
-                        isActive
-                          ? "bg-blue-50 text-blue-600"
-                          : "text-slate-700 hover:bg-slate-100"
-                      }
-                    `}
-                  >
-                    {item.icon && (
-                      <item.icon
-                        size={18}
-                        strokeWidth={2}
-                      />
-                    )}
+                  ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }
+                `}
+              >
+                {item.icon && (
+                  <item.icon
+                    size={18}
+                    strokeWidth={2}
+                  />
+                )}
 
-                    {!isMini && (
-                      <span>
-                        {item.label}
-                      </span>
-                    )}
-                  </NavLink>
-                );
-              }
+                {!isMini && (
+                  <span>{item.label}</span>
+                )}
+              </NavLink>
+            );
+          }
 
-              const isGroupActive =
-                item.children.some((child) =>
-                  location.pathname.startsWith(
-                    child.path,
-                  ),
-                );
+          const isGroupActive =
+            item.children.some((child) =>
+              location.pathname.startsWith(
+                child.path,
+              ),
+            );
 
-              const isOpen =
-                openMenu === item.label ||
-                (openMenu === null &&
-                  isGroupActive);
+          const isOpen =
+            openMenu === item.label ||
+            (openMenu === null &&
+              isGroupActive);
 
-              return (
+          return (
+            <div
+              key={item.label}
+              className="space-y-1"
+            >
+              <button
+                onClick={() =>
+                  setOpenMenu(
+                    openMenu === item.label
+                      ? null
+                      : item.label,
+                  )
+                }
+                className={`
+                  flex
+                  w-full
+                  items-center
+
+                  ${
+                    isMini
+                      ? "justify-center"
+                      : "justify-between"
+                  }
+
+                  rounded-xl
+                  px-3
+                  py-2.5
+
+                  text-sm
+                  font-medium
+
+                  transition-colors
+
+                  ${
+                    isGroupActive
+                      ? "bg-slate-100 text-slate-900"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }
+                `}
+              >
                 <div
-                  key={item.label}
-                  className="mt-2"
-                >
+                  className={`
+                    flex items-center
 
-                  <button
-                    onClick={() =>
-                      setOpenMenu(
-                        openMenu ===
-                          item.label
-                          ? null
-                          : item.label,
-                      )
+                    ${
+                      isMini
+                        ? "justify-center"
+                        : "gap-3"
                     }
-                    className={`
-                      flex
-                      w-full
-                      items-center
+                  `}
+                >
+                  {item.icon && (
+                    <item.icon
+                      size={18}
+                      strokeWidth={2}
+                    />
+                  )}
 
-                      ${
-                        isMini
-                          ? "justify-center"
-                          : "justify-between"
-                      }
-
-                      rounded-2xl
-                      px-4 py-3
-
-                      text-sm
-                      font-semibold
-
-                      transition-colors
-
-                      ${
-                        isGroupActive
-                          ? "bg-slate-100 text-slate-900"
-                          : "text-slate-700 hover:bg-slate-100"
-                      }
-                    `}
-                  >
-
-                    <div
-                      className={`
-                        flex items-center
-
-                        ${
-                          isMini
-                            ? "justify-center"
-                            : "gap-3"
-                        }
-                      `}
-                    >
-
-                      {item.icon && (
-                        <item.icon
-                          size={18}
-                          strokeWidth={2}
-                        />
-                      )}
-
-                      {!isMini && (
-                        <span>
-                          {item.label}
-                        </span>
-                      )}
-                    </div>
-
-                    {!isMini && (
-                      <ChevronDown
-                        size={16}
-                        className={`
-                          transition-transform
-                          duration-200
-                          ${
-                            isOpen
-                              ? "rotate-180"
-                              : ""
-                          }
-                        `}
-                      />
-                    )}
-                  </button>
-
-                  {!isMini && isOpen && (
-                    <div
-                      className="
-                        mt-1
-                        ml-3
-
-                        flex
-                        flex-col
-                        gap-1
-
-                        border-l
-                        border-slate-200
-
-                        pl-4
-                      "
-                    >
-
-                      {item.children.map(
-                        (child) => (
-                          <NavLink
-                            key={child.path}
-                            to={child.path}
-                            className={({
-                              isActive,
-                            }) => `
-                              rounded-xl
-                              px-4 py-3
-
-                              text-sm
-                              font-medium
-
-                              transition-colors
-
-                              ${
-                                isActive
-                                  ? "bg-blue-50 text-blue-600"
-                                  : "text-slate-600 hover:bg-slate-100"
-                              }
-                            `}
-                          >
-                            {child.label}
-                          </NavLink>
-                        ),
-                      )}
-                    </div>
+                  {!isMini && (
+                    <span>{item.label}</span>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        </nav>
 
+                {!isMini && (
+                  <ChevronDown
+                    size={16}
+                    className={`
+                      transition-transform
+                      duration-200
+                      ${
+                        isOpen
+                          ? "rotate-180"
+                          : ""
+                      }
+                    `}
+                  />
+                )}
+              </button>
+
+              {!isMini && isOpen && (
+                <div
+                  className="
+                    ml-3
+                    border-l
+                    border-slate-200
+                    pl-3
+                  "
+                >
+                  {item.children.map(
+                    (child) => (
+                      <NavLink
+                        key={child.path}
+                        to={child.path}
+                        className={({
+                          isActive,
+                        }) => `
+                          block
+                          rounded-xl
+                          px-3
+                          py-2
+
+                          text-sm
+
+                          transition-colors
+
+                          ${
+                            isActive
+                              ? "bg-blue-50 text-blue-600"
+                              : "text-slate-600 hover:bg-slate-100"
+                          }
+                        `}
+                      >
+                        {child.label}
+                      </NavLink>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    ))}
+  </div>
+</nav>
         {/* ===================================================== */}
         {/* SIDEBAR FOOTER */}
         {/* ===================================================== */}
