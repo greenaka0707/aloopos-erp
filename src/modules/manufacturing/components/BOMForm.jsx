@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import Button from "@/shared/components/Button";
 
-import Input from "@/shared/components/Input";
+import Input from "@/shared/components/common/Input";
 
 import { supabase } from "@/lib/supabase";
 
