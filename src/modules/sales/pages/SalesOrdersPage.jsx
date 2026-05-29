@@ -20,7 +20,7 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-import Tabs from "@/shared/components/Tabs";
+import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
 
 import { getSalesOrders } from "../services/sales.service";
 
@@ -404,7 +404,7 @@ export default function SalesOrdersPage() {
 
         <div className="min-w-max">
 
-          <Tabs
+          <DesktopTabs
             tabs={TABS.map(
               (tab) =>
                 `${tab} (${tabCounts[tab]})`,
