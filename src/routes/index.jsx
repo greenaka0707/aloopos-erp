@@ -37,7 +37,6 @@ import LoginPage from "@/pages/LoginPage";
 
 import { useAuth } from "@/providers/AuthProvider";
 
-import TestMobile from "@/pages/TestMobile";
 
 export default function AppRoutes() {
   const { user } = useAuth();
@@ -131,7 +130,7 @@ export default function AppRoutes() {
 
       <Route path="/receivable" element={<ReceivablePage />} />
 
-      <Route path="/receivable" element={<ReceivablePage />} />
+
 
       <Route path="/receivable/payment/:id" element={<ReceivePaymentPage />} />
 
@@ -139,14 +138,10 @@ export default function AppRoutes() {
 
 
       <Route
-        path="/test-mobile"
-        element={<TestMobile />}
-      />
-
-      <Route
         path="/dev/design-system"
         element={<DesignSystemPage />}
       />
+
       {/* =========================================
           FALLBACK
       ========================================= */}
