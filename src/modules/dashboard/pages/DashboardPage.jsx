@@ -12,7 +12,7 @@ import {
 
 // SESUAIKAN JIKA IMPORT DEFAULT: import supabase from "@/lib/supabase";
 import { supabase } from "@/lib/supabase"; 
-import Card from "@/shared/components/Card";
+import Card from "@/shared/components/common/Card";
 
 function StatsCard({ title, value, icon, growth, iconClassName = "", linkTo }) {
   return (
