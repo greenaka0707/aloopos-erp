@@ -8,8 +8,8 @@ import Toolbar from "@/shared/components/desktop/Toolbar";
 import StatCard from "@/shared/components/desktop/StatCard";
 import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
 
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 
 
@@ -248,14 +248,17 @@ export default function SalesOrdersPage() {
         formatRupiah(summary.profit),
       ]);
 
-      autoTable(doc, {
+     doc.autoTable({
         head: [tableColumn],
         body: tableRows,
         startY: 42,
         theme: "grid",
         styles: { fontSize: 9 },
         headStyles: { fillColor: [41, 128, 185] },
-        columnStyles: { 4: { halign: "right" }, 5: { halign: "right" } },
+        columnStyles: {
+          4: { halign: "right" },
+          5: { halign: "right" },
+        },
       });
 
       doc.save(`SO_Report_${activeTab}.pdf`);
