@@ -50,6 +50,7 @@ function formatRupiah(value = 0) {
   )}`;
 }
 
+// Tetap dipertahankan (FIXED)
 function calculateOrderTotals(order) {
   const revenue =
     order.items?.reduce(
@@ -74,6 +75,7 @@ function calculateOrderTotals(order) {
   };
 }
 
+// Tetap dipertahankan (FIXED)
 function getStatusClass(status) {
   switch (status) {
     case "COMPLETED":
@@ -99,35 +101,21 @@ function getStatusClass(status) {
 
 export default function SalesOrdersPage() {
   const navigate = useNavigate();
-
-  const [searchParams] =
-    useSearchParams();
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [orders, setOrders] =
-    useState([]);
-
-  const [search, setSearch] =
-    useState("");
-
-  const [activeTab, setActiveTab] =
-    useState(
-      searchParams.get("tab") || "All",
-    );
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "All",
+  );
 
   /* ===================================================== */
-  /* LOAD DATA */
+  /* LOAD DATA (FIXED) */
   /* ===================================================== */
-
   async function loadOrders() {
     try {
       setLoading(true);
-
-      const data =
-        await getSalesOrders();
-
+      const data = await getSalesOrders();
       setOrders(data || []);
     } catch (error) {
       console.error(error);
@@ -141,166 +129,90 @@ export default function SalesOrdersPage() {
   }, []);
 
   /* ===================================================== */
-  /* FILTERED DATA */
+  /* FILTERED, PREPARED & SUMMARY DATA (FIXED) */
   /* ===================================================== */
-
   const filteredOrders = useMemo(() => {
     let data = [...orders];
-
     if (activeTab !== "All") {
       data = data.filter(
-        (order) =>
-          order.status ===
-          activeTab.toUpperCase(),
+        (order) => order.status === activeTab.toUpperCase(),
       );
     }
-
     if (search.trim()) {
-      const keyword =
-        search.toLowerCase();
-
+      const keyword = search.toLowerCase();
       data = data.filter(
         (order) =>
-          String(order.so_number || "")
-            .toLowerCase()
-            .includes(keyword) ||
-          String(
-            order.customer_name || "",
-          )
-            .toLowerCase()
-            .includes(keyword),
+          String(order.so_number || "").toLowerCase().includes(keyword) ||
+          String(order.customer_name || "").toLowerCase().includes(keyword),
       );
     }
-
     return data;
   }, [orders, activeTab, search]);
 
-  /* ===================================================== */
-  /* PREPARED DATA */
-  /* ===================================================== */
-
   const preparedOrders = useMemo(() => {
-    return filteredOrders.map(
-      (order) => {
-        const totals =
-          calculateOrderTotals(order);
-
-        return {
-          ...order,
-          ...totals,
-        };
-      },
-    );
+    return filteredOrders.map((order) => {
+      const totals = calculateOrderTotals(order);
+      return { ...order, ...totals };
+    });
   }, [filteredOrders]);
-
-  /* ===================================================== */
-  /* SUMMARY */
-  /* ===================================================== */
 
   const summary = useMemo(() => {
     return preparedOrders.reduce(
       (acc, order) => {
-        acc.revenue +=
-          order.revenue;
-
+        acc.revenue += order.revenue;
         acc.hpp += order.hpp;
-
-        acc.profit +=
-          order.profit;
-
+        acc.profit += order.profit;
         return acc;
       },
-      {
-        revenue: 0,
-        hpp: 0,
-        profit: 0,
-      },
+      { revenue: 0, hpp: 0, profit: 0 },
     );
   }, [preparedOrders]);
-
-  /* ===================================================== */
-  /* TAB COUNTS */
-  /* ===================================================== */
 
   const tabCounts = useMemo(() => {
     return {
       All: orders.length,
-
-      Pending: orders.filter(
-        (o) =>
-          o.status === "PENDING",
-      ).length,
-
-      Campuran: orders.filter(
-        (o) =>
-          o.status === "DIKEMAS",
-      ).length,
-
-      Dikemas: orders.filter(
-        (o) =>
-          o.status === "DIKEMAS",
-      ).length,
-
-      Dikirim: orders.filter(
-        (o) =>
-          o.status === "DIKIRIM",
-      ).length,
-
-      Completed: orders.filter(
-        (o) =>
-          o.status === "COMPLETED",
-      ).length,
-
-      Void: orders.filter(
-        (o) => o.status === "VOID",
-      ).length,
+      Pending: orders.filter((o) => o.status === "PENDING").length,
+      Campuran: orders.filter((o) => o.status === "DIKEMAS").length,
+      Dikemas: orders.filter((o) => o.status === "DIKEMAS").length,
+      Dikirim: orders.filter((o) => o.status === "DIKIRIM").length,
+      Completed: orders.filter((o) => o.status === "COMPLETED").length,
+      Void: orders.filter((o) => o.status === "VOID").length,
     };
   }, [orders]);
 
-
+  /* ===================================================== */
+  /* COLUMNS (REFOUNDED: CLEANED ACTION BUTTON) */
+  /* ===================================================== */
   const columns = [
     {
       key: "so_number",
       label: "SO Number",
     },
-
     {
       key: "customer_name",
       label: "Customer",
     },
-
     {
       key: "status",
       label: "Status",
-
       render: (row) => (
         <span
-          className={`
-            inline-flex
-            rounded-full
-            px-2 py-1
-            text-xs
-            font-semibold
-            ${getStatusClass(row.status)}
-          `}
+          className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusClass(
+            row.status,
+          )}`}
         >
           {row.status}
         </span>
       ),
     },
-
     {
       key: "revenue",
       label: "Revenue",
-
-      render: (row) =>
-        formatRupiah(row.revenue),
+      render: (row) => formatRupiah(row.revenue),
     },
-
     {
       key: "profit",
       label: "Profit",
-
       render: (row) => (
         <span
           className={
@@ -313,165 +225,65 @@ export default function SalesOrdersPage() {
         </span>
       ),
     },
-
-    {
-      key: "detail",
-      label: "Action",
-
-      render: (row) => (
-        <button
-          onClick={() =>
-            navigate(
-              `/sales/orders/${row.id}`,
-            )
-          }
-          className="
-            text-blue-600
-            font-medium
-          "
-        >
-          Detail
-        </button>
-      ),
-    },
+    // Kolom "Action" dihapus karena sekarang satu baris utuh bisa diklik langsung.
   ];
-  
-  /* ===================================================== */
-  /* DOWNLOAD PDF */
-  /* ===================================================== */
 
+  /* ===================================================== */
+  /* DOWNLOAD PDF (FIXED) */
+  /* ===================================================== */
   const handleDownloadPDF = () => {
     try {
       const doc = new jsPDF();
-
       doc.setFontSize(18);
-
-      doc.text(
-        "Sales Orders Report",
-        14,
-        22,
-      );
-
+      doc.text("Sales Orders Report", 14, 22);
       doc.setFontSize(11);
-
       doc.setTextColor(100);
+      doc.text(`Status: ${activeTab}`, 14, 30);
 
-      doc.text(
-        `Status: ${activeTab}`,
-        14,
-        30,
-      );
-
-      const tableColumn = [
-        "SO Number",
-        "Customer",
-        "Date",
-        "Status",
-        "Revenue",
-        "Profit",
-      ];
-
+      const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
       const tableRows = [];
 
-      preparedOrders.forEach(
-        (order) => {
-          const orderDate =
-            order.created_at
-              ? order.created_at.split(
-                  "T",
-                )[0]
-              : "-";
-
-          tableRows.push([
-            order.so_number,
-            order.customer_name,
-            orderDate,
-            order.status,
-            formatRupiah(
-              order.revenue,
-            ),
-            formatRupiah(
-              order.profit,
-            ),
-          ]);
-        },
-      );
+      preparedOrders.forEach((order) => {
+        const orderDate = order.created_at ? order.created_at.split("T")[0] : "-";
+        tableRows.push([
+          order.so_number,
+          order.customer_name,
+          orderDate,
+          order.status,
+          formatRupiah(order.revenue),
+          formatRupiah(order.profit),
+        ]);
+      });
 
       tableRows.push([
-        "",
-        "",
-        "",
-        "TOTAL",
-        formatRupiah(
-          summary.revenue,
-        ),
-        formatRupiah(
-          summary.profit,
-        ),
+        "", "", "", "TOTAL",
+        formatRupiah(summary.revenue),
+        formatRupiah(summary.profit),
       ]);
 
       autoTable(doc, {
         head: [tableColumn],
-
         body: tableRows,
-
         startY: 35,
-
         theme: "grid",
-
-        styles: {
-          fontSize: 9,
-        },
-
-        headStyles: {
-          fillColor: [
-            41, 128, 185,
-          ],
-        },
-
-        columnStyles: {
-          4: {
-            halign: "right",
-          },
-
-          5: {
-            halign: "right",
-          },
-        },
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [41, 128, 185] },
+        columnStyles: { 4: { halign: "right" }, 5: { halign: "right" } },
       });
 
-      doc.save(
-        `SO_Report_${activeTab}.pdf`,
-      );
+      doc.save(`SO_Report_${activeTab}.pdf`);
     } catch (error) {
       console.error(error);
-
-      alert(
-        "Sedang memuat sistem PDF, silakan coba lagi.",
-      );
+      alert("Sedang memuat sistem PDF, silakan coba lagi.");
     }
   };
-
-  /* ===================================================== */
-  /* LOADING */
-  /* ===================================================== */
 
   if (loading) {
     return (
       <div className="space-y-3 pb-32">
-        {[1, 2, 3, 4].map(
-          (item) => (
-            <div
-              key={item}
-              className="
-                h-[120px]
-                animate-pulse
-                rounded-2xl
-                bg-slate-200
-              "
-            />
-          ),
-        )}
+        {[1, 2, 3, 4].map((item) => (
+          <div key={item} className="h-[120px] animate-pulse rounded-2xl bg-slate-200" />
+        ))}
       </div>
     );
   }
@@ -479,30 +291,15 @@ export default function SalesOrdersPage() {
   /* ===================================================== */
   /* RENDER */
   /* ===================================================== */
-
   return (
     <div className="space-y-6">
-
       <PageHeader
         title="Sales Orders"
         description="Manage sales order transactions"
         actions={
           <button
-            onClick={() =>
-              navigate("/sales/create")
-            }
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-lg
-              bg-blue-600
-              px-4
-              py-2
-              text-sm
-              font-medium
-              text-white
-            "
+            onClick={() => navigate("/sales/create")}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white"
           >
             <Plus size={16} />
             Tambah Order
@@ -511,37 +308,16 @@ export default function SalesOrdersPage() {
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-
-        <StatCard
-          title="Revenue"
-          value={formatRupiah(summary.revenue)}
-        />
-
-        <StatCard
-          title="HPP"
-          value={formatRupiah(summary.hpp)}
-        />
-
-        <StatCard
-          title="Profit"
-          value={formatRupiah(summary.profit)}
-        />
-
+        <StatCard title="Revenue" value={formatRupiah(summary.revenue)} />
+        <StatCard title="HPP" value={formatRupiah(summary.hpp)} />
+        <StatCard title="Profit" value={formatRupiah(summary.profit)} />
       </div>
 
       <DesktopTabs
-        tabs={TABS.map(
-          (tab) =>
-            `${tab} (${tabCounts[tab] || 0})`,
-        )}
+        tabs={TABS.map((tab) => `${tab} (${tabCounts[tab] || 0})`)}
         value={`${activeTab} (${tabCounts[activeTab] || 0})`}
         onChange={(value) => {
-          const cleanValue =
-            value.replace(
-              /\s\(\d+\)$/,
-              "",
-            );
-
+          const cleanValue = value.replace(/\s\(\d+\)$/, "");
           setActiveTab(cleanValue);
         }}
       />
@@ -549,52 +325,20 @@ export default function SalesOrdersPage() {
       <Toolbar
         left={
           <div className="relative">
-            <Search
-              size={16}
-              className="
-                absolute
-                left-3
-                top-1/2
-                -translate-y-1/2
-                text-slate-400
-              "
-            />
-
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={search}
               placeholder="Cari SO atau Customer..."
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
-              className="
-                h-10
-                w-[320px]
-                rounded-lg
-                border
-                border-slate-300
-                pl-10
-                pr-3
-                text-sm
-              "
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-10 w-[320px] rounded-lg border border-slate-300 pl-10 pr-3 text-sm"
             />
           </div>
         }
-
         right={
           <button
             onClick={handleDownloadPDF}
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-lg
-              border
-              border-slate-300
-              px-4
-              py-2
-              text-sm
-            "
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm"
           >
             <Download size={16} />
             Export PDF
@@ -602,12 +346,13 @@ export default function SalesOrdersPage() {
         }
       />
 
+      {/* UPDATE DI SINI: Ditambahkan prop onRowClick */}
       <DataTable
         columns={columns}
         data={preparedOrders}
         emptyMessage="Belum ada Sales Order"
+        onRowClick={(row) => navigate(`/sales/orders/${row.id}`)}
       />
-
     </div>
   );
 }
