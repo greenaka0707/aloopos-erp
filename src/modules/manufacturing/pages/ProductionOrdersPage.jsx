@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 
-import Table from "@/shared/components/Table";
-
-import Modal from "@/shared/components/Modal";
+import DataTable from "@/shared/components/desktop/DataTable";
+import Modal from "@/shared/components/common/Modal";
+import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
 
 import { createProductionOrder, getBOMDetail, getBOMOptions, getProductionOrders } from "../services/production-order.service";
 
 import { useNavigate } from "react-router-dom";
 
-import Tabs from "@/shared/components/Tabs";
+
 
 import { STATUS_TABS } from "../constants/status";
 
