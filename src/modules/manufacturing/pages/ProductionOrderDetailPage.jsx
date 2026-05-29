@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import Modal from "@/shared/components/common/Modal";
+import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
+import { STATUS_TABS } from "../constants/status";
 
 import { executeProduction, getProductionOrderById, receiveProduction } from "../services/production-order.service";
 
-import DesktopTabs from "@/shared/components/desktop/DesktopTabs";
-
-import { STATUS_TABS } from "../constants/status";
 
 export default function ProductionOrderDetailPage() {
   const { id } = useParams();
