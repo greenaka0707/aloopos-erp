@@ -229,7 +229,7 @@ export default function SalesOrdersPage() {
 );
 
       const tableColumn = ["SO Number", "Customer", "Date", "Status", "Revenue", "Profit"];
-      
+      console.log("PDF DATA", filteredOrders);
       const tableRows = filteredOrders.map((order) => [
         order.so_number,
         order.customer_name,
