@@ -13,9 +13,12 @@ import {
   Search,
   Download,
   Plus,
-  ChevronRight,
-  FileText,
 } from "lucide-react";
+
+import DataTable from "@/shared/components/desktop/DataTable";
+import PageHeader from "@/shared/components/desktop/PageHeader";
+import Toolbar from "@/shared/components/desktop/Toolbar";
+import StatCard from "@/shared/components/desktop/StatCard";
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -249,6 +252,84 @@ export default function SalesOrdersPage() {
     };
   }, [orders]);
 
+
+  const columns = [
+  {
+    key: "so_number",
+    label: "SO Number",
+  },
+
+  {
+    key: "customer_name",
+    label: "Customer",
+  },
+
+  {
+    key: "status",
+    label: "Status",
+
+    render: (row) => (
+      <span
+        className={`
+          inline-flex
+          rounded-full
+          px-2 py-1
+          text-xs
+          font-semibold
+          ${getStatusClass(row.status)}
+        `}
+      >
+        {row.status}
+      </span>
+    ),
+  },
+
+  {
+    key: "revenue",
+    label: "Revenue",
+
+    render: (row) =>
+      formatRupiah(row.revenue),
+  },
+
+  {
+    key: "profit",
+    label: "Profit",
+
+    render: (row) => (
+      <span
+        className={
+          row.profit >= 0
+            ? "font-semibold text-emerald-600"
+            : "font-semibold text-red-600"
+        }
+      >
+        {formatRupiah(row.profit)}
+      </span>
+    ),
+  },
+
+  {
+    key: "detail",
+    label: "Action",
+
+    render: (row) => (
+      <button
+        onClick={() =>
+          navigate(
+            `/sales/orders/${row.id}`,
+          )
+        }
+        className="
+          text-blue-600
+          font-medium
+        "
+      >
+        Detail
+      </button>
+    ),
+  },
+];
   /* ===================================================== */
   /* DOWNLOAD PDF */
   /* ===================================================== */
@@ -393,8 +474,136 @@ export default function SalesOrdersPage() {
   /* RENDER */
   /* ===================================================== */
 
-  return (
-    <div className="relative">
+ return (
+  <div className="space-y-6">
+
+    <PageHeader
+      title="Sales Orders"
+      description="Manage sales order transactions"
+      actions={
+        <button
+          onClick={() =>
+            navigate("/sales/create")
+          }
+          className="
+            inline-flex
+            items-center
+            gap-2
+            rounded-lg
+            bg-blue-600
+            px-4
+            py-2
+            text-sm
+            font-medium
+            text-white
+          "
+        >
+          <Plus size={16} />
+          Tambah Order
+        </button>
+      }
+    />
+
+    <div className="grid gap-4 lg:grid-cols-3">
+
+      <StatCard
+        title="Revenue"
+        value={formatRupiah(summary.revenue)}
+      />
+
+      <StatCard
+        title="HPP"
+        value={formatRupiah(summary.hpp)}
+      />
+
+      <StatCard
+        title="Profit"
+        value={formatRupiah(summary.profit)}
+      />
+
+    </div>
+
+    <DesktopTabs
+      tabs={TABS.map(
+        (tab) =>
+          `${tab} (${tabCounts[tab]})`,
+      )}
+      value={`${activeTab} (${tabCounts[activeTab]})`}
+      onChange={(value) => {
+        const cleanValue =
+          value.replace(
+            /\s\(\d+\)$/,
+            "",
+          );
+
+        setActiveTab(cleanValue);
+      }}
+    />
+
+    <Toolbar
+      left={
+        <div className="relative">
+          <Search
+            size={16}
+            className="
+              absolute
+              left-3
+              top-1/2
+              -translate-y-1/2
+              text-slate-400
+            "
+          />
+
+          <input
+            type="text"
+            value={search}
+            placeholder="Cari SO atau Customer..."
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
+            className="
+              h-10
+              w-[320px]
+              rounded-lg
+              border
+              border-slate-300
+              pl-10
+              pr-3
+              text-sm
+            "
+          />
+        </div>
+      }
+
+      right={
+        <button
+          onClick={handleDownloadPDF}
+          className="
+            inline-flex
+            items-center
+            gap-2
+            rounded-lg
+            border
+            border-slate-300
+            px-4
+            py-2
+            text-sm
+          "
+        >
+          <Download size={16} />
+          Export PDF
+        </button>
+      }
+    />
+
+    <DataTable
+      columns={columns}
+      data={preparedOrders}
+      emptyMessage="Belum ada Sales Order"
+    />
+
+  </div>
+);
 
       {/* ======================================== */}
       {/* TABS */}
@@ -427,326 +636,6 @@ export default function SalesOrdersPage() {
         </div>
       </div>
 
-      {/* ======================================== */}
-      {/* LIST */}
-      {/* ======================================== */}
+     
 
-      <div className="space-y-3 pb-32">
-
-        {preparedOrders.length ===
-        0 ? (
-          <div
-            className="
-              flex flex-col
-              items-center
-              justify-center
-              rounded-2xl
-              border border-slate-200
-              bg-white
-              px-4 py-16
-              text-center
-              shadow-sm
-            "
-          >
-
-            <div
-              className="
-                mb-3
-                rounded-full
-                bg-slate-100
-                p-3
-                text-slate-400
-              "
-            >
-              <FileText size={24} />
-            </div>
-
-            <h2
-              className="
-                text-base
-                font-semibold
-                text-slate-900
-              "
-            >
-              No Sales Orders Found
-            </h2>
-
-            <p
-              className="
-                mt-1
-                text-sm
-                text-slate-500
-              "
-            >
-              {search
-                ? "Try adjusting your filters"
-                : "Create your first sales order"}
-            </p>
-          </div>
-        ) : (
-          preparedOrders.map(
-            (order) => (
-              <button
-                key={order.id}
-                onClick={() =>
-                  navigate(
-                    `/sales/orders/${order.id}`,
-                  )
-                }
-                className="
-                  w-full
-                  text-left
-                  transition-all
-                  duration-200
-                  active:scale-[0.99]
-                "
-              >
-
-                <div
-                  className="
-                    rounded-2xl
-                    border border-slate-200
-                    bg-white
-                    p-3.5
-                    shadow-sm
-                  "
-                >
-
-                  <div
-                    className="
-                      flex items-start
-                      justify-between
-                      gap-3
-                    "
-                  >
-
-                    <div className="min-w-0 flex-1">
-
-                      <h3
-                        className="
-                          truncate
-                          text-sm
-                          font-bold
-                          text-blue-600
-                        "
-                      >
-                        {
-                          order.so_number
-                        }
-                      </h3>
-
-                      <p
-                        className="
-                          mt-0.5
-                          truncate
-                          text-[11px]
-                          font-medium
-                          uppercase
-                          tracking-wider
-                          text-slate-500
-                        "
-                      >
-                        {order.customer_name ||
-                          "Unknown Customer"}
-                      </p>
-                    </div>
-
-                    <span
-                      className={`
-                        inline-flex
-                        items-center
-                        rounded-full
-                        px-2.5 py-1
-                        text-[10px]
-                        font-semibold
-                        uppercase
-                        tracking-wide
-                        whitespace-nowrap
-                        ${getStatusClass(order.status)}
-                      `}
-                    >
-                      {order.status}
-                    </span>
-                  </div>
-
-                  <div
-                    className="
-                      mt-3
-                      flex items-end
-                      justify-between
-                      border-t border-slate-100
-                      pt-3
-                    "
-                  >
-
-                    <div className="flex flex-col">
-
-                      <span
-                        className="
-                          text-[10px]
-                          font-medium
-                          uppercase
-                          tracking-wide
-                          text-slate-400
-                        "
-                      >
-                        Total Revenue
-                      </span>
-
-                      <span
-                        className="
-                          mt-1
-                          text-[15px]
-                          font-bold
-                          text-slate-900
-                        "
-                      >
-                        {formatRupiah(
-                          order.revenue,
-                        )}
-                      </span>
-                    </div>
-
-                    <ChevronRight
-                      size={18}
-                      className="text-slate-300"
-                    />
-                  </div>
-                </div>
-              </button>
-            ),
-          )
-        )}
-      </div>
-
-      {/* ======================================== */}
-      {/* FLOATING SEARCH */}
-      {/* ======================================== */}
-
-      <div
-        className="
-          fixed
-          inset-x-0
-          bottom-0
-          z-40
-          px-4
-          pb-[max(env(safe-area-inset-bottom),12px)]
-          pointer-events-none
-        "
-      >
-
-        <div
-          className="
-            pointer-events-auto
-            mx-auto
-            flex
-            max-w-2xl
-            items-center
-            gap-2.5
-          "
-        >
-
-          {/* SEARCH */}
-
-          <div className="relative flex-1">
-
-            <div
-              className="
-                pointer-events-none
-                absolute inset-y-0 left-4
-                flex items-center
-                text-slate-400
-              "
-            >
-              <Search
-                size={16}
-                strokeWidth={2.5}
-              />
-            </div>
-
-            <input
-              type="text"
-              value={search}
-              placeholder="Search SO or Customer..."
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              onChange={(e) =>
-                setSearch(
-                  e.target.value,
-                )
-              }
-              style={{
-                fontSize: "16px",
-              }}
-              className="
-                h-12
-                w-full
-                rounded-full
-                border border-white/70
-                bg-white
-                pl-11 pr-4
-                shadow-[0_10px_35px_rgba(0,0,0,0.14)]
-                focus:outline-none
-                focus:ring-2
-                focus:ring-orange-500/20
-              "
-            />
-          </div>
-
-          {/* PDF */}
-
-          <button
-            onClick={
-              handleDownloadPDF
-            }
-            className="
-              flex
-              h-12 w-12
-              flex-shrink-0
-              items-center justify-center
-              rounded-full
-              bg-white
-              text-slate-700
-              shadow-[0_10px_35px_rgba(0,0,0,0.12)]
-              transition-all
-              active:scale-95
-            "
-          >
-            <Download
-              size={20}
-              strokeWidth={2.3}
-            />
-          </button>
-
-          {/* FAB */}
-
-          <button
-            onClick={() =>
-              navigate(
-                "/sales/create",
-              )
-            }
-            className="
-              flex
-              h-12 w-12
-              flex-shrink-0
-              items-center justify-center
-              rounded-full
-              bg-orange-500
-              text-white
-              shadow-[0_12px_30px_rgba(249,115,22,0.38)]
-              transition-all
-              active:scale-95
-            "
-          >
-            <Plus
-              size={22}
-              strokeWidth={2.5}
-            />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+    
