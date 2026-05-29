@@ -1,8 +1,8 @@
 import { Calendar, Download, Filter, Search, ShoppingCart } from "lucide-react";
 
-import Card from "@/shared/components/Card";
-import Button from "@/shared/components/Button";
-import Input from "@/shared/components/Input";
+import Card from "@/shared/components/common/Card";
+import Button from "@/shared/components/common/Button";
+import Input from "@/shared/components/common/Input";
 
 /* ===================================================== */
 /* DUMMY DATA */
